@@ -1,0 +1,24 @@
+.idea
+.venv
+.envrc
+*.pyc
+*.egg-info
+*egg-info/
+dist
+build
+_build
+.cache/
+*pycache*
+.tox/
+.cache/
+.pytest_cache
+.coverage
+.doctrees
+coverage.xml
+pylint.log
+unittest_py*.xml
+flake8.log
+
+# test output folders
+/tests/output/*
+/examples/output/
