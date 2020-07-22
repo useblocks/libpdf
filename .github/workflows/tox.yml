@@ -12,16 +12,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [[3,6], [3,7], [3,8]]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ join(matrix.python-version, '.') }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ join(matrix.python-version, '.') }}
 
     - name: Install poetry and tox
       run: |
@@ -29,7 +29,7 @@ jobs:
 
     - name: Run tox env pytest
       run: |
-        tox -e py${{ matrix.python-version }}
+        tox -e py${{ join(matrix.python-version, '') }}
 
   flake8_pylint_docs_black:
 
