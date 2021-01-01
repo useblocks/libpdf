@@ -1,0 +1,15 @@
+{
+    "restructuredtext.confPath": "${workspaceFolder}/docs",
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "120",
+        "--skip-string-normalization",
+        "--target-version",
+        "py38"
+    ],
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.flake8Enabled": true,
+}

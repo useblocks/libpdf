@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "examples.lib_usage_example",
+            "type": "python",
+            "request": "launch",
+            "module": "examples.lib_usage_example",
+        },
+        {
+            "name": "libpdf CLI",
+            "type": "python",
+            "request": "launch",
+            "module": "libpdf.__init__",
+            "args": [
+                "-vvv",
+                // "-p",
+                // "2-3",
+                "-vd",
+                // "-vi",
+                // "paragraph,chapter",
+                // "-vs",
+                // "-vs",
+                // "-vi",
+                // "chapter",
+                // "-ve",
+                // "table,chapter,figure",
+                "--no-figures",
+                "--smart-page-crop",
+                "--output-path",
+                "out.yml",
+                "tests/pdf/full_features.pdf",
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}
