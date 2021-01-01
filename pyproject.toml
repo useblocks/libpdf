@@ -4,10 +4,11 @@ version = "0.0.1"
 description = "Extract structured data from PDFs."
 authors = [
     "Marco Heinemann <marco.heinemann@useblocks.com>",
-    "Jui-Wen Chen <jui-wen.chen@useblocks.com",
-    "Haiyang Zhang <haiyang.zhang@useblocks.com",
 ]
-maintainers = []
+maintainers = [
+    "Jui-Wen Chen <jui-wen.chen@useblocks.com>",
+    "Haiyang Zhang <haiyang.zhang@useblocks.com>",
+]
 license = 'MIT'
 readme = 'README.rst'
 homepage = 'http://pypi.python.org/pypi/libpdf'
@@ -23,6 +24,7 @@ classifiers = [
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
     'Topic :: Scientific/Engineering',
     'Topic :: Scientific/Engineering :: Information Analysis',
     'Topic :: Software Development',
@@ -39,14 +41,14 @@ click = "^7"
 importlib-metadata = { version = "^1.6.0", python = "~3.6 || ~3.7" }
 pdfplumber = { git = "https://github.com/useblocks/pdfplumber.git" }
 PyYAML = "^5"
-
-# optional dependencies
-tqdm = { version = "<4.25.0", optional = true }
-colorama = { version = "^0.4.3", optional = true }
-camelot-py = { version = "^0.7", optional = true }
-opencv-python = { version = "^3.4.2.17", optional = true }
 "ruamel.yaml" = "^0.16.10"
 "pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
+
+# optional dependencies
+tqdm = { version = "^4.50.0", optional = true }
+colorama = { version = "^0.4.4", optional = true }
+camelot-py = { version = "^0.7", optional = true }
+opencv-python = { version = "^3.4.2.17", optional = true }
 
 [tool.poetry.extras]
 tqdm = ["tqdm"]
@@ -73,7 +75,6 @@ flake8-docstrings = "*"         # Uses pydocstyle to check docstrings (PEP 257)
 flake8-import-order = "*"       # Checks the ordering of import statements.
 flake8-mutable = "*"            # Checks for mutable defaults
 flake8-pep3101 = "*"            # Checks for old string formatting.
-flake8-per-file-ignores = "*"   # Ignore individual error codes per file with flake8
 flake8-quotes = "*"             # Enforce single quotes instead of double quotes
 flake8-rst-docstrings = "*"     # Validating Python docstrings markup as reStructuredText (RST)
 flake8-string-format = "*"      # Check the strings and parameters using str.format
@@ -82,7 +83,8 @@ flake8-tuple = "*"              # Check code for 1 element tuple
 flake8-formatter-abspath = "*"  # Formatter to get absolute file paths for IDE external tool calls
 
 pylint = "*"
-black = { version = "*", allow-prereleases = true }
+black = { version = "^20.0", allow-prereleases = true }
+mypy = "^0.790"
 
 # docs
 sphinx_rtd_theme = "*"
@@ -97,7 +99,7 @@ libpdf = 'libpdf.core:main_cli'
 line-length = 120
 target-version = ['py38']
 skip-string-normalization = 'True'
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-
