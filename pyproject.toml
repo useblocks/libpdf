@@ -54,6 +54,7 @@ opencv-python = { version = "^3.4.2.17", optional = true }
 tqdm = ["tqdm"]
 colorama = ["colorama"]
 camelot = ["camelot-py", "opencv-python"]
+docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-needs", "sphinxcontrib-plantuml"]
 
 [tool.poetry.dev-dependencies]
 # testing

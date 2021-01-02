@@ -1,37 +1,34 @@
 """Configuration file for the Sphinx documentation builder."""
 
+# non-capitalized global names are needed by Sphinx and its extension
+# pylint: disable=invalid-name
+
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Path setup --------------------------------------------------------------
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
 import os
 
 # -- Project information -----------------------------------------------------
-
 project = 'libpdf'
-copyright = '2020, team useblocks'  # noqa: A001 (python builtin)
+copyright = '2020, team useblocks'  # noqa: A001 (python builtin) # pylint: disable=redefined-builtin
 author = 'team useblocks'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
 
-
 # -- General configuration ---------------------------------------------------
-
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinxcontrib.plantuml',
-]
+extensions = ['sphinx.ext.autodoc', 'sphinxcontrib.plantuml', 'sphinx.ext.todo']
 
+# output TODOs into the docs
+todo_include_todos = True
 
 # Plantuml configuration
 cwd = os.getcwd()
@@ -52,6 +49,10 @@ def remove_module_docstring(app, what, name, obj, options, lines):
     Invoked by Sphinx event autodoc-process-docstring.
     Original idea from https://stackoverflow.com/a/18031024.
     """
+    # delete unused parameters to denote that explicitly
+    del app
+    del obj
+    del options
     if what == 'module' and name == 'libpdf':
         del lines[:]
 
