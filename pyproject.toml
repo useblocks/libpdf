@@ -44,16 +44,20 @@ PyYAML = "^5"
 "ruamel.yaml" = "^0.16.10"
 "pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
 
-# optional dependencies
+# optional deps for progress bars
 tqdm = { version = "^4.50.0", optional = true }
 colorama = { version = "^0.4.4", optional = true }
-camelot-py = { version = "^0.7", optional = true }
-opencv-python = { version = "^3.4.2.17", optional = true }
+
+# optional deps for docs, needed to make RTD work with pyproject.toml
+# see https://github.com/readthedocs/readthedocs.org/issues/4912#issuecomment-664002569
+sphinx = { version = "*", optional = true }
+sphinx_rtd_theme = { version = "*", optional = true }
+sphinxcontrib-needs = { version = "*", optional = true }
+sphinxcontrib-plantuml = { version = "*", optional = true }
 
 [tool.poetry.extras]
 tqdm = ["tqdm"]
 colorama = ["colorama"]
-camelot = ["camelot-py", "opencv-python"]
 docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-needs", "sphinxcontrib-plantuml"]
 
 [tool.poetry.dev-dependencies]
@@ -88,8 +92,8 @@ black = { version = "^20.0", allow-prereleases = true }
 mypy = "^0.790"
 
 # docs
-sphinx_rtd_theme = "*"
 sphinx = "*"
+sphinx_rtd_theme = "*"
 sphinxcontrib-needs = "*"
 sphinxcontrib-plantuml = "*"
 

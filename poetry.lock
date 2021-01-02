@@ -2,7 +2,7 @@
 name = "alabaster"
 version = "0.7.12"
 description = "A configurable sidebar-enabled Sphinx theme"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -66,7 +66,7 @@ tests_no_zope = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0
 name = "babel"
 version = "2.9.0"
 description = "Internationalization utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -100,33 +100,10 @@ version = ">=0.6"
 python = "<3.7"
 
 [[package]]
-name = "camelot-py"
-version = "0.7.3"
-description = "PDF Table Extraction for Humans."
-category = "main"
-optional = true
-python-versions = "*"
-
-[package.extras]
-all = ["opencv-python (>=3.4.2.17)", "matplotlib (>=2.2.3)"]
-cv = ["opencv-python (>=3.4.2.17)"]
-dev = ["codecov (>=2.0.15)", "pytest (>=3.8.0)", "pytest-cov (>=2.6.0)", "pytest-mpl (>=0.10)", "pytest-runner (>=4.2)", "Sphinx (>=1.7.9)", "opencv-python (>=3.4.2.17)", "matplotlib (>=2.2.3)"]
-plot = ["matplotlib (>=2.2.3)"]
-
-[package.dependencies]
-chardet = ">=3.0.4"
-click = ">=6.7"
-numpy = ">=1.13.3"
-openpyxl = ">=2.5.8"
-pandas = ">=0.23.4"
-"pdfminer.six" = ">=20170720"
-PyPDF2 = ">=1.26.0"
-
-[[package]]
 name = "certifi"
 version = "2020.12.5"
 description = "Python package for providing Mozilla's CA Bundle."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -169,7 +146,7 @@ toml = ["toml"]
 name = "cycler"
 version = "0.10.0"
 description = "Composable style cycles"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 marker = "python_version >= \"3.6\""
@@ -198,17 +175,9 @@ python-versions = "*"
 name = "docutils"
 version = "0.16"
 description = "Docutils -- Python Documentation Utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-
-[[package]]
-name = "et-xmlfile"
-version = "1.0.1"
-description = "An implementation of lxml.xmlfile for the standard library"
-category = "main"
-optional = true
-python-versions = "*"
 
 [[package]]
 name = "execnet"
@@ -464,7 +433,7 @@ six = "*"
 name = "idna"
 version = "2.10"
 description = "Internationalized Domain Names in Applications (IDNA)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -472,7 +441,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "imagesize"
 version = "1.2.0"
 description = "Getting image size from png/jpeg/jpeg2000/gif file"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -524,18 +493,10 @@ requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama (>=0.4.3,<0.5.0)"]
 
 [[package]]
-name = "jdcal"
-version = "1.4.1"
-description = "Julian dates from proleptic Gregorian and Julian calendars."
-category = "main"
-optional = true
-python-versions = "*"
-
-[[package]]
 name = "jinja2"
 version = "2.11.2"
 description = "A very fast and expressive template engine."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -549,7 +510,7 @@ MarkupSafe = ">=0.23"
 name = "kiwisolver"
 version = "1.3.1"
 description = "A fast implementation of the Cassowary constraint solver"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 marker = "python_version >= \"3.6\""
@@ -566,7 +527,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "markupsafe"
 version = "1.1.1"
 description = "Safely add untrusted strings to HTML/XML markup."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
@@ -574,7 +535,7 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 name = "matplotlib"
 version = "3.3.3"
 description = "Python plotting package"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 marker = "python_version >= \"3.6\""
@@ -634,53 +595,18 @@ description = "NumPy is the fundamental package for array computing with Python.
 category = "main"
 optional = false
 python-versions = ">=3.6"
-
-[[package]]
-name = "opencv-python"
-version = "3.4.11.45"
-description = "Wrapper package for OpenCV python bindings."
-category = "main"
-optional = true
-python-versions = ">=3.6"
-
-[[package]]
-name = "openpyxl"
-version = "3.0.5"
-description = "A Python library to read/write Excel 2010 xlsx/xlsm files"
-category = "main"
-optional = true
-python-versions = ">=3.6,"
-
-[package.dependencies]
-et-xmlfile = "*"
-jdcal = "*"
+marker = "python_version >= \"3.6\""
 
 [[package]]
 name = "packaging"
 version = "20.8"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.dependencies]
 pyparsing = ">=2.0.2"
-
-[[package]]
-name = "pandas"
-version = "0.25.3"
-description = "Powerful data structures for data analysis, time series, and statistics"
-category = "main"
-optional = true
-python-versions = ">=3.5.3"
-
-[package.extras]
-test = ["pytest (>=4.0.2)", "pytest-xdist", "hypothesis (>=3.58)"]
-
-[package.dependencies]
-numpy = ">=1.13.3"
-python-dateutil = ">=2.6.1"
-pytz = ">=2017.2"
 
 [[package]]
 name = "pathspec"
@@ -807,7 +733,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pygments"
 version = "2.7.3"
 description = "Pygments is a syntax highlighting package written in Python."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -830,17 +756,9 @@ toml = ">=0.7.1"
 name = "pyparsing"
 version = "2.4.7"
 description = "Python parsing module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
-
-[[package]]
-name = "pypdf2"
-version = "1.26.0"
-description = "PDF toolkit"
-category = "main"
-optional = true
-python-versions = "*"
 
 [[package]]
 name = "pytest"
@@ -919,6 +837,7 @@ description = "Extensions to the standard Python datetime module"
 category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+marker = "python_version >= \"3.6\""
 
 [package.dependencies]
 six = ">=1.5"
@@ -951,7 +870,7 @@ python-versions = "*"
 name = "requests"
 version = "2.25.1"
 description = "Python HTTP for Humans."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -1014,7 +933,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "snowballstemmer"
 version = "2.0.0"
 description = "This package provides 26 stemmers for 25 languages generated from Snowball algorithms."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -1030,7 +949,7 @@ python-versions = "*"
 name = "sphinx"
 version = "3.4.1"
 description = "Python documentation generator"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -1062,7 +981,7 @@ sphinxcontrib-serializinghtml = "*"
 name = "sphinx-rtd-theme"
 version = "0.5.0"
 description = "Read the Docs theme for Sphinx"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -1076,7 +995,7 @@ sphinx = "*"
 name = "sphinxcontrib-applehelp"
 version = "1.0.2"
 description = "sphinxcontrib-applehelp is a sphinx extension which outputs Apple help books"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -1088,7 +1007,7 @@ test = ["pytest"]
 name = "sphinxcontrib-devhelp"
 version = "1.0.2"
 description = "sphinxcontrib-devhelp is a sphinx extension which outputs Devhelp document."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -1100,7 +1019,7 @@ test = ["pytest"]
 name = "sphinxcontrib-htmlhelp"
 version = "1.0.3"
 description = "sphinxcontrib-htmlhelp is a sphinx extension which renders HTML help files"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -1112,7 +1031,7 @@ test = ["pytest", "html5lib"]
 name = "sphinxcontrib-jsmath"
 version = "1.0.1"
 description = "A sphinx extension which renders display math in HTML via JavaScript"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -1123,7 +1042,7 @@ test = ["pytest", "flake8", "mypy"]
 name = "sphinxcontrib-needs"
 version = "0.5.6"
 description = "Sphinx needs extension for managing needs/requirements and specifications"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -1142,7 +1061,7 @@ python = ">=3.6"
 name = "sphinxcontrib-plantuml"
 version = "0.19"
 description = "Sphinx \"plantuml\" extension"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -1153,7 +1072,7 @@ Sphinx = ">=1.6"
 name = "sphinxcontrib-qthelp"
 version = "1.0.3"
 description = "sphinxcontrib-qthelp is a sphinx extension which outputs QtHelp document."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -1165,7 +1084,7 @@ test = ["pytest"]
 name = "sphinxcontrib-serializinghtml"
 version = "1.1.4"
 description = "sphinxcontrib-serializinghtml is a sphinx extension which outputs \"serialized\" HTML files (json and pickle)."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -1247,7 +1166,7 @@ python-versions = "*"
 name = "urllib3"
 version = "1.26.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
@@ -1326,13 +1245,12 @@ testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pyt
 [extras]
 tqdm = ["tqdm"]
 colorama = ["colorama"]
-camelot = ["camelot-py", "opencv-python"]
-docs = []
+docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-needs", "sphinxcontrib-plantuml"]
 
 [metadata]
 lock-version = "1.0"
 python-versions = "^3.6"
-content-hash = "3ed62f2a2161b055f2d87967c902b30fcc893310a65a3f73176df7d316db8709"
+content-hash = "10637017ec9a79792142be43586d865f0b56f60157d422cb2ad89f43efa56c2e"
 
 [metadata.files]
 alabaster = [
@@ -1365,9 +1283,6 @@ babel = [
 ]
 black = [
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
-]
-camelot-py = [
-    {file = "camelot_py-0.7.3-py3-none-any.whl", hash = "sha256:49ea28c98948272098a1fcfbd95b96a74c710d2ba51b9df7bb778b19421d4d86"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
@@ -1451,9 +1366,6 @@ distlib = [
 docutils = [
     {file = "docutils-0.16-py2.py3-none-any.whl", hash = "sha256:0c5b78adfbf7762415433f5515cd5c9e762339e23369dbe8000d84a4bf4ab3af"},
     {file = "docutils-0.16.tar.gz", hash = "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"},
-]
-et-xmlfile = [
-    {file = "et_xmlfile-1.0.1.tar.gz", hash = "sha256:614d9722d572f6246302c4491846d2c393c199cfa4edc9af593437691683335b"},
 ]
 execnet = [
     {file = "execnet-1.7.1-py2.py3-none-any.whl", hash = "sha256:d4efd397930c46415f62f8a31388d6be4f27a91d7550eb79bc64a756e0056547"},
@@ -1551,10 +1463,6 @@ importlib-resources = [
 isort = [
     {file = "isort-5.7.0-py3-none-any.whl", hash = "sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc"},
     {file = "isort-5.7.0.tar.gz", hash = "sha256:c729845434366216d320e936b8ad6f9d681aab72dc7cbc2d51bedc3582f3ad1e"},
-]
-jdcal = [
-    {file = "jdcal-1.4.1-py2.py3-none-any.whl", hash = "sha256:1abf1305fce18b4e8aa248cf8fe0c56ce2032392bc64bbd61b5dff2a19ec8bba"},
-    {file = "jdcal-1.4.1.tar.gz", hash = "sha256:472872e096eb8df219c23f2689fc336668bdb43d194094b5cc1707e1640acfc8"},
 ]
 jinja2 = [
     {file = "Jinja2-2.11.2-py2.py3-none-any.whl", hash = "sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035"},
@@ -1743,57 +1651,9 @@ numpy = [
     {file = "numpy-1.19.4-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:2a2740aa9733d2e5b2dfb33639d98a64c3b0f24765fed86b0fd2aec07f6a0a08"},
     {file = "numpy-1.19.4.zip", hash = "sha256:141ec3a3300ab89c7f2b0775289954d193cc8edb621ea05f99db9cb181530512"},
 ]
-opencv-python = [
-    {file = "opencv-python-3.4.11.45.tar.gz", hash = "sha256:7c9994899a78dec9d0fd78734cc4a5aa89ef6a795dfe091ddcf2e89f74153aec"},
-    {file = "opencv_python-3.4.11.45-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:3e4ca74e8b9b96532b4516bd6181d1146d1a0d5b6467dbda8eb804379637f193"},
-    {file = "opencv_python-3.4.11.45-cp36-cp36m-manylinux2014_i686.whl", hash = "sha256:fca7443bb677fadf359e286e57f88898a557cd6d43b0369b8ffecff988e7c533"},
-    {file = "opencv_python-3.4.11.45-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:5063fd508dfaf4cce1524ea66b8d14ce56f5b428075da38740f6efeeb8cb61aa"},
-    {file = "opencv_python-3.4.11.45-cp36-cp36m-win32.whl", hash = "sha256:b16cc269ee213d021a0ec93050d544e34996a4a40d323c1545fe0a0457d58b5e"},
-    {file = "opencv_python-3.4.11.45-cp36-cp36m-win_amd64.whl", hash = "sha256:23922faf4d0e251b55f8568d21d55f841ac3354ca8cd28dcd8b0be849f71ed0b"},
-    {file = "opencv_python-3.4.11.45-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:dda11d7b1caaa9a2501815036178f21995ccd1a7782b3e3b2f1e9356d272d2ea"},
-    {file = "opencv_python-3.4.11.45-cp37-cp37m-manylinux2014_i686.whl", hash = "sha256:291082dd172b00d8fb7d119e4de390179e5b554ab5945d2dab2eb5e1111eb85b"},
-    {file = "opencv_python-3.4.11.45-cp37-cp37m-manylinux2014_x86_64.whl", hash = "sha256:3a072f1b85801b7291849e6095e5ab6c7e6f7273bc89ef919a2509621512b7ac"},
-    {file = "opencv_python-3.4.11.45-cp37-cp37m-win32.whl", hash = "sha256:665d35978d8c0f318018c4d1c41ce2d3e9b3de7e9472f711a0580e45f7bc4612"},
-    {file = "opencv_python-3.4.11.45-cp37-cp37m-win_amd64.whl", hash = "sha256:b3979f5af85ce7818ad9de5f08449f7522fcc2aabb9d867b7c560204fc764c85"},
-    {file = "opencv_python-3.4.11.45-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:047e2c18ccae7cff5b74e63f614f8761acd8e1be6201dbacdec4e4ce2536cc79"},
-    {file = "opencv_python-3.4.11.45-cp38-cp38-manylinux2014_i686.whl", hash = "sha256:464fbd28c56a34b728074fd5f123eccaffc8009610803237073709fdc295dfdf"},
-    {file = "opencv_python-3.4.11.45-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:5fc9e636e0e5e929fed91fe79e6e3cd8051ffb86e42e466c08a18e1780df7d50"},
-    {file = "opencv_python-3.4.11.45-cp38-cp38-win32.whl", hash = "sha256:b2f787bee6fe407999179d77ce6d5b2df74af4415f0d99d3f12fd43db0cebd27"},
-    {file = "opencv_python-3.4.11.45-cp38-cp38-win_amd64.whl", hash = "sha256:34f92e2a723e0d7b102565722ad9e6e992132a8986b1d1c771ac1fe6ba7b75fc"},
-    {file = "opencv_python-3.4.11.45-cp39-cp39-macosx_10_13_x86_64.whl", hash = "sha256:87015ea21e3f2faa7923cc3505e671b5e99b791fc812630f5d5ca4474387b242"},
-    {file = "opencv_python-3.4.11.45-cp39-cp39-manylinux2014_i686.whl", hash = "sha256:113cefff2530390ebe54e7a68f7cd105ce4f35da81501f69f48bf89fed592d22"},
-    {file = "opencv_python-3.4.11.45-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:b9a9e71d7e883948d703a299ff53d4949c1a92af4e953afdba22243b2002bac9"},
-    {file = "opencv_python-3.4.11.45-cp39-cp39-win32.whl", hash = "sha256:83730ef2b98cb95dc183556937442b46e4b816e960ebd6dec3c4135d67ad4439"},
-    {file = "opencv_python-3.4.11.45-cp39-cp39-win_amd64.whl", hash = "sha256:995540f2e962d53bcd940b4392a08a4b720a1ead08ccb87b7be0dff8af694938"},
-]
-openpyxl = [
-    {file = "openpyxl-3.0.5-py2.py3-none-any.whl", hash = "sha256:f7d666b569f729257082cf7ddc56262431878f602dcc2bc3980775c59439cdab"},
-    {file = "openpyxl-3.0.5.tar.gz", hash = "sha256:18e11f9a650128a12580a58e3daba14e00a11d9e907c554a17ea016bf1a2c71b"},
-]
 packaging = [
     {file = "packaging-20.8-py2.py3-none-any.whl", hash = "sha256:24e0da08660a87484d1602c30bb4902d74816b6985b93de36926f5bc95741858"},
     {file = "packaging-20.8.tar.gz", hash = "sha256:78598185a7008a470d64526a8059de9aaa449238f280fc9eb6b13ba6c4109093"},
-]
-pandas = [
-    {file = "pandas-0.25.3-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:df8864824b1fe488cf778c3650ee59c3a0d8f42e53707de167ba6b4f7d35f133"},
-    {file = "pandas-0.25.3-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:7458c48e3d15b8aaa7d575be60e1e4dd70348efcd9376656b72fecd55c59a4c3"},
-    {file = "pandas-0.25.3-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:61741f5aeb252f39c3031d11405305b6d10ce663c53bc3112705d7ad66c013d0"},
-    {file = "pandas-0.25.3-cp35-cp35m-win32.whl", hash = "sha256:adc3d3a3f9e59a38d923e90e20c4922fc62d1e5a03d083440468c6d8f3f1ae0a"},
-    {file = "pandas-0.25.3-cp35-cp35m-win_amd64.whl", hash = "sha256:975c461accd14e89d71772e89108a050fa824c0b87a67d34cedf245f6681fc17"},
-    {file = "pandas-0.25.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:ee50c2142cdcf41995655d499a157d0a812fce55c97d9aad13bc1eef837ed36c"},
-    {file = "pandas-0.25.3-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:4545467a637e0e1393f7d05d61dace89689ad6d6f66f267f86fff737b702cce9"},
-    {file = "pandas-0.25.3-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:bbe3eb765a0b1e578833d243e2814b60c825b7fdbf4cdfe8e8aae8a08ed56ecf"},
-    {file = "pandas-0.25.3-cp36-cp36m-win32.whl", hash = "sha256:8153705d6545fd9eb6dd2bc79301bff08825d2e2f716d5dced48daafc2d0b81f"},
-    {file = "pandas-0.25.3-cp36-cp36m-win_amd64.whl", hash = "sha256:26382aab9c119735908d94d2c5c08020a4a0a82969b7e5eefb92f902b3b30ad7"},
-    {file = "pandas-0.25.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:00dff3a8e337f5ed7ad295d98a31821d3d0fe7792da82d78d7fd79b89c03ea9d"},
-    {file = "pandas-0.25.3-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:e45055c30a608076e31a9fcd780a956ed3b1fa20db61561b8d88b79259f526f7"},
-    {file = "pandas-0.25.3-cp37-cp37m-win32.whl", hash = "sha256:255920e63850dc512ce356233081098554d641ba99c3767dde9e9f35630f994b"},
-    {file = "pandas-0.25.3-cp37-cp37m-win_amd64.whl", hash = "sha256:22361b1597c8c2ffd697aa9bf85423afa9e1fcfa6b1ea821054a244d5f24d75e"},
-    {file = "pandas-0.25.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9962957a27bfb70ab64103d0a7b42fa59c642fb4ed4cb75d0227b7bb9228535d"},
-    {file = "pandas-0.25.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:78bf638993219311377ce9836b3dc05f627a666d0dbc8cec37c0ff3c9ada673b"},
-    {file = "pandas-0.25.3-cp38-cp38-win32.whl", hash = "sha256:6a3ac2c87e4e32a969921d1428525f09462770c349147aa8e9ab95f88c71ec71"},
-    {file = "pandas-0.25.3-cp38-cp38-win_amd64.whl", hash = "sha256:33970f4cacdd9a0ddb8f21e151bfb9f178afb7c36eb7c25b9094c02876f385c2"},
-    {file = "pandas-0.25.3.tar.gz", hash = "sha256:52da74df8a9c9a103af0a72c9d5fdc8e0183a90884278db7f386b5692a2220a4"},
 ]
 pathspec = [
     {file = "pathspec-0.8.1-py2.py3-none-any.whl", hash = "sha256:aa0cb481c4041bf52ffa7b0d8fa6cd3e88a2ca4879c533c9153882ee2556790d"},
@@ -1899,9 +1759,6 @@ pylint = [
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
-]
-pypdf2 = [
-    {file = "PyPDF2-1.26.0.tar.gz", hash = "sha256:e28f902f2f0a1603ea95ebe21dff311ef09be3d0f0ef29a3e44a932729564385"},
 ]
 pytest = [
     {file = "pytest-5.3.5-py3-none-any.whl", hash = "sha256:ff615c761e25eb25df19edddc0b970302d2a9091fbce0e7213298d85fb61fef6"},
