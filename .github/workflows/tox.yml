@@ -27,10 +27,11 @@ jobs:
       run: |
         python -m pip install poetry tox
 
-    - name: Copy policy file to OS image (needed to use ImageMagic in visual debugging tox tests)
+    - name: Copy policy file for Linux (needed to use ImageMagic in visual debugging tox tests)
       run: |
         sudo mkdir -p /etc/ImageMagick-7/
         sudo cp .github/workflows/policy.xml /etc/ImageMagick-7/policy.xml
+      if: runner.os == 'Linux'
 
     - name: Run tox env pytest
       run: |
