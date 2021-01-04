@@ -53,6 +53,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     pdf_path: str,
     pages: Optional[List[int]],
     smart_page_crop: bool,
+    save_figures: bool,
     figure_dir: Optional[str],
     no_chapters: bool,
     no_paragraphs: bool,
@@ -66,6 +67,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     :param pdf_path: path to the PDF to read
     :param pages: list of pages to extract
     :param smart_page_crop: see description in function core.main()
+    :param save_figures: flag triggering the export of figures to the figure_dir
     :param figure_dir: output directory for extracted figures
     :param no_chapters: flag triggering the exclusion of chapters (flat structure of elements)
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
@@ -189,7 +191,8 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         overall_pbar.update(10)
 
         # write out figures to given path
-        images_to_save(pdf, figure_list)
+        if save_figures:
+            images_to_save(pdf, figure_list)
 
     # populate ApiObjects
     objects = ApiObjects(

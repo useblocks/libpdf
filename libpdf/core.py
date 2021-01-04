@@ -28,6 +28,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     smart_page_crop: bool = False,
     output_format: str = None,
     output_path: str = None,
+    save_figures: bool = False,
     figure_dir: str = None,
     no_chapters: bool = False,
     no_paragraphs: bool = False,
@@ -55,6 +56,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
            If a certain box is found on multiple pages it is considered a header/footer element and will be
            ignored for the extraction. This feature can be used together with page_crop. In this case the pages will
            first be cropped to the values defined in page_crop and then the header/footer detection will run.
+    :param save_figures: flag triggering the export of figures to the figure_dir
     :param figure_dir: output directory for extracted figures; if it does not exist, it will be created
     :param output_format: only relevant for CLI, allowed values are json, yaml or stdout
     :param output_path: only relevant for CLI, path to the output file for output_formats json or yaml
@@ -114,6 +116,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
                 pdf,
                 pages,
                 smart_page_crop,
+                save_figures,
                 figure_dir,
                 no_chapters,
                 no_paragraphs,
@@ -156,6 +159,7 @@ def main_api(  # pylint: disable=too-many-arguments
     page_range: str = None,
     page_crop: Tuple[float, float, float, float] = None,
     smart_page_crop: bool = False,
+    save_figures: bool = False,
     figure_dir: str = 'figures',
     no_chapters: bool = False,
     no_paragraphs: bool = False,
@@ -179,6 +183,7 @@ def main_api(  # pylint: disable=too-many-arguments
     :param page_range: range of pages to extract as string without spaces (e.g. 3-5 or 3,4,7 or 3-5,7)
     :param page_crop: see description in function core.main()
     :param smart_page_crop: see description in function core.main()
+    :param save_figures: flag triggering the export of figures to the figure_dir
     :param figure_dir: output directory for extracted figures; if it does not exist, it will be created
     :param no_chapters: flag triggering the exclusion of chapters (resulting in a flat list of elements)
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
@@ -220,6 +225,7 @@ def main_api(  # pylint: disable=too-many-arguments
         page_range=page_range,
         page_crop=page_crop,
         smart_page_crop=smart_page_crop,
+        save_figures=save_figures,
         figure_dir=figure_dir,
         no_chapters=no_chapters,
         no_paragraphs=no_paragraphs,
@@ -391,6 +397,14 @@ class DependentOption(click.Option):
 )
 @click.option('-o', '--output-path', type=click.Path(file_okay=True, dir_okay=False))
 @click.option(
+    '-sf',
+    '--save-figures',
+    is_flag=True,
+    show_default=True,
+    help='Flag enabling the export of PDF figures into the directory given in --figure-dir.'
+    ' Has no effect if --no-figures is also given.',
+)
+@click.option(
     '-d',
     '--figure-dir',
     type=click.Path(file_okay=False, dir_okay=True),
@@ -401,15 +415,22 @@ class DependentOption(click.Option):
 @click.option(
     '--no-chapters',
     is_flag=True,
+    show_default=True,
     help='Do not extract chapter/outline structure. The list of paragraphs, tables and figures will be flattened.',
 )
 @click.option(
     '--no-paragraphs',
     is_flag=True,
+    show_default=True,
     help='Skip paragraphs. The chapter structure will still be preserved.',
 )
 @click.option('--no-tables', is_flag=True, help='Skip tables.')
-@click.option('--no-figures', is_flag=True, help='Skip figures.')
+@click.option(
+    '--no-figures',
+    is_flag=True,
+    show_default=True,
+    help='Skip figures. Figures will not be part of the output JSON/YAML structures and also not saved if'
+    ' --save-figures is given.')
 @click.option('-vd', '--visual-debug', is_flag=True, help='Visual debug libpdf.')
 @click.option(
     '-vo',
@@ -418,12 +439,14 @@ class DependentOption(click.Option):
     depends_on=['visual_debug'],
     type=click.Path(file_okay=False, dir_okay=True),
     default='visual_debug_libpdf',
+    show_default=True,
     help='Output directory for visualized pdf pages.',
 )
 @click.option(
     '-vs',
     '--visual-split-elements',
     is_flag=True,
+    show_default=True,
     help='Put visual debugging elements into separate directories.',
 )
 @click.option(
