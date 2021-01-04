@@ -26,13 +26,14 @@ jobs:
     - name: Copy policy file for Linux (needed to use ImageMagic in visual debugging tox tests)
       run: |
         ls -al /etc
-        ls -al /etc/ImageMagick-7
-        cat /etc/ImageMagick-7/policy.xml
+        ls -al /etc/ImageMagick-7 | true
+        cat /etc/ImageMagick-7/policy.xml | true
         sudo mkdir -p /etc/ImageMagick-7/
         sudo cp .github/workflows/policy.xml /etc/ImageMagick-7/policy.xml
+        sudo cp .github/workflows/policy.xml /etc/ImageMagick-6/policy.xml
         ls -al /etc
-        ls -al /etc/ImageMagick-7
-        cat /etc/ImageMagick-7/policy.xml
+        ls -al /etc/ImageMagick-7 | true
+        cat /etc/ImageMagick-7/policy.xml | true
       if: matrix.os == 'ubuntu-latest'
 
     - name: Install poetry and tox
