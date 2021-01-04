@@ -430,7 +430,8 @@ class DependentOption(click.Option):
     is_flag=True,
     show_default=True,
     help='Skip figures. Figures will not be part of the output JSON/YAML structures and also not saved if'
-    ' --save-figures is given.')
+    ' --save-figures is given.',
+)
 @click.option('-vd', '--visual-debug', is_flag=True, help='Visual debug libpdf.')
 @click.option(
     '-vo',
