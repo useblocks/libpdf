@@ -21,7 +21,7 @@ def test_cli_ok(path):
     if sys.platform.startswith('win'):
         # TODO bug on Windows currently for PDF_TWO_COLUMNS:
         #      UnicodeEncodeError('charmap', '\uf0b7  8 1/2', 0, 1, 'character maps to <undefined>')
-        assert result.exception is UnicodeEncodeError
+        assert isinstance(result.exception, UnicodeEncodeError)
     else:
         assert result.exception is None
     assert result.exit_code == 0
