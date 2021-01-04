@@ -25,8 +25,13 @@ jobs:
 
     - name: Copy policy file for Linux (needed to use ImageMagic in visual debugging tox tests)
       run: |
+        ls -al /etc
+        ls -al /etc/ImageMagick-7
+        cat /etc/ImageMagick-7/policy.xml
         sudo mkdir -p /etc/ImageMagick-7/
         sudo cp .github/workflows/policy.xml /etc/ImageMagick-7/policy.xml
+        ls -al /etc
+        ls -al /etc/ImageMagick-7
         cat /etc/ImageMagick-7/policy.xml
       if: matrix.os == 'ubuntu-latest'
 
