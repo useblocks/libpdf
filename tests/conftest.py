@@ -45,8 +45,13 @@ def obj_equal(class_type, instance1, instance2):
 
 
 @pytest.fixture(scope='session')
-def load_full_features_pdf(tmpdir_factory):
+def load_full_features_pdf(tmpdir_factory, request):
     """Load test pdf and return temporary directory path and the libpdf object."""
     tmpdir = tmpdir_factory.mktemp('full_features_pdf')
     tmpdir_path = str(tmpdir)
-    return tmpdir_path, load(PDF_FULL_FEATURES, figure_dir=os.path.join(tmpdir_path, 'figures'))
+    save_figures = request.param if hasattr(request, 'param') else False
+    return tmpdir_path, load(
+        PDF_FULL_FEATURES,
+        save_figures=save_figures,
+        figure_dir=os.path.join(tmpdir_path, 'figures'),
+    )

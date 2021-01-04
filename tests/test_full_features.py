@@ -96,6 +96,7 @@ def test_tables(load_full_features_pdf):
     assert tables[1].uid == 'chapter.3/table.1'
 
 
+@pytest.mark.parametrize('load_full_features_pdf', [True], indirect=True)  # save figures
 def test_figures(load_full_features_pdf):
     """Check if API extract all the figures."""
     tmpdir_path, objects = load_full_features_pdf
