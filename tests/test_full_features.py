@@ -213,7 +213,7 @@ def test_smart_header_footer_detection():
     assert smart_objects.flattened.paragraphs[29].text == '4. Chapter test for footer'
 
 
-@pytest.mark.skipif(sys.platform.startswith('win'), reason='ImageMagick not installed for Github windows-latest OS')
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='visual debugging: ImageMagick not installed on Win')
 def test_visual_debug_include_elements(tmpdir):
     """Test visual debug include visualized elements."""
     visual_debug_output_dir = os.path.join(tmpdir, 'visual_debug_libpdf')
@@ -236,7 +236,7 @@ def test_visual_debug_include_elements(tmpdir):
     assert len(os.listdir(visual_debug_output_dir)) == 1
 
 
-@pytest.mark.skipif(sys.platform.startswith('win'), reason='ImageMagick not installed for Github windows-latest OS')
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='visual debugging: ImageMagick not installed on Win')
 def test_visual_debug_exclude_elements(tmpdir):
     """Test visual debug exclude visualized elements."""
     visual_debug_output_dir = os.path.join(tmpdir, 'visual_debug_libpdf')
