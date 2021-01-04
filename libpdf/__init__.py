@@ -17,7 +17,9 @@ except ImportError:
 __version__: str = importlib_metadata.version('libpdf')
 __summary__: str = importlib_metadata.metadata('libpdf')['Summary']
 
-# this import cannot be at the top to avoid import errors in core.py when importing __version__ and __summary__
+import libpdf._import_forks  # noqa: E402, F401
+# below imports cannot be at the top avoid circular import errors in core.py when
+# importing __version__ and __summary__
 from libpdf.core import main_api as load  # noqa: E402
 from libpdf.core import main_cli  # noqa: E402
 

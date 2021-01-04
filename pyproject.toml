@@ -33,20 +33,30 @@ classifiers = [
     'Topic :: Text Processing',
     'Topic :: Utilities',
 ]
+include = [
+    'deps/*'
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"
 chardet = "^3"
 click = "^7"
 importlib-metadata = { version = "^1.6.0", python = "~3.6 || ~3.7" }
-pdfplumber = { git = "https://github.com/useblocks/pdfplumber.git" }
 PyYAML = "^5"
 "ruamel.yaml" = "^0.16.10"
-"pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
 
 # optional deps for progress bars
 tqdm = { version = "^4.50.0", optional = true }
 colorama = { version = "^0.4.4", optional = true }
+
+# dependencies needed by pdfminer.six and pdfplumber which are deliverd as wheels in the deps folder
+# the libs were patched and no upstream PR has been raised yet
+# see [tool.poetry.dev-dependencies] for the forked libraries
+pycryptodome = "^3.9.9"
+sortedcontainers = "^2.3.0"
+pillow = "^8.1.0"
+unicodecsv = "^0.14.1"
+wand = "^0.6.5"
 
 # optional deps for docs, needed to make RTD work with pyproject.toml
 # see https://github.com/readthedocs/readthedocs.org/issues/4912#issuecomment-664002569
@@ -61,6 +71,13 @@ colorama = ["colorama"]
 docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-needs", "sphinxcontrib-plantuml"]
 
 [tool.poetry.dev-dependencies]
+# forked libraries;
+# they must be dev deps so make them invisible to PyPI and the egg/wheel requires section
+# 'poetry install' installs those by default, so the Git deps are actually used instead of the wheels in the deps
+# folder; see also libpdf/_import_forks.py
+pdfplumber = { git = "https://github.com/useblocks/pdfplumber.git" }
+"pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
+
 # testing
 pytest = "<=5.3.5"  # fixed to this version because of https://github.com/pytest-dev/pytest/issues/6925
 pytest-cov = "*"
