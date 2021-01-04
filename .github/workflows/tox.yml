@@ -29,6 +29,7 @@ jobs:
 
     - name: Copy policy file to OS image (needed to use ImageMagic in visual debugging tox tests)
       run: |
+        mkdir -p /etc/ImageMagick-7/
         cp .github/workflows/policy.xml /etc/ImageMagick-7/policy.xml
 
     - name: Run tox env pytest
