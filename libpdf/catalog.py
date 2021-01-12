@@ -8,6 +8,7 @@ from libpdf.parameters import ANNO_X_TOLERANCE, ANNO_Y_TOLERANCE
 from libpdf.utils import decode_title, to_pdfplumber_bbox
 
 from pdfminer.pdftypes import PDFObjRef
+from pdfminer.psparser import PSLiteral
 
 LOG = logging.getLogger(__name__)
 
@@ -40,44 +41,51 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
     name_tree = {}
     pdf_catalog = pdf.doc.catalog
     if 'Names' in pdf_catalog:
+        # PDF 1.2
         if isinstance(pdf_catalog['Names'], PDFObjRef) and 'Dests' in pdf_catalog['Names'].resolve():
             name_tree = pdf_catalog['Names'].resolve()['Dests'].resolve()
         elif isinstance(pdf_catalog['Names'], dict) and 'Dests' in pdf_catalog['Names']:
             name_tree = pdf_catalog['Names']['Dests'].resolve()
+        # check if name tree not empty
+        if not name_tree:
+            LOG.info('Catalog extraction: name destination exists but is empty...')
+            return None
+    elif 'Dests' in pdf_catalog:
+        # PDF 1.1
+        if isinstance(pdf_catalog['Dests'], PDFObjRef):
+            named_destination = pdf_catalog['Dests'].resolve()
+        elif isinstance(pdf_catalog['Dests'], dict):
+            named_destination = pdf_catalog['Dests']
     else:
         LOG.info('Catalog extraction: name destination does not exist...')
         return None
 
-    # check if name tree not empty
-    if not name_tree:
-        LOG.info('Catalog extraction: name destination exists but is empty...')
-        return None
+    if name_tree:
+        # map page id to page number
+        page_id_num_map = {}
+        for page in pdf.pages:
+            page_id_num_map[page.page_number] = page.page_obj.pageid
 
-    # map page id to page number
-    page_id_num_map = {}
-    for page in pdf.pages:
-        page_id_num_map[page.page_number] = page.page_obj.pageid
+        # If key "Kids" exists, it means the name destination catalog is nested in more than one hierarchy.
+        # In this case, it needs to be flatten by the recursive function resolve_name_obj() for further process.
+        # name_obj_list always contains a flatten name destination catalog.
 
-    # If key "Kids" exists, it means the name destination catalog is nested in more than one hierarchy.
-    # In this case, it needs to be flatten by the recursive function resolve_name_obj() for further process.
-    # name_obj_list always contains a flatten name destination catalog.
+        # resolve name objects
+        if 'Kids' in name_tree:
+            kids_hierarchy = []
+            kids_hierarchy.extend([kid.resolve() for kid in name_tree['Kids']])
+            name_obj_list = resolve_name_obj(kids_hierarchy)
+        else:
+            name_obj_list = [name_tree]
 
-    # resolve name objects
-    if 'Kids' in name_tree:
-        kids_hierarchy = []
-        kids_hierarchy.extend([kid.resolve() for kid in name_tree['Kids']])
-        name_obj_list = resolve_name_obj(kids_hierarchy)
-    else:
-        name_obj_list = [name_tree]
-
-    named_destination = {}
-    for index_dest, item_dest in enumerate(name_obj_list):
-        # In 'Names', odd indices are destination's names, while even indices are the obj id which can be referred to
-        # the certain page in PDF
-        for index_name in range(0, len(item_dest['Names']), 2):
-            named_destination[name_obj_list[index_dest]['Names'][index_name].decode('utf-8')] = name_obj_list[
-                index_dest
-            ]['Names'][index_name + 1]
+        named_destination = {}
+        for index_dest, item_dest in enumerate(name_obj_list):
+            # In 'Names', odd indices are destination's names, while even indices are the obj id which can be referred
+            # to the certain page in PDF
+            for index_name in range(0, len(item_dest['Names']), 2):
+                named_destination[name_obj_list[index_dest]['Names'][index_name].decode('utf-8')] = name_obj_list[
+                    index_dest
+                ]['Names'][index_name + 1]
 
     for key_object in named_destination:
         # only resolve when the value of named_destination is instance of PDFObjRef
@@ -205,7 +213,7 @@ def chapter_number_giver(chapters_in_outline: List[Dict], virt_hierarchical_leve
             chapter_number_giver(chapters_in_outline[idx_chapter]['content'], f'{new_hierarchical_level}.1')
 
 
-def resolve_outline(outline_obj, outline_list, des_dict, pdf):  # pylint: disable=too-many-branches
+def resolve_outline(outline_obj, outline_list, des_dict, pdf):  # pylint: disable=too-many-branches, too-many-statements
     """
     Resolve outline hierarchy from top level to furthest level recursively.
 
@@ -254,7 +262,12 @@ def resolve_outline(outline_obj, outline_list, des_dict, pdf):  # pylint: disabl
                     )
             else:
                 # named destination
-                outline_dest = outline_dest_entry['D'].decode('utf-8')
+                if isinstance(outline_dest_entry['D'], PSLiteral):
+                    # PDF 1.1 name object
+                    outline_dest = outline_dest_entry['D'].name
+                else:
+                    # PDF 1.2 byte string
+                    outline_dest = outline_dest_entry['D'].decode('utf-8')
                 title_bytes = outline_obj['Title'].resolve()  # title is a PDFObjRef
         else:
             # not go-to action, no destination in this document to jump to
@@ -276,7 +289,12 @@ def resolve_outline(outline_obj, outline_list, des_dict, pdf):  # pylint: disabl
                 raise RuntimeError(f"Page {outline_obj['Dest'][0]} is not an indirect reference to a page object")
         else:
             # named destination
-            outline_dest = outline_obj['Dest'].decode('utf-8')
+            if isinstance(outline_obj['Dest'], PSLiteral):
+                # PDF 1.1 name object
+                outline_dest = outline_obj['Dest'].name
+            else:
+                # PDF 1.2 byte string
+                outline_dest = outline_obj['Dest'].decode('utf-8')
         title_bytes = outline_obj['Title']
     else:
         raise ValueError('No key A and Dest in outline.')
@@ -412,12 +430,18 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf):  # 
                         f"Page {ann_resolved_entry['D'][0]} is not an indirect reference to a page object",
                     )
             else:
-                # implicit destination, ann_resolved['A']['D'] is byte string
+                # Named destination
+                if isinstance(ann_resolved_entry['D'], PSLiteral):
+                    # PDF 1.1 name object
+                    des_name = ann_resolved_entry['D'].name
+                else:
+                    # PDF 1.2 byte string
+                    des_name = ann_resolved_entry['D'].decode('utf-8')
                 annotation_page_map[idx_page + 1]['annotation'].append(
                     {
                         'text': ann_text,
                         'rect': ann_resolved['Rect'],
-                        'des_name': ann_resolved_entry['D'].decode('utf-8'),
+                        'des_name': des_name,
                     },
                 )
         else:
@@ -443,9 +467,16 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf):  # 
             else:
                 raise RuntimeError(f"Page {ann_resolved['Dest'][0]} is not an indirect reference to a page object")
         else:
-            # implicit destination
+            # Named destination
+            if isinstance(ann_resolved['Dest'], PSLiteral):
+                # PDF 1.1 name object
+                des_name = ann_resolved['Dest'].name
+            else:
+                # PDF 1.2 byte string
+                des_name = ann_resolved['Dest'].decode('utf-8')
+
             annotation_page_map[idx_page + 1]['annotation'].append(
-                {'text': ann_text, 'rect': ann_resolved['Rect'], 'des_name': ann_resolved['Dest'].decode('utf-8')},
+                {'text': ann_text, 'rect': ann_resolved['Rect'], 'des_name': des_name},
             )
     else:
         raise Exception('Key "A" and "Dest" do not exist in annotations.')
