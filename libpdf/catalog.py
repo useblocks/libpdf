@@ -39,6 +39,7 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
 
     # check if name tree exist in catalog and extract name tree
     name_tree = {}
+    named_destination = {}
     pdf_catalog = pdf.doc.catalog
     if 'Names' in pdf_catalog:
         # PDF 1.2
@@ -48,7 +49,7 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
             name_tree = pdf_catalog['Names']['Dests'].resolve()
         # check if name tree not empty
         if not name_tree:
-            LOG.info('Catalog extraction: name destination exists but is empty...')
+            LOG.info('Catalog extraction: name destination exists but is empty')
             return None
     elif 'Dests' in pdf_catalog:
         # PDF 1.1
@@ -57,7 +58,7 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
         elif isinstance(pdf_catalog['Dests'], dict):
             named_destination = pdf_catalog['Dests']
     else:
-        LOG.info('Catalog extraction: name destination does not exist...')
+        LOG.info('Catalog extraction: name destination does not exist')
         return None
 
     if name_tree:
@@ -78,7 +79,6 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
         else:
             name_obj_list = [name_tree]
 
-        named_destination = {}
         for index_dest, item_dest in enumerate(name_obj_list):
             # In 'Names', odd indices are destination's names, while even indices are the obj id which can be referred
             # to the certain page in PDF
