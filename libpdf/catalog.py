@@ -48,9 +48,31 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
         elif isinstance(pdf_catalog['Names'], dict) and 'Dests' in pdf_catalog['Names']:
             name_tree = pdf_catalog['Names']['Dests'].resolve()
         # check if name tree not empty
-        if not name_tree:
-            LOG.info('Catalog extraction: name destination exists but is empty')
-            return None
+        if name_tree:
+            # map page id to page number
+            page_id_num_map = {}
+            for page in pdf.pages:
+                page_id_num_map[page.page_number] = page.page_obj.pageid
+
+            # If key "Kids" exists, it means the name destination catalog is nested in more than one hierarchy.
+            # In this case, it needs to be flatten by the recursive function resolve_name_obj() for further process.
+            # name_obj_list always contains a flatten name destination catalog.
+
+            # resolve name objects
+            if 'Kids' in name_tree:
+                kids_hierarchy = []
+                kids_hierarchy.extend([kid.resolve() for kid in name_tree['Kids']])
+                name_obj_list = resolve_name_obj(kids_hierarchy)
+            else:
+                name_obj_list = [name_tree]
+
+            for index_dest, item_dest in enumerate(name_obj_list):
+                # In 'Names', odd indices are destination's names, while even indices are the obj id which can be
+                # referred to the certain page in PDF
+                for index_name in range(0, len(item_dest['Names']), 2):
+                    named_destination[name_obj_list[index_dest]['Names'][index_name].decode('utf-8')] = name_obj_list[
+                        index_dest
+                    ]['Names'][index_name + 1]
     elif 'Dests' in pdf_catalog:
         # PDF 1.1
         if isinstance(pdf_catalog['Dests'], PDFObjRef):
@@ -58,34 +80,8 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
         elif isinstance(pdf_catalog['Dests'], dict):
             named_destination = pdf_catalog['Dests']
     else:
-        LOG.info('Catalog extraction: name destination does not exist')
+        LOG.debug('Catalog extraction: name destinations do not exist')
         return None
-
-    if name_tree:
-        # map page id to page number
-        page_id_num_map = {}
-        for page in pdf.pages:
-            page_id_num_map[page.page_number] = page.page_obj.pageid
-
-        # If key "Kids" exists, it means the name destination catalog is nested in more than one hierarchy.
-        # In this case, it needs to be flatten by the recursive function resolve_name_obj() for further process.
-        # name_obj_list always contains a flatten name destination catalog.
-
-        # resolve name objects
-        if 'Kids' in name_tree:
-            kids_hierarchy = []
-            kids_hierarchy.extend([kid.resolve() for kid in name_tree['Kids']])
-            name_obj_list = resolve_name_obj(kids_hierarchy)
-        else:
-            name_obj_list = [name_tree]
-
-        for index_dest, item_dest in enumerate(name_obj_list):
-            # In 'Names', odd indices are destination's names, while even indices are the obj id which can be referred
-            # to the certain page in PDF
-            for index_name in range(0, len(item_dest['Names']), 2):
-                named_destination[name_obj_list[index_dest]['Names'][index_name].decode('utf-8')] = name_obj_list[
-                    index_dest
-                ]['Names'][index_name + 1]
 
     for key_object in named_destination:
         # only resolve when the value of named_destination is instance of PDFObjRef
