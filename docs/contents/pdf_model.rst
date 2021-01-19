@@ -125,6 +125,7 @@ UML PDF model
 
         class Paragraph {
             + [str] text: content of the Paragraph
+            + [LTTextBox]: texts with positions
             --
             **id**: ""paragraph.<1,2,3,n>""
             A paragraph gets detected by
@@ -139,6 +140,7 @@ UML PDF model
         class Chapter {
             + [str] title
             + [str] number
+            + [LTTextBox]: texts with positions
             --
             **id**: ""chapter.<number>""
             **number**: globally unique (e.g. 3.2.4)
@@ -150,6 +152,7 @@ UML PDF model
             + [int] row
             + [int] col
             + [str] text: Cell content
+            + [LTTextBox]: texts with positions
             --
             **row**: 1-based
             **col**: 1-based
@@ -164,6 +167,7 @@ UML PDF model
             + [str] rel_path
             + [str] caption
             + [str] text: text inside Figure area
+            + [LTTextBox]: texts with positions
             --
             **id**: ""figure.<1,2,3,n>""
             **rel_path**: figures/<image>
