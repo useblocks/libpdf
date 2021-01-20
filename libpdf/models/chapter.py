@@ -10,10 +10,10 @@ from pdfminer.layout import LTTextLineHorizontal
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.figure import Figure  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.paragraph import Paragraph  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.position import Position  # pylint: disable=cyclic-import
-    from libpdf.models.table import Table  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.figure import Figure  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
+    from libpdf.models.paragraph import Paragraph  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
+    from libpdf.models.position import Position  # pylint: disable=cyclic-import, ungrouped-imports
+    from libpdf.models.table import Table  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
 
 
 class Chapter(Element):

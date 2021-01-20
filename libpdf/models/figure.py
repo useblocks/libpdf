@@ -10,7 +10,7 @@ from pdfminer.layout import LTTextLineHorizontal
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.position import Position  # noqa: F401
+    from libpdf.models.position import Position  # noqa: F401, pylint: disable=ungrouped-imports
 
 
 class Figure(Element):

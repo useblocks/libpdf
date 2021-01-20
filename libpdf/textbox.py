@@ -50,7 +50,7 @@ from libpdf.parameters import (
     TABLE_MARGIN,
 )
 from libpdf.progress import bar_format_lvl2, tqdm
-from libpdf.utils import page_crop, textbox_crop, to_pdfplumber_bbox
+from libpdf.utils import page_crop, textbox_crop
 
 from pdfminer.layout import (
     LTAnno,
@@ -131,8 +131,10 @@ def extract_textboxes(pdf, figure_list, table_list, page_list):
     return page_textboxes_filtered_noise
 
 
-def render_chapters(  # pylint: disable=too-many-branches
-    page_textboxes_filtered: Dict[int, List[LTTextBox]], page_list: List[Page], pdf
+def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
+    page_textboxes_filtered: Dict[int, List[LTTextBox]],
+    page_list: List[Page],
+    pdf,
 ) -> List[Chapter]:
     """
     Render libpdf chapters from LTTextboxes according to outline catalog.
@@ -220,7 +222,12 @@ def render_chapters(  # pylint: disable=too-many-branches
                     )
 
                 chapter_obj = Chapter(
-                    chapter['title'], chapter['number'], position, content=[], chapter=None, lt_textbox=lt_textbox
+                    chapter['title'],
+                    chapter['number'],
+                    position,
+                    content=[],
+                    chapter=None,
+                    lt_textbox=lt_textbox,
                 )
                 chapter_list.append(chapter_obj)
         else:

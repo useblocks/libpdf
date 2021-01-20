@@ -37,10 +37,11 @@ def test_lorem_ipsum():
     dummy_page = Page(1, 700, 900)
     dummy_pos = Position(10, 10, 20, 20, dummy_page)
     dummy_links = []
-    cell1_1 = Cell(1, 1, 'Tempora co Voluptatem', dummy_pos, dummy_links)
-    cell2_6 = Cell(2, 6, 'Sed non ei Velit numq', dummy_pos, dummy_links)
-    cell6_2 = Cell(6, 2, 'Etincidunt Consectetu', dummy_pos, dummy_links)
-    cell18_7 = Cell(18, 7, 'Sit adipis', dummy_pos, dummy_links)
+    dummy_lt_textbox = None
+    cell1_1 = Cell(1, 1, 'Tempora co Voluptatem', dummy_pos, dummy_links, dummy_lt_textbox)
+    cell2_6 = Cell(2, 6, 'Sed non ei Velit numq', dummy_pos, dummy_links, dummy_lt_textbox)
+    cell6_2 = Cell(6, 2, 'Etincidunt Consectetu', dummy_pos, dummy_links, dummy_lt_textbox)
+    cell18_7 = Cell(18, 7, 'Sit adipis', dummy_pos, dummy_links, dummy_lt_textbox)
     table1 = Table(idx=1, cells=[cell1_1, cell2_6, cell6_2, cell18_7], position=dummy_pos)
     paragraph1 = Paragraph(
         idx=1,
@@ -49,10 +50,26 @@ def test_lorem_ipsum():
         'sed. Numquam labore consectetur dolorem non consectetur eius.',
         links=dummy_links,
         position=dummy_pos,
+        lt_textbox=dummy_lt_textbox,
     )
-    chapter1 = Chapter(title='Ipsum labore ut consectetur.', number='1', position=dummy_pos)
-    chapter2 = Chapter(title='Quiquia adipisci numquam tempora dolore magnam.', number='2', position=dummy_pos)
-    chapter2_1 = Chapter(title='Etincidunt consectetur porro velit sed quaerat.', number='2.1', position=dummy_pos)
+    chapter1 = Chapter(
+        title='Ipsum labore ut consectetur.',
+        number='1',
+        position=dummy_pos,
+        lt_textbox=dummy_lt_textbox,
+    )
+    chapter2 = Chapter(
+        title='Quiquia adipisci numquam tempora dolore magnam.',
+        number='2',
+        position=dummy_pos,
+        lt_textbox=dummy_lt_textbox,
+    )
+    chapter2_1 = Chapter(
+        title='Etincidunt consectetur porro velit sed quaerat.',
+        number='2.1',
+        position=dummy_pos,
+        lt_textbox=dummy_lt_textbox,
+    )
 
     # create the right, ordered structure
     chapter2.content.append(chapter2_1)  # chapter2_1 is below chapter2

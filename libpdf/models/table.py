@@ -128,10 +128,10 @@ class Cell(ModelBase):
         row: int,
         col: int,
         text: str,
-        lt_textbox: LTTextLineHorizontal,
         position: Position,
         links: List[Link],
         table: Table = None,
+        lt_textbox: LTTextLineHorizontal = None,
     ):
         """Initialize the instance."""
         self.row = row
