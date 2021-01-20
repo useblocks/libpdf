@@ -7,6 +7,8 @@ from libpdf.models.link import Link
 from libpdf.models.model_base import ModelBase
 from libpdf.models.position import Position
 
+from pdfminer.layout import LTTextLineHorizontal
+
 
 class Table(Element):
     """
@@ -111,6 +113,8 @@ class Cell(ModelBase):
     :vartype col: int
     :ivar text: the text content of the cell
     :vartype text: str
+    :ivar lt_textbox: the lt_textbox of the cell, as extracted from pdfminer
+    :vartype lt_textbox: LTTextBoxHorizontal
     :ivar position: a Position instance determining the location of the cell
     :vartype position: Position
     :ivar b_table: a Table instance that contains the cell
@@ -124,6 +128,7 @@ class Cell(ModelBase):
         row: int,
         col: int,
         text: str,
+        lt_textbox: LTTextLineHorizontal,
         position: Position,
         links: List[Link],
         table: Table = None,
@@ -134,6 +139,7 @@ class Cell(ModelBase):
         self.position = position
         self.b_table = table
         self.text = text
+        self.lt_textbox = lt_textbox
         self.links = links
         self.set_backref()
         if self.links:

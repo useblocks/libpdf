@@ -4,6 +4,8 @@ from typing import List, TYPE_CHECKING
 from libpdf.models.element import Element
 from libpdf.models.link import Link
 
+from pdfminer.layout import LTTextLineHorizontal
+
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
@@ -23,10 +25,12 @@ class Paragraph(Element):
     :vartype idx: int
     :ivar text: the text in the paragraph with \\n as newline character
     :vartype text: str
-    :ivar position: the position of the Paragraph
+    :ivar position: the position of the paragraph
     :vartype position: Position
     :ivar links: list of links in the paragraph text
     :vartype links: List[Link]
+    :ivar lt_textbox: the lt_textbox of the paragraph, as extracted from pdfminer
+    :vartype lt_textbox: LTTextBoxHorizontal
     """
 
     def __init__(
@@ -35,6 +39,7 @@ class Paragraph(Element):
         text: str,
         position: 'Position',
         links: List[Link],
+        lt_textbox: LTTextLineHorizontal,
         root: 'Root' = None,
         chapter: 'Chapter' = None,
     ):
@@ -43,6 +48,7 @@ class Paragraph(Element):
         self.text = text
         self.links = links
         self.idx = idx
+        self.lt_textbox = lt_textbox
         if self.links:
             self.set_links_backref()
 

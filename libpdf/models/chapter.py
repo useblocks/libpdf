@@ -4,6 +4,8 @@ from typing import List, TYPE_CHECKING, Union
 
 from libpdf.models.element import Element
 
+from pdfminer.layout import LTTextLineHorizontal
+
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
@@ -25,6 +27,10 @@ class Chapter(Element):
     :vartype title: str
     :ivar number: the chapter number as string (e.g. '3.2.4')
     :vartype number: str
+    :ivar lt_textbox: the lt_textbox of the chapter, as extracted from pdfminer
+    :vartype lt_textbox: LTTextBoxHorizontal
+    :ivar number: the chapter number as string (e.g. '3.2.4')
+    :vartype number: str
     :ivar position: a Position instance determining the location of the Chapter;
                     a Chapter commonly spans across several pages, however only one Position is aggregated
                     because the end of the Chapter can be determined by looking at the next Chapter
@@ -40,11 +46,13 @@ class Chapter(Element):
         position: 'Position',
         content: List[Union['Chapter', 'Paragraph', 'Table', 'Figure']] = None,
         chapter: 'Chapter' = None,
+        lt_textbox: LTTextLineHorizontal = None,
     ):
         """Initialize the instance."""
         super().__init__(position=position, chapter=chapter)
         self.title = title
         self.number = number
+        self.lt_textbox = lt_textbox
         self.content = [] if content is None else content
         self.set_backref()
 
