@@ -162,9 +162,9 @@ def to_pdfplumber_bbox(x0, y0, x1, y1, page_height):
     """
     # pylint: disable=invalid-name  # short is better here
     ret_x0 = Decimal(x0)
-    ret_y0 = Decimal(page_height - Decimal(y1))
+    ret_y0 = Decimal(Decimal(page_height) - Decimal(y1))
     ret_x1 = Decimal(x1)
-    ret_y1 = Decimal(page_height - Decimal(y0))
+    ret_y1 = Decimal(Decimal(page_height) - Decimal(y0))
     return [ret_x0, ret_y0, ret_x1, ret_y1]
 
 
