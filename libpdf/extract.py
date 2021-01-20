@@ -580,7 +580,7 @@ def extract_figures(
 
                 image_path = os.path.abspath(os.path.join(figure_dir, image_name))
 
-                figure = Figure(idx_figure + 1, image_path, fig_pos, links, text, 'None')
+                figure = Figure(idx_figure + 1, image_path, fig_pos, links, lt_textbox, text, 'None')
                 figure_list.append(figure)
 
     return figure_list

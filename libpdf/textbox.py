@@ -45,11 +45,12 @@ from libpdf.models.table import Table
 from libpdf.parameters import (
     ANNO_X_TOLERANCE,
     CHAPTER_RECTANGLE_EXTEND,
+    CHAPTER_TEXTBOX_TOLERANCE,
     MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY,
     TABLE_MARGIN,
 )
 from libpdf.progress import bar_format_lvl2, tqdm
-from libpdf.utils import page_crop
+from libpdf.utils import page_crop, textbox_crop, to_pdfplumber_bbox
 
 from pdfminer.layout import (
     LTAnno,
@@ -78,7 +79,7 @@ def extract_paragraphs_chapters(
         LOG.info('Excluding chapters extraction')
     else:
         if catalog['outline']:
-            chapter_list = render_chapters(extracted_textboxes, page_list)
+            chapter_list = render_chapters(extracted_textboxes, page_list, pdf)
 
     paragraph_list = []
     if no_paragraphs:
@@ -131,8 +132,7 @@ def extract_textboxes(pdf, figure_list, table_list, page_list):
 
 
 def render_chapters(  # pylint: disable=too-many-branches
-    page_textboxes_filtered: Dict[int, List[LTTextBox]],
-    page_list: List[Page],
+    page_textboxes_filtered: Dict[int, List[LTTextBox]], page_list: List[Page], pdf
 ) -> List[Chapter]:
     """
     Render libpdf chapters from LTTextboxes according to outline catalog.
@@ -147,6 +147,7 @@ def render_chapters(  # pylint: disable=too-many-branches
 
     :param page_textboxes_filtered: all of the textboxes sorted by pages
     :param page_list: a list of libpdf pages
+    :param pdf: pdf object from PDFPlumber
     :return: a list of libpdf chapters
     """
     chapter_list = []
@@ -170,6 +171,7 @@ def render_chapters(  # pylint: disable=too-many-branches
                     chapter_page = page
             for chapter in chapters:
                 chapter_textboxes = chapter_examiner(chapter, textboxes, chapter_page)
+
                 if chapter_textboxes:
                     # render chapter based on the textbox
                     x0 = min(chapter_textboxes, key=lambda x: x.x0).x0
@@ -183,13 +185,32 @@ def render_chapters(  # pylint: disable=too-many-branches
                         # and outline catalog doesn't have chapter number.
                         chapter['number'] = min(chapter_textboxes, key=lambda x: x.x0).get_text().strip()
 
+                    # extract LTPage for textbox_crop() to use
+                    lt_page = pdf.pages[page_number - 1].layout
+
+                    # extract LTChars/LTTextLine mainly for their positions of chars
+                    bbox = (
+                        position.x0 - CHAPTER_TEXTBOX_TOLERANCE,
+                        position.y0 - CHAPTER_TEXTBOX_TOLERANCE,
+                        position.x1 + CHAPTER_TEXTBOX_TOLERANCE,
+                        position.y1 + CHAPTER_TEXTBOX_TOLERANCE,
+                    )
+                    lt_textbox = textbox_crop(
+                        bbox,
+                        lt_page._objs,  # pylint: disable=protected-access # access needed
+                        word_margin=0.1,
+                        y_tolerance=3,
+                    )
+
                     # remove textboxes recognised as the chapters from page_textboxes_filtered. By doing so,
                     # these textboxes will not be instantiated as paragraphs.
                     for textbox in chapter_textboxes:
                         textboxes.remove(textbox)
+
                 else:
                     # if no matched textboxes are found, the position of a virtual chapter is rendered
                     position = virtual_chapter_position_generator(chapter, chapter_page)
+                    lt_textbox = None
                     LOG.info(
                         'The chapter "%s" on page %s can not be detected. The virtual chapter number "%s" is applied. '
                         'This number may not be consistent with the numerical order in the content',
@@ -198,7 +219,9 @@ def render_chapters(  # pylint: disable=too-many-branches
                         chapter['number'],
                     )
 
-                chapter_obj = Chapter(chapter['title'], chapter['number'], position, content=[], chapter=None)
+                chapter_obj = Chapter(
+                    chapter['title'], chapter['number'], position, content=[], chapter=None, lt_textbox=lt_textbox
+                )
                 chapter_list.append(chapter_obj)
         else:
             pass
@@ -474,7 +497,7 @@ def render_single_paragraph(textbox: LTTextBox, page_number: int, paragraph_id: 
     if catalog['annos']:
         links = extract_linked_chars(textbox, page_number)
 
-    paragraph = Paragraph(paragraph_id, text_textbox, position, links)
+    paragraph = Paragraph(paragraph_id, text_textbox, position, links, textbox)
     return paragraph
 
 

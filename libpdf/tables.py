@@ -179,7 +179,7 @@ def extract_cells(lt_page: LTPage, rows: List, list_cell: List[Cell], page: Page
 
                 list_cell.append(cell)
 
-                cell_obj = Cell(idx_row + 1, idx_cell + 1, text_cell, pos_cell, links)
+                cell_obj = Cell(idx_row + 1, idx_cell + 1, text_cell, lt_textbox, pos_cell, links)
                 cell_obj_list.append(cell_obj)
 
     return cell_obj_list

@@ -68,6 +68,11 @@ HEADLINE_TOLERANCE = 20
 # Given in points (72 points = 1 inch = 25.4 mm)
 CHAPTER_RECTANGLE_EXTEND = 20
 
+# To extract the textbox considered as the chapter, the tolerance needs to be applied. It is to make sure the
+# extracted region is bigger than the textbox itself. If the extracted region is exactly equal to the position of the
+# textbox, the function "utils.text_crop()" won't extract the textbox.
+CHAPTER_TEXTBOX_TOLERANCE = 1
+
 # difflib SequenceMatcher is used to compare PDF outline text with textbox
 # content created by pdfminer layout analysis. The textbox is only selected if
 # the text similarity is higher than the following value.

@@ -77,6 +77,9 @@ def to_dict_output(obj: Union[ModelBase, Position]) -> Dict:
     if isinstance(obj, Page):
         # no serialization for the contents of pages
         del vars_dict['content']
+    if isinstance(obj,(Figure, Paragraph, Cell, Chapter)):
+        # chars with positions are not interest of the output file
+        del vars_dict['lt_textbox']
 
     # delete back references so the export does not create circular loops
     delete_backref_keys = []
