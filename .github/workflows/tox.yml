@@ -23,9 +23,9 @@ jobs:
       with:
         python-version: ${{ join(matrix.python-version, '.') }}
 
-    - name: Install poppler-utils for ubuntu-latest
+    - name: Install libpoppler-cpp-dev for ubuntu-latest
       run: |
-        sudo apt install poppler-utils
+        sudo apt install libpoppler-cpp-dev
       if: matrix.os == 'ubuntu-latest'
 
     - name: Copy policy file for ubuntu-latest (needed to use ImageMagic in visual debugging tox tests)
