@@ -57,10 +57,9 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Install libpoppler-cpp-dev for ubuntu-latest
+    - name: Install libpoppler-cpp-dev
       run: |
         sudo apt install libpoppler-cpp-dev
-      if: matrix.os == 'ubuntu-latest'
 
     - name: Install poetry and tox
       run: |
