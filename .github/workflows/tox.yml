@@ -9,7 +9,6 @@ on:
 jobs:
 
   pytest-windows:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -35,7 +34,6 @@ jobs:
         tox -e py${{ join(matrix.python-version, '') }}
 
   pytest-linux:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -66,7 +64,6 @@ jobs:
         tox -e py${{ join(matrix.python-version, '') }}
 
   pytest-macos:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -93,7 +90,6 @@ jobs:
         tox -e py${{ join(matrix.python-version, '') }}
 
   flake8_pylint_docs_black:
-
     runs-on: ubuntu-latest
 
     steps:
