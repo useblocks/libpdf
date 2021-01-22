@@ -19,6 +19,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+
     - name: Set up Python ${{ join(matrix.python-version, '.') }}
       uses: actions/setup-python@v2
       with:
