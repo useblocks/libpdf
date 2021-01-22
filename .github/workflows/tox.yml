@@ -83,7 +83,7 @@ jobs:
 
     - name: Install ImageMagick on macos-latest
       run: |
-        brew install freetype imagemagick
+        brew install freetype imagemagick poppler
 
     - name: Install poetry and tox
       run: |
