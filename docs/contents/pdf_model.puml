@@ -202,10 +202,10 @@
         Word "+words  1..*" --*  HorizontalLine
         HorizontalLine "+line  1..*" --*  HorizontalBox
         
-        HorizontalBox "+box  1" --* "+paragraph  1" Paragraph    
-        HorizontalBox "+box  0..1" --* "+cell  1" Cell
-        HorizontalBox "+box  0..*" -down-* "+figure  1" Figure
-        HorizontalBox "+box  0..1" --* "+chapter  1" Chapter
+        HorizontalBox "+box  1" --* Paragraph    
+        HorizontalBox "+box  0..1" --* Cell
+        HorizontalBox "+box  0..*" -down-* Figure
+        HorizontalBox "+box  0..1" --* Chapter
 
         Char -[#COL_DERIVE]-|> Coord
         Word -[#COL_DERIVE]-|> Coord
