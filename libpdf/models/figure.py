@@ -3,8 +3,8 @@ from typing import List, TYPE_CHECKING
 
 from libpdf.models.element import Element
 from libpdf.models.link import Link
+from libpdf.models.horizontal_box import HorizontalBox
 
-from pdfminer.layout import LTTextLineHorizontal
 
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
@@ -30,8 +30,8 @@ class Figure(Element):
     :vartype rel_path: str
     :ivar text: all merged text inside the figure area
     :vartype text: str
-    :ivar lt_textbox: the lt_textbox of the figure, as extracted from pdfminer
-    :vartype lt_textbox: LTTextBoxHorizontal
+    :ivar textboxes: the textboxes of the figure, as extracted from pdfminer
+    :vartype textboxes: a list of HorizontalBox
     :ivar caption: the caption of the figure (text over/under the figure describing it)
     :vartype caption: str
     :ivar position: a Position instance determining the location of the figure
@@ -46,7 +46,7 @@ class Figure(Element):
         rel_path: str,
         position: 'Position',
         links: List[Link],
-        lt_textbox: LTTextLineHorizontal,
+        textboxes: List[HorizontalBox],
         text: str = None,
         caption: str = None,
     ):
@@ -55,7 +55,7 @@ class Figure(Element):
         self.idx = idx
         self.rel_path = rel_path
         self.text = text
-        self.lt_textbox = lt_textbox
+        self.textboxes = textboxes
         self.links = links
         self.caption = caption
         if self.links:

@@ -3,8 +3,8 @@ from typing import List, TYPE_CHECKING
 
 from libpdf.models.element import Element
 from libpdf.models.link import Link
+from libpdf.models.horizontal_box import HorizontalBox
 
-from pdfminer.layout import LTTextLineHorizontal
 
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
@@ -29,26 +29,24 @@ class Paragraph(Element):
     :vartype position: Position
     :ivar links: list of links in the paragraph text
     :vartype links: List[Link]
-    :ivar lt_textbox: the lt_textbox of the paragraph, as extracted from pdfminer
-    :vartype lt_textbox: LTTextBoxHorizontal
+    :ivar textbox: the textbox of the paragraph, as extracted from pdfminer
+    :vartype textbox: HorizontalBox
     """
 
     def __init__(
         self,
         idx: int,
-        text: str,
         position: 'Position',
         links: List[Link],
-        lt_textbox: LTTextLineHorizontal,
+        textbox: HorizontalBox = None,
         root: 'Root' = None,
         chapter: 'Chapter' = None,
     ):
         """Initialize the instance."""
         super().__init__(position=position, root=root, chapter=chapter)
-        self.text = text
         self.links = links
         self.idx = idx
-        self.lt_textbox = lt_textbox
+        self.textbox = textbox
         if self.links:
             self.set_links_backref()
 
@@ -76,4 +74,4 @@ class Paragraph(Element):
 
     def __repr__(self):
         """Make paragraph text part of the repr for better debugging."""
-        return f"{type(self).__name__}({self.id_}) '{self.text}'"
+        return f"{type(self).__name__}({self.id_})({self.textbox.text})"
