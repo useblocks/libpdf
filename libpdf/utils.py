@@ -7,11 +7,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Type, Union
 
 import chardet
+import copy
 
 from libpdf.log import logging_needed
 from libpdf.models.chapter import Chapter
 from libpdf.models.element import Element
 from libpdf.models.figure import Figure
+from libpdf.models.horizontal_box import Char, Word, HorizontalLine, HorizontalBox
 from libpdf.models.paragraph import Paragraph
 from libpdf.models.table import Table
 from libpdf.parameters import RENDER_ELEMENTS, VIS_DBG_MAP_ELEMENTS_COLOR
@@ -335,7 +337,7 @@ def find_lt_obj_in_bbox(
             pass
 
 
-def page_crop(
+def lt_page_crop(
     bbox: Tuple[float, float, float, float],
     lt_objs: List,
     lt_type_in_filter: Type[Union[LTText, LTCurve, LTImage, LTFigure]],
@@ -390,7 +392,112 @@ def page_crop(
     return lt_objs_in_bbox
 
 
+def lt_to_libpdf_hbox_converter(lt_objs: List[LTTextBoxHorizontal]) -> Union[HorizontalBox, None]:
+    """
+    Convert a LTTextBox to a HorizontalBox.
+    """
+    flatten_lt_objs = []
+    flatten_hiearchical_lttext(lt_objs, flatten_lt_objs)
+    textlines = assemble_to_textlines(flatten_lt_objs)
+
+    if textlines:
+        textbox = HorizontalBox(textlines)
+        return textbox
+
+    return None
+
+
 def textbox_crop(
+    bbox: Tuple[float, float, float, float],
+    ltpage_objs: List,
+) -> Union[HorizontalBox, None]:
+    """
+    Collect and group hierachically all LTChar in a given bbox and convert all LTText to libpdf text objects.
+
+    :param bbox: a given bounding box (x0, y0, x1, y1)
+    :param ltpage_objs: a list of LT objects in a certain LTPage
+    :return: a libpdf horizontal box or None if no LTChar in the given bbox
+    """
+    lt_objs = lt_page_crop(bbox, ltpage_objs, LTText)
+    if len(lt_objs) == 0:
+        # None of LTText objects exists
+        return None
+
+    return lt_to_libpdf_hbox_converter(lt_objs)
+
+
+def assemble_to_textlines(
+    flatten_lt_objs: List[LTText],
+) -> List[LTTextLineHorizontal]:
+    """
+    Assemble and convert all LTChar into a libpdf horiontal line or several libpdf horizontal lines.
+
+    The flatten_lt_objs is a list of LTChar and LTAnno which are already sorted because layout analysis of pdfminer
+    sort each LTTextboxHorizontal from top to bottom. When the hierarchical structure is flatten, LTChar and LTAnno are
+    placed in the order of their x coordinates by textlines
+
+    These LTChar are groupped into textlines again in the scope of only one textbox and textlines-grouping is
+    according to LTAnno
+
+    :param flatten_lt_objs: a list of LTChar and LTAnno
+    :return: a list of libpdf HorizontalLine
+    """
+    chars = []
+    words = []
+    textlines = []
+    # if isinstance(flatten_lt_objs[0], LTChar):
+    #     last_ltobj = flatten_lt_objs[0]
+    # else:
+    #     last_ltobj = flatten_lt_objs[1]
+
+    for lt_obj in flatten_lt_objs:
+        if lt_obj.get_text() != ' ' and lt_obj.get_text() != '\n':
+            # instantiate Char
+            char = Char(lt_obj.get_text(), lt_obj.x0, lt_obj.y0, lt_obj.x1, lt_obj.y1)
+            chars.append(char)
+
+            if lt_obj is flatten_lt_objs[-1]:
+                # last character of the flatten LT objects
+                word = Word(copy.deepcopy(chars))
+                chars.clear()
+                words.append(word)
+                textline = HorizontalLine(copy.deepcopy(words))
+                words.clear()
+                textlines.append(textline)
+
+        elif lt_obj.get_text() == ' ' and chars:
+            word = Word(copy.deepcopy(chars))
+            chars.clear()
+            words.append(word)
+
+            if lt_obj is flatten_lt_objs[-1]:
+                # last character of the flatten LT objects
+                textline = HorizontalLine(copy.deepcopy(words))
+                words.clear()
+                textlines.append(textline)
+
+        elif isinstance(lt_obj, LTAnno) and lt_obj.get_text() == '\n' and chars:
+            word = Word(copy.deepcopy(chars))
+            chars.clear()
+            words.append(word)
+            textline = HorizontalLine(copy.deepcopy(words))
+            words.clear()
+            textlines.append(textline)
+
+    if chars or words:
+        # for the case where several trailing spaces at the end of the last textline.
+        if chars:
+            word = Word(copy.deepcopy(chars))
+            chars.clear()
+        if words:
+            textline = HorizontalLine(copy.deepcopy(words))
+            words.clear()
+            textlines.append(textline)
+
+    return textlines
+
+
+def lt_textbox_crop(
     bbox: Tuple[float, float, float, float],
     ltpage_objs: List,
     word_margin: float,
@@ -398,14 +505,13 @@ def textbox_crop(
 ) -> Union[LTTextBoxHorizontal, None]:
     """
     Collect and group all LTChar in a given bbox and return only one LTTextBoxHorizontal.
-
     :param bbox: a given bounding box (x0, y0, x1, y1)
     :param ltpage_objs: a list of LT objects in a cetain LTPage
     :param word_margin: pdfminer laparam for word margins in a LTTextline
     :param y_tolerance: the vertical tolerance to group a line. LTAnno with newline is inserted at the end of a line
     :return: a LTTextbox or None if no LTChar in the given bbox
     """
-    lt_objs = page_crop(bbox, ltpage_objs, LTText)
+    lt_objs = lt_page_crop(bbox, ltpage_objs, LTText)
     if len(lt_objs) == 0:
         # None of LTText objects exists
         return None
@@ -416,7 +522,7 @@ def textbox_crop(
 
     flatten_lt_objs = []
     flatten_hiearchical_lttext(lt_objs, flatten_lt_objs)
-    lt_textlines = assemble_to_textlines(flatten_lt_objs, word_margin, y_tolerance)
+    lt_textlines = assemble_to_lt_textlines(flatten_lt_objs, word_margin, y_tolerance)
 
     if lt_textlines:
         lt_textbox = LTTextBoxHorizontal()
@@ -428,21 +534,18 @@ def textbox_crop(
     return None
 
 
-def assemble_to_textlines(
+def assemble_to_lt_textlines(
     flatten_lt_objs: List[LTText],
     word_margin: float,
     y_tolerance: float,
 ) -> List[LTTextLineHorizontal]:
     """
     Assemble all LTChar into a LTTextline or several LTTextlines.
-
     The flatten_lt_objs is a list of LTChar and LTAnno which are already sorted because layout analysis of pdfminer
     sort each LTTextboxHorizontal from top to bottom. When the hierarchical structure is flatten, LTChar and LTAnno are
     placed in the order of their x coordinates by textlines
-
     These LTChar are groupped into textlines again in the scope of only one textbox. words-grouping is still made by
     pdfminer layout analysis, but the textlines-grouping is according to the vertical center of each character.
-
     :param flatten_lt_objs: a list of LTChar and LTAnno
     :param word_margin: pdfminer laparam for word margins in a LTTextline
     :param y_tolerance: the vertical tolerance to group a line. LTAnno with newline is inserted at the end of a line

@@ -77,9 +77,18 @@ def to_dict_output(obj: Union[ModelBase, Position]) -> Dict:  # pylint: disable=
     if isinstance(obj, Page):
         # no serialization for the contents of pages
         del vars_dict['content']
-    if isinstance(obj, (Figure, Paragraph, Cell, Chapter)):
-        # chars with positions are not interest of the output file
-        del vars_dict['lt_textbox']
+    if isinstance(obj, (Paragraph, Cell, Chapter)):
+        # textboxes with positions are not interest of the output file
+        if obj.textbox:
+            text = obj.textbox.text
+            vars_dict['text'] = text
+        del vars_dict['textbox']
+    if isinstance(obj, Figure):
+        # textboxes with positions are not interest of the output file
+        if obj.textboxes:
+            text = '\n'.join(x.text for x in obj.textboxes)
+            vars_dict['text'] = text
+        del vars_dict['textboxes']
 
     # delete back references so the export does not create circular loops
     delete_backref_keys = []
