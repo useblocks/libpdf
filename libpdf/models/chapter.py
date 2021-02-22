@@ -3,7 +3,6 @@
 from typing import List, TYPE_CHECKING, Union
 
 from libpdf.models.element import Element
-
 from libpdf.models.horizontal_box import HorizontalBox
 
 # avoid import cycles for back reference type hinting

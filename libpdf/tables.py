@@ -24,7 +24,6 @@ from libpdf import utils
 from libpdf.catalog import catalog
 from libpdf.log import logging_needed
 from libpdf.models.figure import Figure
-from libpdf.models.horizontal_box import HorizontalBox
 from libpdf.models.page import Page
 from libpdf.models.position import Position
 from libpdf.models.table import Cell
@@ -171,6 +170,8 @@ def extract_cells(lt_page: LTPage, rows: List, list_cell: List[Cell], page: Page
                         links = textbox.extract_linked_chars(lt_textbox, lt_page.pageid)
 
                     hbox = lt_to_libpdf_hbox_converter([lt_textbox])
+                else:
+                    hbox = None
 
                 cell = {
                     'row': idx_row + 1,
@@ -216,7 +217,7 @@ def _table_figure_check(positions: Position, figure_list: List[Figure]):
     return True
 
 
-def cell_lttextbox_extraction(position: Position, lt_page: LTPage) -> Union[HorizontalBox, None]:
+def cell_lttextbox_extraction(position: Position, lt_page: LTPage) -> Union[LTTextBoxHorizontal, None]:
     """
     Extract the lttextbox in the cell.
 

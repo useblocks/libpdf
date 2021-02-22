@@ -210,7 +210,7 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
                 else:
                     # if no matched lt_textboxes are found, the position of a virtual chapter is rendered
                     position = virtual_chapter_position_generator(chapter, chapter_page)
-                    lt_textbox = None
+                    horizontal_box = None
                     LOG.info(
                         'The chapter "%s" on page %s can not be detected. The virtual chapter number "%s" is applied. '
                         'This number may not be consistent with the numerical order in the content',
@@ -287,8 +287,8 @@ def chapter_examiner(chapter: Dict, lt_textboxes: List[LTTextBox], page: Page) -
     :param chapter: a chapter in the outline catalog
     :param lt_textboxes: lt_textboxes on a certain page
     :param page: a libpdf page
-    :return: None means no lt_textboxes are matched to the outline chapter. If the match is found, a list of lt_textboxes
-             is returned
+    :return: None means no lt_textboxes are matched to the outline chapter. If the match is found, a list of
+            lt_textboxes is returned
     """
     # The width of the rectangle is the width of the page.
     # The height of the rectangle is a half of the page's height.
@@ -419,10 +419,6 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
         else:
             number_winner_idx = number_winners_idx[0]
 
-        # content_winner_idx, content_winner_value = max(enumerate(similarity_lt_textboxes), key=lambda x: x[1]['content'])
-        # title_winner_idx, title_winner_value = max(enumerate(similarity_lt_textboxes), key=lambda x: x[1]['title'])
-        # number_winner_idx, number_winner_value = max(enumerate(similarity_lt_textboxes), key=lambda x: x[1]['number'])
-
         # If the lt_textbox is 100% similar to the chapter in terms of its content (chapter number amd title),
         # it is considered the outline chapter jump target.
         if similarity_lt_textboxes[content_winner_idx]['content'] == 1:
@@ -436,8 +432,8 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
         ):
             # The case where chapter number and chapter title are broken into two different lt_textboxes by pdfminer.
             # For the lt_textbox which wins on the basis of the content, if the similarity of its title is bigger
-            # than its content, it means the lt_textbox contains title text only because if the lt_textbox has the number
-            # and title, its content similarity shall be the highest.
+            # than its content, it means the lt_textbox contains title text only because if the lt_textbox has the
+            # number and title, its content similarity shall be the highest.
             winners.append(lt_textboxes_in_rect[number_winner_idx])
             winners.append(lt_textboxes_in_rect[title_winner_idx])
         elif (
@@ -453,8 +449,8 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
             # the similarty of them shall be the same.
             winners.append(lt_textboxes_in_rect[content_winner_idx])
         else:
-            # If none of the terms is met, there is no winner in this case. It means none of the lt_textboxes are outline
-            # chapters.
+            # If none of the terms is met, there is no winner in this case. It means none of the lt_textboxes are
+            # outline chapters.
             pass
 
     return winners
@@ -493,7 +489,10 @@ def render_paragraphs(  # pylint: disable=too-many-branches
 
 
 def render_single_paragraph(
-    lt_textbox: LTTextBox, page_number: int, paragraph_id: int, position: Position
+    lt_textbox: LTTextBox,
+    page_number: int,
+    paragraph_id: int,
+    position: Position,
 ) -> Paragraph:
     """
     Render a paragraph with linked characters from the lt_textbox.
@@ -599,8 +598,8 @@ def annos_scanner(
     :param lt_textline: LTTextlineHorizontal contains LTChar and LTAnno. LTChar contains the metadata of a char.
     :param annos_line: a list of annotations intersected or in the line, which has been sorted from
                         the left to the right.
-    :param char_counter:  In the end of the process, all chars in the scope of a lt_textbox is a char array, this variable
-                        is used to index the start and end chars in the lt_textbox
+    :param char_counter:  In the end of the process, all chars in the scope of a lt_textbox is a char array, this
+                        variable is used to index the start and end chars in the lt_textbox
     :return: a list of Links in the textline
     """
     idx_anno = 0
@@ -707,8 +706,8 @@ def render_link(anno_flags: Dict, anno: Dict, char_counter: int) -> Link:
 
     :param anno_flags: a dict in which the start and end chars are indexed
     :param anno: a single annotation in PDF catalog, which belongs to the link source founded
-    :param char_counter: In the end of the process, all chars in the scope of a lt_textbox is a char array, this variable
-                        is used to index the start and end chars in the lt_textbox
+    :param char_counter: In the end of the process, all chars in the scope of a lt_textbox is a char array,
+                        this variable is used to index the start and end chars in the lt_textbox
     :return: a single Link instantiated
     """
     start_idx = anno_flags['anno_start_idx'] + char_counter
@@ -779,7 +778,8 @@ def remove_lt_textboxes_in_tables_figures(
         figures_tables_list = tables_figures_merge(figure_list, table_list, page_index)
         if figures_tables_list is not None:  # figures or tables exists in the current page
             for element in figures_tables_list:
-                # The lt_textbox inside the elements will be filtered out. It return only the boxes outside the elements.
+                # The lt_textbox inside the elements will be filtered out. It returns only the boxes
+                # outside the elements.
                 # Elements here can be tables or figures
                 lt_textboxes = list(
                     filter(

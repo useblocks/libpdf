@@ -1,9 +1,7 @@
 """Definition of the abstract class of coordinates."""
 
-from typing import List
 
-
-class Coord:
+class Coord:  # pylint: disable=too-few-public-methods # simplicity is good.
     """
     Define the coordinates inherited by of :class:`~libpdf.models.position.Position`.
 

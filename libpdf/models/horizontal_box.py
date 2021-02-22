@@ -4,12 +4,14 @@ from typing import List
 
 from libpdf.models.coord import Coord
 
-class TextBase(Coord):
+
+class TextBase(Coord):  # pylint: disable=too-few-public-methods # simplicity is good.
     """
     Define basic class for libpdf text classes.
 
     The definition of text classes is the classes contains more than one character.
     """
+
     def __init__(
         self,
         libpdf_text_objs: List = None,
@@ -22,9 +24,7 @@ class TextBase(Coord):
             super().__init__(x0=rect_coor[0], y0=rect_coor[1], x1=rect_coor[2], y1=rect_coor[3])
 
     def get_coordinates(self):
-        """
-        Obtain the rectangle coordinates from a list of libpdf text objects.
-        """
+        """Obtain the rectangle coordinates from a list of libpdf text objects."""
         x0 = min(text_obj.x0 for text_obj in self.libpdf_text_objs)
         y0 = min(text_obj.y0 for text_obj in self.libpdf_text_objs)
         x1 = max(text_obj.x1 for text_obj in self.libpdf_text_objs)
@@ -32,7 +32,8 @@ class TextBase(Coord):
 
         return (x0, y0, x1, y1)
 
-class Char(Coord):
+
+class Char(Coord):  # pylint: disable=too-few-public-methods # simplicity is good.
     """
     Define the character class.
 
@@ -57,13 +58,12 @@ class Char(Coord):
         y1: float,
     ):
         """Init the class with plain text of a character and its rectangular coordinates."""
-
         super().__init__(x0=x0, y0=y0, x1=x1, y1=y1)
         self.text = text
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f"{self.text}"
+        return f'{self.text}'
 
 
 class Word(TextBase):
@@ -80,20 +80,18 @@ class Word(TextBase):
         self,
         chars: List[Char],
     ):
-        """Init the class with plain text of a word and its rectangular coordinates"""
+        """Init the class with plain text of a word and its rectangular coordinates."""
         self.chars = chars
         super().__init__(self.chars)
 
     @property
     def text(self):
-        """
-        Return plain text of a list of chararcters.
-        """
+        """Return plain text of a list of chararcters."""
         return ''.join([x.text for x in self.chars])
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f"{self.text}"
+        return f'{self.text}'
 
 
 class HorizontalLine(TextBase):
@@ -110,21 +108,18 @@ class HorizontalLine(TextBase):
         self,
         words: List[Word],
     ):
-        """Init the class with plain text of a horizontal line and its rectangular coordinates"""
-
+        """Init the class with plain text of a horizontal line and its rectangular coordinates."""
         self.words = words
         super().__init__(self.words)
 
     @property
     def text(self):
-        """
-        Return plain text of a list of chararcters.
-        """
+        """Return plain text of a list of chararcters."""
         return ' '.join([x.text for x in self.words])
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f"{self.text}"
+        return f'{self.text}'
 
 
 class HorizontalBox(TextBase):
@@ -141,17 +136,18 @@ class HorizontalBox(TextBase):
         self,
         lines: List[HorizontalLine],
     ):
-        """Init the class with plain text of a horizontal box and its rectangular coordinates"""
+        """Init the class with plain text of a horizontal box and its rectangular coordinates."""
         self.lines = lines
-        super().__init__(self.lines)
+        if self.lines:
+            super().__init__(self.lines)
 
     @property
     def text(self):
-        """
-        Return plain text of a list of chararcters.
-        """
+        """Return plain text of a list of chararcters."""
         return '\n'.join([x.text for x in self.lines])
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f"{self.text}"
+        if self.lines:
+            return f'{self.text}'
+        return None

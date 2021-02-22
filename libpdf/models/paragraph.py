@@ -2,8 +2,8 @@
 from typing import List, TYPE_CHECKING
 
 from libpdf.models.element import Element
-from libpdf.models.link import Link
 from libpdf.models.horizontal_box import HorizontalBox
+from libpdf.models.link import Link
 
 
 # avoid import cycles for back reference type hinting
@@ -74,4 +74,4 @@ class Paragraph(Element):
 
     def __repr__(self):
         """Make paragraph text part of the repr for better debugging."""
-        return f"{type(self).__name__}({self.id_})({self.textbox.text})"
+        return f'{type(self).__name__}({self.id_})({self.textbox.text})'

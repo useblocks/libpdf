@@ -28,11 +28,11 @@ from libpdf.parameters import (
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.tables import extract_pdf_table
 from libpdf.textbox import extract_linked_chars, extract_paragraphs_chapters
-from libpdf.utils import lt_page_crop, textbox_crop, to_pdfplumber_bbox
-
-import pdfplumber
+from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, to_pdfplumber_bbox
 
 from pdfminer.layout import LTText
+
+import pdfplumber
 
 import yaml
 

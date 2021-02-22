@@ -3,10 +3,10 @@ from operator import attrgetter
 from typing import List
 
 from libpdf.models.element import Element
+from libpdf.models.horizontal_box import HorizontalBox
 from libpdf.models.link import Link
 from libpdf.models.model_base import ModelBase
 from libpdf.models.position import Position
-from libpdf.models.horizontal_box import HorizontalBox
 
 
 class Table(Element):

@@ -2,8 +2,8 @@
 from typing import List, TYPE_CHECKING
 
 from libpdf.models.element import Element
-from libpdf.models.link import Link
 from libpdf.models.horizontal_box import HorizontalBox
+from libpdf.models.link import Link
 
 
 # avoid import cycles for back reference type hinting
