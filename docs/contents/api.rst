@@ -73,12 +73,6 @@ Figure
 .. autoclass:: libpdf.models.figure.Figure
 
 
-Coord
-~~~~~~
-
-.. autoclass:: libpdf.models.coord.Coord
-
-
 Position
 ~~~~~~~~
 
@@ -95,12 +89,6 @@ Char
 ~~~~
 
 .. autoclass:: libpdf.models.horizontal_box.Char
-
-
-TextBase
-~~~~~~~~
-
-.. autoclass:: libpdf.models.horizontal_box.TextBase
 
 
 Word

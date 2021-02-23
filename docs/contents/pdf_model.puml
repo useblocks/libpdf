@@ -50,14 +50,11 @@
             is located under a chapter
         }
 
-        class Coord {
+        class Position {
             + [float] x0
             + [float] y0
             + [float] x1
             + [float] y1
-        }
-
-        class Position {
             --
             **page**: reference to a ""Page"" instance;
             For YAML/JSON output it is serialized to
@@ -65,6 +62,7 @@
 
             ""Position"" is either referenced by a ""Cell""
             or by an ""Element"" (never both).
+
             **b_cell**: set, if the Position is referenced
             by a ""Cell""
             **b_element**: set, if the Position is
@@ -177,36 +175,41 @@
             **rel_path**: figures/<image>
         }
 
-        class TextBase {
-            --
-            **bbox**: the bouncoordinates of the bounding box. 
-
-            Text-based classes are the classes 
-            with one characters.
-        }
-
-        
         package x <<layout>> {
 
            class HorizontalBox {
+                + [float] x0
+                + [float] y0
+                + [float] x1
+                + [float] y1
                 --
                 **text**: plain text in the box
             }
 
             class HorizontalLine {
+                + [float] x0
+                + [float] y0
+                + [float] x1
+                + [float] y1
                 --
                 **text**: plain text in the line
             }
 
             class Word {
+                + [float] x0
+                + [float] y0
+                + [float] x1
+                + [float] y1
                 --
                 **text**: plain text in the word
             }
 
             class Char {
-                ++[str]tchar
-                --
-                **text**: plain char in a the character
+                + [float] x0
+                + [float] y0
+                + [float] x1
+                + [float] y1
+                + [str] char
             }
         }
        
@@ -215,17 +218,10 @@
         Word "+words  1..*" --*  HorizontalLine
         HorizontalLine "+line  1..*" --*  HorizontalBox
         
-        HorizontalBox "+box  1" --* Paragraph    
-        HorizontalBox "+box  0..1" --* Cell
-        HorizontalBox "+box  0..*" --* Figure
+        HorizontalBox "+textbox  1" --* Paragraph    
+        HorizontalBox "+textbox  0..1" --* Cell
+        HorizontalBox "+textbox  0..*" --* Figure
         HorizontalBox "+textbox  0..1" --* Chapter
-
-        Char -[#COL_DERIVE]|> Coord
-        Position -[#COL_DERIVE]up|> Coord
-
-        Word -[#COL_DERIVE]-|> TextBase
-        HorizontalLine -[#COL_DERIVE]-|> TextBase
-        HorizontalBox -[#COL_DERIVE]-|> TextBase
 
         Paragraph "+b_source  1" *-- "+links  *" Link
         Figure "+b_source  1" *-- "+links  *" Link
