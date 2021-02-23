@@ -7,7 +7,7 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
     """
     Define the character class.
 
-    :ivar text: plain char of the chararcter
+    :ivar ~.text: a plain char of the chararcter
     :vartype text: str
     :ivar x0: distance from the left of the page to the left edge of the character
     :vartype x0: float
