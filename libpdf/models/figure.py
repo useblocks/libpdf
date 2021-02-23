@@ -28,8 +28,6 @@ class Figure(Element):
     :vartype idx: int
     :ivar rel_path: the path to the external file containing the figure
     :vartype rel_path: str
-    :ivar text: all merged text inside the figure area
-    :vartype text: str
     :ivar textboxes: the textboxes of the figure, as extracted from pdfminer
     :vartype textboxes: a list of HorizontalBox
     :ivar caption: the caption of the figure (text over/under the figure describing it)

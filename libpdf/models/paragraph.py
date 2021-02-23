@@ -23,8 +23,6 @@ class Paragraph(Element):
 
     :ivar idx: the number of the instance in the current scope, 1-based
     :vartype idx: int
-    :ivar text: the text in the paragraph with \\n as newline character
-    :vartype text: str
     :ivar position: the position of the paragraph
     :vartype position: Position
     :ivar links: list of links in the paragraph text

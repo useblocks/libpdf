@@ -44,8 +44,8 @@ class Char(Coord):  # pylint: disable=too-few-public-methods # simplicity is goo
     """
     Define the character class.
 
-    :ivar text: plain text of the chararcter
-    :vartype text: str
+    :ivar char: plain char of the chararcter
+    :vartype char: str
     :ivar x0: distance from the left of the page to the left edge of the character
     :vartype x0: float
     :ivar y0: distance from the bottom of the page to the lower edge of the character (less than y1)
@@ -58,19 +58,19 @@ class Char(Coord):  # pylint: disable=too-few-public-methods # simplicity is goo
 
     def __init__(
         self,
-        text: str,
+        char: str,
         x0: float,
         y0: float,
         x1: float,
         y1: float,
     ):
-        """Init the class with plain text of a character and its rectangular coordinates."""
+        """Init the class with plain char of a character and its rectangular coordinates."""
         super().__init__(x0=x0, y0=y0, x1=x1, y1=y1)
-        self.text = text
+        self.char = char
 
     def __repr__(self):
-        """Make the text part of the repr for better debugging."""
-        return f'{self.text}'
+        """Make the char part of the repr for better debugging."""
+        return f'{self.char}'
 
 
 class Word(TextBase):

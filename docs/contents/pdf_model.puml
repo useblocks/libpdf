@@ -175,7 +175,7 @@
             **rel_path**: figures/<image>
         }
 
-        class TextBase{
+        class TextBase {
           --
 ++bbox**bbox**: the bouncoordinates of the bounding box. 
 
@@ -183,10 +183,10 @@ TextB-based classes are the classese s wiwith
  atl one characters.
         }
 
-        package x <<Layout>>{
+        
 
-             class HorizontalBox {
-            --
+           class HorizontalBox {
+                  --
                 **text**: plain text in the box
             }
 
@@ -201,11 +201,11 @@ TextB-based classes are the classese s wiwith
             }
 
             class Char {
-  + **text**: a pl[str]text
+  + **text**: a pl[str]tchar
                 --
-  **text**: plain text in the word
+  **text**: plain char in a the wocharacterar
             }
-        }
+        
        
         
         Char "+chars  1..*" --*  Word

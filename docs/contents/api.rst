@@ -98,7 +98,7 @@ Char
 
 
 TextBase
-~~~~
+~~~~~~~~
 
 .. autoclass:: libpdf.models.horizontal_box.TextBase
 
@@ -109,13 +109,13 @@ Word
 .. autoclass:: libpdf.models.horizontal_box.Word
 
 
-HorzontalLine
-~~~~
+HorizontalLine
+~~~~~~~~~~~~~~
 
-.. autoclass:: libpdf.models.horizontal_box.HorzontalLine
+.. autoclass:: libpdf.models.horizontal_box.HorizontalLine
 
 
 HorizontalBox
-~~~~
+~~~~~~~~~~~~~
 
 .. autoclass:: libpdf.models.horizontal_box.HorizontalBox
