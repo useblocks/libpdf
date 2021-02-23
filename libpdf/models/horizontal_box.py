@@ -93,7 +93,7 @@ class Word(TextBase):
     @property
     def text(self):
         """Return plain text of a list of chararcters."""
-        return ''.join([x.text for x in self.chars])
+        return ''.join([x.char for x in self.chars])
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
