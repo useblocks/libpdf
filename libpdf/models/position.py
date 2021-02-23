@@ -1,7 +1,6 @@
 """Definition of positions in the PDF."""
 from typing import TYPE_CHECKING
 
-from libpdf.models.coord import Coord
 from libpdf.parameters import TARGET_COOR_TOLERANCE
 
 # avoid import cycles for back reference type hinting
@@ -13,7 +12,7 @@ if TYPE_CHECKING:
     from libpdf.models.element import Element  # noqa: F401  # pylint: disable=cyclic-import
 
 
-class Position(Coord):
+class Position:
     """
     Define the coordinates of an :class:`~libpdf.models.element.Element` or :class:`~libpdf.models.table.Cell`.
 
@@ -88,7 +87,10 @@ class Position(Coord):
         cell: 'Cell' = None,
     ):
         """Init the class with rectangular coordinates and a page reference."""
-        super().__init__(x0=x0, y0=y0, x1=x1, y1=y1)
+        self.x0 = x0
+        self.y0 = y0
+        self.x1 = x1
+        self.y1 = y1
         self.page = page
         self.b_element = element
         self.b_cell = cell
