@@ -209,18 +209,18 @@
                 + [float] y0
                 + [float] x1
                 + [float] y1
-                + [str] char
+                + [str] text
             }
-        }
+        
        
         
-        Char "+chars  1..*" --*  Word
-        Word "+words  1..*" --*  HorizontalLine
-        HorizontalLine "+line  1..*" --*  HorizontalBox
+        Char "+chars  1..*" ---left*  Word
+        Word "+words  1..*" ---left*  HorizontalLine
+        HorizontalLine "+lines  1..*" --*  HorizontalBox
         
         HorizontalBox "+textbox  1" --* Paragraph    
         HorizontalBox "+textbox  0..1" --* Cell
-        HorizontalBox "+textbox  0..*" --* Figure
+        HorizontalBox "+textboxes  0..*" --* Figure
         HorizontalBox "+textbox  0..1" --* Chapter
 
         Paragraph "+b_source  1" *-- "+links  *" Link
