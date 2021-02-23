@@ -132,10 +132,12 @@
         class Paragraph {
             --
             **id**: ""paragraph.<1,2,3,n>""
+
             A paragraph gets detected by
             layout analysis. Characters are
             merged into words, words into
             lines and lines into paragraphs.
+
             A new word, line or paragraph
             is started if the gap changes
             significantly.
@@ -176,17 +178,18 @@
         }
 
         class TextBase {
-          --
-++bbox**bbox**: the bouncoordinates of the bounding box. 
+            --
+            **bbox**: the bouncoordinates of the bounding box. 
 
-TextB-based classes are the classese s wiwith
- atl one characters.
+            Text-based classes are the classes 
+            with one characters.
         }
 
         
+        package x <<layout>> {
 
            class HorizontalBox {
-                  --
+                --
                 **text**: plain text in the box
             }
 
@@ -201,11 +204,11 @@ TextB-based classes are the classese s wiwith
             }
 
             class Char {
-  + **text**: a pl[str]tchar
+                ++[str]tchar
                 --
-  **text**: plain char in a the wocharacterar
+                **text**: plain char in a the character
             }
-        
+        }
        
         
         Char "+chars  1..*" --*  Word
@@ -214,7 +217,7 @@ TextB-based classes are the classese s wiwith
         
         HorizontalBox "+box  1" --* Paragraph    
         HorizontalBox "+box  0..1" --* Cell
-        HorizontalBox "+box  0..*" -downigure
+        HorizontalBox "+box  0..*" --* Figure
         HorizontalBox "+textbox  0..1" --* Chapter
 
         Char -[#COL_DERIVE]|> Coord
