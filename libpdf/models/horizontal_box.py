@@ -5,32 +5,39 @@ from typing import List
 from libpdf.models.coord import Coord
 
 
-class TextBase(Coord):  # pylint: disable=too-few-public-methods # simplicity is good.
+class TextBase:  # pylint: disable=too-few-public-methods # simplicity is good.
     """
     Define basic class for libpdf text classes.
+
+    This class is inherited by :class:`~libpdf.models.horizontal_box.Word`,
+    :class:`~libpdf.models.horizontal_box.HorizontalLine`, and :class:`~libpdf.models.horizontal_box.HorizontalBox`.
 
     The definition of text classes is the classes contains more than one character.
     """
 
-    def __init__(
-        self,
-        libpdf_text_objs: List = None,
-    ):
-        """Init the class with rectangular coordinates."""
-        self.libpdf_text_objs = libpdf_text_objs
-
-        if self.libpdf_text_objs:
-            rect_coor = self.get_coordinates()
-            super().__init__(x0=rect_coor[0], y0=rect_coor[1], x1=rect_coor[2], y1=rect_coor[3])
-
-    def get_coordinates(self):
+    @property
+    def bbox(self):
         """Obtain the rectangle coordinates from a list of libpdf text objects."""
-        x0 = min(text_obj.x0 for text_obj in self.libpdf_text_objs)
-        y0 = min(text_obj.y0 for text_obj in self.libpdf_text_objs)
-        x1 = max(text_obj.x1 for text_obj in self.libpdf_text_objs)
-        y1 = max(text_obj.y1 for text_obj in self.libpdf_text_objs)
+        libpdf_text_objs = []
+        if hasattr(self, 'chars'):
+            libpdf_text_objs = self.chars  # pylint: disable=no-member # It comes when it has been inherited.
+        elif hasattr(self, 'words'):
+            words = self.words  # pylint: disable=no-member # It comes when it has been inherited.
+            libpdf_text_objs.extend([char for word in words for char in word.chars])
+        elif hasattr(self, 'lines'):
+            words = []
+            lines = self.lines  # pylint: disable=no-member # It comes when it has been inherited.
+            words.extend([word for line in lines for word in line.words])
+            libpdf_text_objs.extend([char for word in words for char in word.chars])
 
-        return (x0, y0, x1, y1)
+        if libpdf_text_objs:
+            x0 = min(text_obj.x0 for text_obj in libpdf_text_objs)
+            y0 = min(text_obj.y0 for text_obj in libpdf_text_objs)
+            x1 = max(text_obj.x1 for text_obj in libpdf_text_objs)
+            y1 = max(text_obj.y1 for text_obj in libpdf_text_objs)
+
+            return {'x0': x0, 'y0': y0, 'x1': x1, 'y1': y1}
+        return None
 
 
 class Char(Coord):  # pylint: disable=too-few-public-methods # simplicity is good.
@@ -82,7 +89,6 @@ class Word(TextBase):
     ):
         """Init the class with plain text of a word and its rectangular coordinates."""
         self.chars = chars
-        super().__init__(self.chars)
 
     @property
     def text(self):
@@ -91,7 +97,7 @@ class Word(TextBase):
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f'{self.text}'
+        return f'{type(self).__name__}({self.text})'
 
 
 class HorizontalLine(TextBase):
@@ -110,7 +116,6 @@ class HorizontalLine(TextBase):
     ):
         """Init the class with plain text of a horizontal line and its rectangular coordinates."""
         self.words = words
-        super().__init__(self.words)
 
     @property
     def text(self):
@@ -119,7 +124,7 @@ class HorizontalLine(TextBase):
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f'{self.text}'
+        return f'{type(self).__name__}({self.text})'
 
 
 class HorizontalBox(TextBase):
@@ -138,8 +143,6 @@ class HorizontalBox(TextBase):
     ):
         """Init the class with plain text of a horizontal box and its rectangular coordinates."""
         self.lines = lines
-        if self.lines:
-            super().__init__(self.lines)
 
     @property
     def text(self):
@@ -149,5 +152,5 @@ class HorizontalBox(TextBase):
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
         if self.lines:
-            return f'{self.text}'
+            return f'{type(self).__name__}({self.text})'
         return None
