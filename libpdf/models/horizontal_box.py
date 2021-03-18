@@ -64,19 +64,16 @@ class Word:
         self.y1 = y1
         self.chars = chars
         if self.chars:
-            self.get_coordinates()
+            # Obtain the rectangle coordinates from a list of libpdf text objects
+            self.x0 = min(text_obj.x0 for text_obj in self.chars)
+            self.y0 = min(text_obj.y0 for text_obj in self.chars)
+            self.x1 = max(text_obj.x1 for text_obj in self.chars)
+            self.y1 = max(text_obj.y1 for text_obj in self.chars)
 
     @property
     def text(self):
-        """Return plain text of a list of chararcters."""
+        """Return plain text."""
         return ''.join([x.text for x in self.chars])
-
-    def get_coordinates(self):
-        """Obtain the rectangle coordinates from a list of libpdf text objects."""
-        self.x0 = min(text_obj.x0 for text_obj in self.chars)
-        self.y0 = min(text_obj.y0 for text_obj in self.chars)
-        self.x1 = max(text_obj.x1 for text_obj in self.chars)
-        self.y1 = max(text_obj.y1 for text_obj in self.chars)
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
@@ -108,19 +105,16 @@ class HorizontalLine:
         self.y1 = y1
         self.words = words
         if self.words:
-            self.get_coordinates()
+            # Obtain the rectangle coordinates from a list of libpdf text objects
+            self.x0 = min(text_obj.x0 for text_obj in self.words)
+            self.y0 = min(text_obj.y0 for text_obj in self.words)
+            self.x1 = max(text_obj.x1 for text_obj in self.words)
+            self.y1 = max(text_obj.y1 for text_obj in self.words)
 
     @property
     def text(self):
-        """Return plain text of a list of chararcters."""
+        """Return plain text."""
         return ' '.join([x.text for x in self.words])
-
-    def get_coordinates(self):
-        """Obtain the rectangle coordinates from a list of libpdf text objects."""
-        self.x0 = min(text_obj.x0 for text_obj in self.words)
-        self.y0 = min(text_obj.y0 for text_obj in self.words)
-        self.x1 = max(text_obj.x1 for text_obj in self.words)
-        self.y1 = max(text_obj.y1 for text_obj in self.words)
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
@@ -152,19 +146,16 @@ class HorizontalBox:
         self.y1 = y1
         self.lines = lines
         if self.lines:
-            self.get_coordinates()
+            # Obtain the rectangle coordinates from a list of libpdf text objects.
+            self.x0 = min(text_obj.x0 for text_obj in self.lines)
+            self.y0 = min(text_obj.y0 for text_obj in self.lines)
+            self.x1 = max(text_obj.x1 for text_obj in self.lines)
+            self.y1 = max(text_obj.y1 for text_obj in self.lines)
 
     @property
     def text(self):
-        """Return plain text of a list of chararcters."""
+        """Return plain text."""
         return '\n'.join([x.text for x in self.lines])
-
-    def get_coordinates(self):
-        """Obtain the rectangle coordinates from a list of libpdf text objects."""
-        self.x0 = min(text_obj.x0 for text_obj in self.lines)
-        self.y0 = min(text_obj.y0 for text_obj in self.lines)
-        self.x1 = max(text_obj.x1 for text_obj in self.lines)
-        self.y1 = max(text_obj.y1 for text_obj in self.lines)
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
