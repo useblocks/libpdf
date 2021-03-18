@@ -214,7 +214,7 @@
                 + [float] y1
                 + [str] text
                 --
-                **text**: plain text in the word
+                **text**: the character itself
             }
         
        
