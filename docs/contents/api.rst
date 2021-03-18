@@ -72,6 +72,7 @@ Figure
 
 .. autoclass:: libpdf.models.figure.Figure
 
+
 Position
 ~~~~~~~~
 
@@ -82,3 +83,27 @@ Link
 ~~~~
 
 .. autoclass:: libpdf.models.link.Link
+
+
+Char
+~~~~
+
+.. autoclass:: libpdf.models.horizontal_box.Char
+
+
+Word
+~~~~
+
+.. autoclass:: libpdf.models.horizontal_box.Word
+
+
+HorizontalLine
+~~~~~~~~~~~~~~
+
+.. autoclass:: libpdf.models.horizontal_box.HorizontalLine
+
+
+HorizontalBox
+~~~~~~~~~~~~~
+
+.. autoclass:: libpdf.models.horizontal_box.HorizontalBox

@@ -61,9 +61,9 @@ def test_chapters(load_full_features_pdf):
     # check chapter content
     assert chapters[1].content is not None
     assert chapters[1].content[0].type == 'paragraph'
-    assert chapters[1].content[0].text.startswith('libpdf allows the extraction')
-    assert chapters[1].content[0].text.endswith('Figure or Table.')
-    assert len(chapters[1].content[0].text.splitlines()) == 3
+    assert chapters[1].content[0].textbox.text.startswith('libpdf allows the extraction')
+    assert chapters[1].content[0].textbox.text.endswith('Figure or Table.')
+    assert len(chapters[1].content[0].textbox.lines) == 3
 
 
 def test_tables(load_full_features_pdf):
@@ -86,10 +86,10 @@ def test_tables(load_full_features_pdf):
     assert tables[1].position.y1 < 654
 
     # check table content
-    assert tables[1].cells[0].text == 'some'
+    assert tables[1].cells[0].textbox.text == 'some'
     assert tables[1].columns[0][0] == tables[1].cells[0]
-    assert tables[1].rows[2][1].text == 'Henry \ncavill'
-    assert tables[1].rows[6][4].text == '3'
+    assert tables[1].rows[2][1].textbox.text == 'Henry\ncavill'
+    assert tables[1].rows[6][4].textbox.text == '3'
 
     # check table unique id
     assert tables[0].uid == 'table.1'
@@ -161,7 +161,7 @@ def test_content_structure(load_full_features_pdf):
     # sub-chapter contains a list of paragraphs, tables and figures including header/footer
     assert len(root.content[11].content[0].content) == 8
     assert root.content[11].content[0].content[0].type == 'paragraph'
-    assert root.content[11].content[0].content[7].text == 'Release snyder cut of justice league!!!'
+    assert root.content[11].content[0].content[7].textbox.text == 'Release snyder cut of justice league!!!'
 
     # check paragraph unique id
     assert root.content[0].uid == 'paragraph.1'
@@ -195,7 +195,7 @@ def test_smart_header_footer_detection():
     # 10 paragraphs in header/footer
     assert len(objects.flattened.paragraphs) == 38
     assert objects.flattened.paragraphs[0].uid == 'paragraph.2'
-    assert objects.flattened.paragraphs[0].text.startswith('libpdf allows the extraction')
+    assert objects.flattened.paragraphs[0].textbox.text.startswith('libpdf allows the extraction')
 
     # Check smart header/footer detection for pdf without outline
     objects = libpdf.load(PDF_SMART_HEADER_FOOTER_DETECTION)
@@ -205,14 +205,14 @@ def test_smart_header_footer_detection():
     # header/footer and at similar location
     smart_objects = libpdf.load(PDF_SMART_HEADER_FOOTER_DETECTION, smart_page_crop=True)
     assert len(smart_objects.flattened.paragraphs) == 30
-    assert smart_objects.flattened.paragraphs[0].text == '1. Chapter title for header'
-    assert smart_objects.flattened.paragraphs[12].text == '1. Chapter test for footer'
-    assert smart_objects.flattened.paragraphs[13].text == '2. Chapter title for header'
-    assert smart_objects.flattened.paragraphs[17].text == '2. Chapter test for footer'
-    assert smart_objects.flattened.paragraphs[18].text == '3. Chapter title for header'
-    assert smart_objects.flattened.paragraphs[23].text == '3. Chapter test for footer'
-    assert smart_objects.flattened.paragraphs[24].text == '4. Chapter title for header'
-    assert smart_objects.flattened.paragraphs[29].text == '4. Chapter test for footer'
+    assert smart_objects.flattened.paragraphs[0].textbox.text == '1. Chapter title for header'
+    assert smart_objects.flattened.paragraphs[12].textbox.text == '1. Chapter test for footer'
+    assert smart_objects.flattened.paragraphs[13].textbox.text == '2. Chapter title for header'
+    assert smart_objects.flattened.paragraphs[17].textbox.text == '2. Chapter test for footer'
+    assert smart_objects.flattened.paragraphs[18].textbox.text == '3. Chapter title for header'
+    assert smart_objects.flattened.paragraphs[23].textbox.text == '3. Chapter test for footer'
+    assert smart_objects.flattened.paragraphs[24].textbox.text == '4. Chapter title for header'
+    assert smart_objects.flattened.paragraphs[29].textbox.text == '4. Chapter test for footer'
 
 
 @pytest.mark.skipif(sys.platform.startswith('win'), reason='visual debugging: ImageMagick not installed on Win')

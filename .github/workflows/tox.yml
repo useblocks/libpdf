@@ -28,6 +28,11 @@ jobs:
         sudo cp .github/workflows/policy.xml /etc/ImageMagick-6/policy.xml
       if: matrix.os == 'ubuntu-latest'
 
+    - name: Install ghostscript
+      run: |
+        sudo apt install ghostscript
+      if: matrix.os == 'ubuntu-latest'
+
     - name: Install ImageMagick on macos-latest
       run: |
         brew install freetype imagemagick

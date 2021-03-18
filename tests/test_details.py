@@ -5,6 +5,7 @@ from datetime import datetime
 from libpdf import load
 from libpdf.models.chapter import Chapter
 from libpdf.models.file import File, FileMeta
+from libpdf.models.horizontal_box import HorizontalBox
 from libpdf.models.page import Page
 from libpdf.models.paragraph import Paragraph
 from libpdf.models.position import Position
@@ -37,22 +38,36 @@ def test_lorem_ipsum():
     dummy_page = Page(1, 700, 900)
     dummy_pos = Position(10, 10, 20, 20, dummy_page)
     dummy_links = []
-    cell1_1 = Cell(1, 1, 'Tempora co Voluptatem', dummy_pos, dummy_links)
-    cell2_6 = Cell(2, 6, 'Sed non ei Velit numq', dummy_pos, dummy_links)
-    cell6_2 = Cell(6, 2, 'Etincidunt Consectetu', dummy_pos, dummy_links)
-    cell18_7 = Cell(18, 7, 'Sit adipis', dummy_pos, dummy_links)
+    dummy_hbox = HorizontalBox(None)
+    cell1_1 = Cell(1, 1, dummy_pos, dummy_links, textbox=dummy_hbox)
+    cell2_6 = Cell(2, 6, dummy_pos, dummy_links, textbox=dummy_hbox)
+    cell6_2 = Cell(6, 2, dummy_pos, dummy_links, textbox=dummy_hbox)
+    cell18_7 = Cell(18, 7, dummy_pos, dummy_links, textbox=dummy_hbox)
     table1 = Table(idx=1, cells=[cell1_1, cell2_6, cell6_2, cell18_7], position=dummy_pos)
     paragraph1 = Paragraph(
         idx=1,
-        text='Labore ipsum sit est. Ipsum quisquam adipisci sed dolor sed. Non voluptatem voluptatem labore. Magnam '
-        'quiquia neque consectetur amet non. Ut aliquam est quiquia dolor non. Quisquam ut etincidunt ipsum amet '
-        'sed. Numquam labore consectetur dolorem non consectetur eius.',
         links=dummy_links,
         position=dummy_pos,
+        textbox=dummy_hbox,
     )
-    chapter1 = Chapter(title='Ipsum labore ut consectetur.', number='1', position=dummy_pos)
-    chapter2 = Chapter(title='Quiquia adipisci numquam tempora dolore magnam.', number='2', position=dummy_pos)
-    chapter2_1 = Chapter(title='Etincidunt consectetur porro velit sed quaerat.', number='2.1', position=dummy_pos)
+    chapter1 = Chapter(
+        title='Ipsum labore ut consectetur.',
+        number='1',
+        position=dummy_pos,
+        textbox=dummy_hbox,
+    )
+    chapter2 = Chapter(
+        title='Quiquia adipisci numquam tempora dolore magnam.',
+        number='2',
+        position=dummy_pos,
+        textbox=dummy_hbox,
+    )
+    chapter2_1 = Chapter(
+        title='Etincidunt consectetur porro velit sed quaerat.',
+        number='2.1',
+        position=dummy_pos,
+        textbox=dummy_hbox,
+    )
 
     # create the right, ordered structure
     chapter2.content.append(chapter2_1)  # chapter2_1 is below chapter2

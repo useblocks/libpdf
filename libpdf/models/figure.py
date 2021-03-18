@@ -2,6 +2,7 @@
 from typing import List, TYPE_CHECKING
 
 from libpdf.models.element import Element
+from libpdf.models.horizontal_box import HorizontalBox
 from libpdf.models.link import Link
 
 
@@ -9,7 +10,7 @@ from libpdf.models.link import Link
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.position import Position  # noqa: F401
+    from libpdf.models.position import Position  # noqa: F401, pylint: disable=ungrouped-imports
 
 
 class Figure(Element):
@@ -27,8 +28,8 @@ class Figure(Element):
     :vartype idx: int
     :ivar rel_path: the path to the external file containing the figure
     :vartype rel_path: str
-    :ivar text: all merged text inside the figure area
-    :vartype text: str
+    :ivar textboxes: the textboxes of the figure, as extracted from pdfminer
+    :vartype textboxes: a list of HorizontalBox
     :ivar caption: the caption of the figure (text over/under the figure describing it)
     :vartype caption: str
     :ivar position: a Position instance determining the location of the figure
@@ -43,6 +44,7 @@ class Figure(Element):
         rel_path: str,
         position: 'Position',
         links: List[Link],
+        textboxes: List[HorizontalBox],
         text: str = None,
         caption: str = None,
     ):
@@ -51,6 +53,7 @@ class Figure(Element):
         self.idx = idx
         self.rel_path = rel_path
         self.text = text
+        self.textboxes = textboxes
         self.links = links
         self.caption = caption
         if self.links:

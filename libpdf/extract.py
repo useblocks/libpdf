@@ -28,7 +28,9 @@ from libpdf.parameters import (
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.tables import extract_pdf_table
 from libpdf.textbox import extract_linked_chars, extract_paragraphs_chapters
-from libpdf.utils import textbox_crop, to_pdfplumber_bbox
+from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, to_pdfplumber_bbox
+
+from pdfminer.layout import LTText
 
 import pdfplumber
 
@@ -557,21 +559,25 @@ def extract_figures(
                     float(figure['y1']),
                     pages_list[idx_page],
                 )
-                bbox = to_pdfplumber_bbox(fig_pos.x0, fig_pos.y0, fig_pos.x1, fig_pos.y1, page.height)
+                bbox = (fig_pos.x0, fig_pos.y0, fig_pos.x1, fig_pos.y1)
 
-                lt_textbox = textbox_crop(
+                lt_textboxes = lt_page_crop(
                     bbox,
                     lt_page._objs,  # pylint: disable=protected-access # access needed
-                    word_margin=0.1,
-                    y_tolerance=3,
+                    LTText,
+                    contain_completely=True,
                 )
 
-                text = ''
+                textboxes = []
                 links = []
-                if lt_textbox:
-                    text = lt_textbox.get_text()
+                for lt_textbox in lt_textboxes:
                     if catalog['annos']:
-                        links = extract_linked_chars(lt_textbox, lt_page.pageid)
+                        links.extend(extract_linked_chars(lt_textbox, lt_page.pageid))
+                    bbox = (lt_textbox.x0, lt_textbox.y0, lt_textbox.x1, lt_textbox.y1)
+
+                    hbox = lt_to_libpdf_hbox_converter(lt_textbox)
+
+                    textboxes.append(hbox)
 
                 image_name = f'page_{page.page_number}_figure.{idx_figure + 1}.png'
 
@@ -580,7 +586,7 @@ def extract_figures(
 
                 image_path = os.path.abspath(os.path.join(figure_dir, image_name))
 
-                figure = Figure(idx_figure + 1, image_path, fig_pos, links, text, 'None')
+                figure = Figure(idx_figure + 1, image_path, fig_pos, links, textboxes, 'None')
                 figure_list.append(figure)
 
     return figure_list

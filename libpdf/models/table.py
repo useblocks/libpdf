@@ -3,6 +3,7 @@ from operator import attrgetter
 from typing import List
 
 from libpdf.models.element import Element
+from libpdf.models.horizontal_box import HorizontalBox
 from libpdf.models.link import Link
 from libpdf.models.model_base import ModelBase
 from libpdf.models.position import Position
@@ -109,8 +110,8 @@ class Cell(ModelBase):
     :vartype row: int
     :ivar col: the column number of the cell, 1-based
     :vartype col: int
-    :ivar text: the text content of the cell
-    :vartype text: str
+    :ivar textbox: the textbox of the cell, as extracted from pdfminer and converted to HorizontalBox
+    :vartype textbox: HorizontalBox
     :ivar position: a Position instance determining the location of the cell
     :vartype position: Position
     :ivar b_table: a Table instance that contains the cell
@@ -123,17 +124,17 @@ class Cell(ModelBase):
         self,
         row: int,
         col: int,
-        text: str,
         position: Position,
         links: List[Link],
         table: Table = None,
+        textbox: HorizontalBox = None,
     ):
         """Initialize the instance."""
         self.row = row
         self.col = col
         self.position = position
         self.b_table = table
-        self.text = text
+        self.textbox = textbox
         self.links = links
         self.set_backref()
         if self.links:
@@ -151,4 +152,4 @@ class Cell(ModelBase):
 
     def __repr__(self):
         """Identify cells by row and column."""
-        return f'Cell({self.row}, {self.col}) {self.text}'
+        return f'Cell({self.row}, {self.col}) {self.textbox.text}'

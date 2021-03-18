@@ -3,15 +3,16 @@
 from typing import List, TYPE_CHECKING, Union
 
 from libpdf.models.element import Element
+from libpdf.models.horizontal_box import HorizontalBox
 
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.figure import Figure  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.paragraph import Paragraph  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.position import Position  # pylint: disable=cyclic-import
-    from libpdf.models.table import Table  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.figure import Figure  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
+    from libpdf.models.paragraph import Paragraph  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
+    from libpdf.models.position import Position  # pylint: disable=cyclic-import, ungrouped-imports
+    from libpdf.models.table import Table  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
 
 
 class Chapter(Element):
@@ -23,6 +24,10 @@ class Chapter(Element):
 
     :ivar title: the title of the chapter, as extracted from outline
     :vartype title: str
+    :ivar number: the chapter number as string (e.g. '3.2.4')
+    :vartype number: str
+    :ivar textbox: the textbox of the chapter, as extracted from pdfminer
+    :vartype textbox: HorizontalBox
     :ivar number: the chapter number as string (e.g. '3.2.4')
     :vartype number: str
     :ivar position: a Position instance determining the location of the Chapter;
@@ -40,11 +45,13 @@ class Chapter(Element):
         position: 'Position',
         content: List[Union['Chapter', 'Paragraph', 'Table', 'Figure']] = None,
         chapter: 'Chapter' = None,
+        textbox: HorizontalBox = None,
     ):
         """Initialize the instance."""
         super().__init__(position=position, chapter=chapter)
         self.title = title
         self.number = number
+        self.textbox = textbox
         self.content = [] if content is None else content
         self.set_backref()
 

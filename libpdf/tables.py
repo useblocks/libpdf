@@ -29,7 +29,7 @@ from libpdf.models.position import Position
 from libpdf.models.table import Cell
 from libpdf.models.table import Table
 from libpdf.progress import bar_format_lvl2, tqdm
-from libpdf.utils import from_pdfplumber_bbox
+from libpdf.utils import from_pdfplumber_bbox, lt_to_libpdf_hbox_converter
 
 from pdfminer.layout import LTPage, LTTextBoxHorizontal
 
@@ -169,6 +169,10 @@ def extract_cells(lt_page: LTPage, rows: List, list_cell: List[Cell], page: Page
                     if catalog['annos']:
                         links = textbox.extract_linked_chars(lt_textbox, lt_page.pageid)
 
+                    hbox = lt_to_libpdf_hbox_converter([lt_textbox])
+                else:
+                    hbox = None
+
                 cell = {
                     'row': idx_row + 1,
                     'col': idx_cell + 1,
@@ -179,7 +183,7 @@ def extract_cells(lt_page: LTPage, rows: List, list_cell: List[Cell], page: Page
 
                 list_cell.append(cell)
 
-                cell_obj = Cell(idx_row + 1, idx_cell + 1, text_cell, pos_cell, links)
+                cell_obj = Cell(idx_row + 1, idx_cell + 1, pos_cell, links, textbox=hbox)
                 cell_obj_list.append(cell_obj)
 
     return cell_obj_list
@@ -225,10 +229,10 @@ def cell_lttextbox_extraction(position: Position, lt_page: LTPage) -> Union[LTTe
     offset = 5
 
     cell_bbox = [position.x0 - offset, position.y0 - offset, position.x1 + offset, position.y1 + offset]
-    lt_textbox = utils.textbox_crop(
+    lt_textbox = utils.lt_textbox_crop(
         cell_bbox,
         lt_page._objs,  # pylint: disable=protected-access  # not publicly available
-        word_margin=0.1,
+        word_margin=1.5,
         y_tolerance=3,
     )
 
