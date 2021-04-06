@@ -387,7 +387,9 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
                 and abs(x.y1 - lt_textboxes_in_rect[title_winner_idx].y1) < CHAPTER_RECTANGLE_EXTEND
             ]
             if len(potential_chapter_number) == 1:
-                winners.append(potential_chapter_number[0])
+                if '(cid:99)' in potential_chapter_number:
+                    # to prevent wrong chapter numbers from being extracted
+                    winners.append(potential_chapter_number[0])
 
     else:
         # the content of the chapter contains number and title
