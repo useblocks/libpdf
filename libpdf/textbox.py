@@ -387,7 +387,12 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
                 and abs(x.y1 - lt_textboxes_in_rect[title_winner_idx].y1) < CHAPTER_RECTANGLE_EXTEND
             ]
             if len(potential_chapter_number) == 1:
-                if '(cid:99)' in potential_chapter_number:
+                # In case 5, the unexpected chapter number may be extracted. To avoid it, the potential chapter number
+                # extracted around the chapter title shall be checked if it matches the patterns of comman chapter
+                # nummber e.g. 3.9.3, XII.I.V, or A.B.D.
+                pattern = re.compile(r'^(?=\w)((^|\.)(([iIvVxX]{1,8})|[a-zA-Z]|[0-9]+))+\.?(?!.)')
+                chapter_number_matches = re.match(pattern, potential_chapter_number[0].get_text().strip())
+                if chapter_number_matches:
                     # to prevent wrong chapter numbers from being extracted
                     winners.append(potential_chapter_number[0])
 
