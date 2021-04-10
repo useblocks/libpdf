@@ -56,7 +56,7 @@ pycryptodome = "^3.9.9"
 sortedcontainers = "^2.3.0"
 pillow = "^8.1.0"
 unicodecsv = "^0.14.1"
-wand = "^0.6.5"
+python-poppler = "^0.2.2"
 
 # optional deps for docs, needed to make RTD work with pyproject.toml
 # see https://github.com/readthedocs/readthedocs.org/issues/4912#issuecomment-664002569
