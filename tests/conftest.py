@@ -18,6 +18,9 @@ PDF_FULL_FEATURES = os.path.join(os.path.dirname(__file__), 'pdf', 'full_feature
 PDF_FIGURES_EXTRACTION = os.path.join(os.path.dirname(__file__), 'pdf', 'test_figures_extraction.pdf')
 PDF_SMART_HEADER_FOOTER_DETECTION = os.path.join(os.path.dirname(__file__), 'pdf', 'test_header_footer_detection.pdf')
 
+# test PDFs from official python documentation
+PDF_PYTHON_LOGGING = os.path.join(os.path.dirname(__file__), 'pdf', 'howto-logging.pdf')
+
 
 def obj_equal(class_type, instance1, instance2):
     """
