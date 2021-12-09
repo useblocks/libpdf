@@ -264,7 +264,7 @@ def resolve_outline(outline_obj, outline_list, des_dict, pdf):  # pylint: disabl
                 else:
                     # PDF 1.2 byte string
                     outline_dest = outline_dest_entry['D'].decode('utf-8')
-                
+
                 if isinstance(outline_obj['Title'], PDFObjRef):
                     title_bytes = outline_obj['Title'].resolve()  # title is a PDFObjRef
                 else:
