@@ -42,13 +42,13 @@ jobs:
       run: |
         python -m pip install poetry tox
 
-    - name: Run tox env pytest
+    - name: Run tox env pytest on Linux, macOS
       run: |
         tox -e py${{ join(matrix.python-version, '') }}
       if: runner.os == 'Linux' || runner.os == 'macOS'
 
     # set the shell for Windows so env var expansion works in tox and subprocesses
-    - name: Run tox env pytest
+    - name: Run tox env pytest on Windows
       run: |
         tox -e py${{ join(matrix.python-version, '') }}
       shell: cmd
