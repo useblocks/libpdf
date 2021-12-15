@@ -17,6 +17,11 @@ __ https://github.com/useblocks/libpdf/compare/v0.0.1...HEAD
     `0.0.2`__ - 2020-09-30
     ----------------------
 
+Fixed
+~~~~~
+
+- Fixed catalog outline title resolve issue
+
 __ https://github.com/useblocks/libpdf/releases/tag/v0.0.1
 
 `0.0.1`__ - 2020-06-30
