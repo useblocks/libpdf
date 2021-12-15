@@ -7,13 +7,38 @@ on:
     branches: [ master ]
 
 jobs:
-  pytest:
 
+  pytest-windows:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: [[3,6], [3,7], [3,8], [3,9]]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Set up Python ${{ join(matrix.python-version, '.') }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ join(matrix.python-version, '.') }}
+
+    - name: Install poetry and tox
+      run: |
+        python -m pip install poetry tox
+    - name: Run tox env pytest
+      run: |
+        tox -e py${{ join(matrix.python-version, '') }}
+
+  pytest-linux:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [[3,6], [3,7], [3,8], [3,9]]
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,10 +48,35 @@ jobs:
       with:
         python-version: ${{ join(matrix.python-version, '.') }}
 
+    - name: Install libpoppler-cpp-dev for ubuntu-latest
+      run: |
+        sudo apt install libpoppler-cpp-dev
+
     - name: Copy policy file for ubuntu-latest (needed to use ImageMagic in visual debugging tox tests)
       run: |
         sudo cp .github/workflows/policy.xml /etc/ImageMagick-6/policy.xml
-      if: matrix.os == 'ubuntu-latest'
+
+    - name: Install poetry and tox
+      run: |
+        python -m pip install poetry tox
+    - name: Run tox env pytest
+      run: |
+        tox -e py${{ join(matrix.python-version, '') }}
+
+  pytest-macos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [[3,6], [3,7], [3,8], [3,9]]
+        os: [macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ join(matrix.python-version, '.') }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ join(matrix.python-version, '.') }}
 
     - name: Install ghostscript
       run: |
@@ -35,8 +85,7 @@ jobs:
 
     - name: Install ImageMagick on macos-latest
       run: |
-        brew install freetype imagemagick
-      if: matrix.os == 'macos-latest'
+        brew install freetype imagemagick poppler
 
     - name: Install poetry and tox
       run: |
@@ -55,7 +104,6 @@ jobs:
       if: runner.os == 'Windows'
 
   flake8_pylint_docs_black:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -65,6 +113,10 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+
+    - name: Install libpoppler-cpp-dev
+      run: |
+        sudo apt install libpoppler-cpp-dev
 
     - name: Install poetry and tox
       run: |
