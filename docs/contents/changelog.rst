@@ -20,7 +20,7 @@ __ https://github.com/useblocks/libpdf/compare/v0.0.1...HEAD
 Fixed
 ~~~~~
 
-- Fixed catalog outline title resolve issue
+- Fixed catalog outline title resolve issue (`PR #10 <https://github.com/useblocks/libpdf/pull/10>`_)
 
 __ https://github.com/useblocks/libpdf/releases/tag/v0.0.1
 
