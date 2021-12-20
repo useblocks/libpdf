@@ -335,7 +335,7 @@ class DependentOption(click.Option):
         if self.mutually_exclusive.intersection(opts) and self.name in opts:
             raise click.UsageError(
                 f"Illegal usage: '{self.name}' is mutually exclusive with '{', '.join(self.mutually_exclusive)}' "
-                "which is also given."
+                'which is also given.',
             )
 
         return super().handle_parse_result(ctx, opts, args)
