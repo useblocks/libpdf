@@ -1,6 +1,4 @@
 """Initial test cases for CLI."""
-import sys
-
 from click.testing import CliRunner
 
 from libpdf.core import main_cli
