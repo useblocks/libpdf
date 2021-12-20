@@ -45,7 +45,7 @@ class FoldedStr(str):
 
 def folded_str_representer(dumper, text):
     """Warp function of the representer."""
-    return dumper.represent_scalar(u'tag', text, style='>')
+    return dumper.represent_scalar('tag', text, style='>')
 
 
 yaml.add_representer(FoldedStr, folded_str_representer)
@@ -257,8 +257,7 @@ def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-man
                         ):
                             element_cnt += 1
                     # on one page several header elements may have same y coordination but count only once
-                    if element_cnt > 1:
-                        element_cnt = 1
+                    element_cnt = min(element_cnt, 1)
                     page_cnt = page_cnt + element_cnt
             # occur on more than HEADER_FOOTER_OCCURRENCE_PERCENTAGE pages, considered as header element
             # and remove from list
@@ -291,8 +290,7 @@ def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-man
                         ):
                             element_cnt += 1
                     # on one page several footer elements may have same y coordination but count only once
-                    if element_cnt > 1:
-                        element_cnt = 1
+                    element_cnt = min(element_cnt, 1)
                     page_cnt = page_cnt + element_cnt
             # occur on more than HEADER_FOOTER_OCCURRENCE_PERCENTAGE pages, considered as footer element
             # and remove from list
@@ -343,9 +341,9 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
     # search the lowest element height on each page
     element_low_pos_dict = {}
     for page_num, elements in elements_page_dict.items():
-        lowest_element_pos = float('{:.4f}'.format(elements[0].position.y0))  # restrict to 4 digits precision
+        lowest_element_pos = float(f'{elements[0].position.y0:.4f}')  # restrict to 4 digits precision
         for element in elements:
-            lowest_element_pos = min(lowest_element_pos, float('{:.4f}'.format(element.position.y0)))
+            lowest_element_pos = min(lowest_element_pos, float(f'{element.position.y0:.4f}'))
         element_low_pos_dict[page_num] = lowest_element_pos
 
     start_page_low_pos = list(element_low_pos_dict)[0]
@@ -376,7 +374,7 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
                 UNIQUE_HEADER_OR_FOOTER_ELEMENTS_PERCENTAGE * len(pdf.pages),
             ):
                 for idx, element in enumerate(elements_list):
-                    if float('{:.4f}'.format(element.position.y0)) == header_low_pos:
+                    if float(f'{element.position.y0:.4f}') == header_low_pos:
                         del elements_list[idx]
                 # recursively check again, to find the next min_low_pos, which will determine the header/footer boundary
                 if elements_list:
@@ -386,7 +384,7 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
                 elements_list.pop()
     else:
         for idx, element in enumerate(elements_list):
-            if float('{:.4f}'.format(element.position.y0)) == header_low_pos:
+            if float(f'{element.position.y0:.4f}') == header_low_pos:
                 del elements_list[idx]
         # recursively check again, to find the next min_low_pos, which will determine the header/footer boundary
         if elements_list:

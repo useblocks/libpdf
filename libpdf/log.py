@@ -13,8 +13,7 @@ from libpdf.progress import TQDM_AVAILABLE, tqdm
 
 def get_level_name(verbose):
     """Return the log levels for the CLI verbosity flag in words."""
-    if verbose > 3:
-        verbose = 3
+    verbose = min(verbose, 3)
     level_dict = {
         0: 'ERROR/FATAL/CRITICAL',
         1: 'WARNING',

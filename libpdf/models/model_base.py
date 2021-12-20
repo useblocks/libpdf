@@ -36,5 +36,5 @@ class ModelBase:
     def __repr__(self):
         """Overwrite the object representation for better debugging."""
         if hasattr(self, 'id_'):
-            return '{0}({1!r})'.format(self.__class__.__name__, self.id_)  # pylint: disable=no-member
-        return '{0}()'.format(self.__class__.__name__)
+            return f'{self.__class__.__name__}({self.id_!r})'  # pylint: disable=no-member
+        return f'{self.__class__.__name__}()'

@@ -54,7 +54,7 @@ class MyRepresenter(RoundTripRepresenter):  # pylint: disable=too-few-public-met
 
     def represent_mapping(self, tag, mapping, flow_style=None):
         """Override represent_mapping."""
-        tag = u'tag:yaml.org,2002:map'
+        tag = 'tag:yaml.org,2002:map'
 
         return RoundTripRepresenter.represent_mapping(self, tag, mapping, flow_style=flow_style)
 
@@ -161,7 +161,7 @@ def output_dump(output_format: str, output_path: str, objects: ApiObjects):
         if output_dir:
             if not os.path.isdir(output_dir):
                 os.makedirs(output_dir)
-        with open(output_path, 'w') as file:
+        with open(output_path, 'w', encoding='utf-8') as file:
             if output_format == 'json':
                 json_string = json.dumps(output_dict, default=json_datetime_converter, indent=2, sort_keys=False)
                 file.write(json_string)

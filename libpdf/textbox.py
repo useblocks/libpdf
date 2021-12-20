@@ -299,8 +299,7 @@ def chapter_examiner(chapter: Dict, lt_textboxes: List[LTTextBox], page: Page) -
     # This assumption may not work in PDFs with multiple columns.
     y0 = chapter['position']['y1'] - (page.height / 4)
     y1 = chapter['position']['y1'] + (page.height / 4)
-    if y0 < 0:
-        y0 = 0
+    y0 = max(y0, 0)
     if y1 > page.height:
         y1 = page.height
 
