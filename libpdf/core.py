@@ -478,11 +478,11 @@ class DependentOption(click.Option):
 @docstring_parameter(__version__, __summary__)
 # flake8 ignore of docstring issues D400 (end with period) and D403 (first word capitalized) not reasonable here
 # as the docstring is used by click in the CLI help page
-def main_cli(**kwargs):  # noqa: D400, D403
+def main_cli(**kwargs):
     """libpdf version {0}: {1}
 
     The argument PDF points to the PDF path that shall be extracted.
-    """
+    """  # noqa: D400, D403
     config_logger(cli=True)
     set_log_level(kwargs['verbose'])  # if not given it's 0 which means log level ERROR
     main(**kwargs, cli_usage=True)
