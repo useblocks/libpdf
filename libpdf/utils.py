@@ -811,10 +811,10 @@ def visual_debug_pdfminer(pdf_path, vd_pdfminer_output):
 def extract_layout(path_pdf, idx_single_page=None):
     """Use pdfminer.six to extract LTContainer layout boxes."""
     LOG.info('Extracting layout ...')
-    file_pointer = open(path_pdf, 'rb')
-
-    # init pdfminer elements
-    parser = PDFParser(file_pointer)
+    parser = None
+    with open(path_pdf, 'rb') as file_pointer:
+        # init pdfminer elements
+        parser = PDFParser(file_pointer)
     doc = PDFDocument(parser)
     rsrcmgr = PDFResourceManager()
     laparams = LAParams(char_margin=6, line_margin=0.4)

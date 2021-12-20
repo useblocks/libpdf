@@ -42,7 +42,7 @@ class FoldedStr(str):
 
 def folded_str_representer(dumper, text):
     """Warp function of the representer."""
-    return dumper.represent_scalar(u'tag', text, style='>')
+    return dumper.represent_scalar('tag', text, style='>')
 
 
 def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):

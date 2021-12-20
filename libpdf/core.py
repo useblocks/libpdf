@@ -208,13 +208,13 @@ def main_api(  # pylint: disable=too-many-arguments
             for visual_incl_element in visual_debug_include_elements:
                 if visual_incl_element not in RENDER_ELEMENTS:
                     raise ValueError(
-                        'Given visual included elements {} not in {}'.format(visual_incl_element, RENDER_ELEMENTS),
+                        f'Given visual included elements {visual_incl_element} not in {RENDER_ELEMENTS}',
                     )
         if visual_debug_exclude_elements:
             for visual_excl_element in visual_debug_exclude_elements:
                 if visual_excl_element not in RENDER_ELEMENTS:
                     raise ValueError(
-                        'Given visual excluded elements {} not in {}'.format(visual_excl_element, RENDER_ELEMENTS),
+                        f'Given visual excluded elements {visual_excl_element} not in {RENDER_ELEMENTS}',
                     )
         if visual_debug_include_elements and visual_debug_exclude_elements:
             raise ValueError('Can not visual include and exclude at the same time.')
@@ -330,15 +330,12 @@ class DependentOption(click.Option):
         """Handle parse result."""
         if (not self.depends_on.intersection(opts)) and self.name in opts:
             raise click.UsageError(
-                "Illegal usage: '{}' depends on "
-                "'{}' which is not given.".format(self.name, ', '.join(self.depends_on)),
+                f"Illegal usage: '{self.name}' depends on '{', '.join(self.depends_on)}' which is not given.",
             )
         if self.mutually_exclusive.intersection(opts) and self.name in opts:
             raise click.UsageError(
-                "Illegal usage: '{}' is mutually exclusive with '{}' which is also given.".format(
-                    self.name,
-                    ', '.join(self.mutually_exclusive),
-                ),
+                f"Illegal usage: '{self.name}' is mutually exclusive with '{', '.join(self.mutually_exclusive)}' "
+                'which is also given.',
             )
 
         return super().handle_parse_result(ctx, opts, args)
@@ -478,11 +475,11 @@ class DependentOption(click.Option):
 @docstring_parameter(__version__, __summary__)
 # flake8 ignore of docstring issues D400 (end with period) and D403 (first word capitalized) not reasonable here
 # as the docstring is used by click in the CLI help page
-def main_cli(**kwargs):  # noqa: D400, D403
+def main_cli(**kwargs):
     """libpdf version {0}: {1}
 
     The argument PDF points to the PDF path that shall be extracted.
-    """
+    """  # noqa: D400, D403
     config_logger(cli=True)
     set_log_level(kwargs['verbose'])  # if not given it's 0 which means log level ERROR
     main(**kwargs, cli_usage=True)

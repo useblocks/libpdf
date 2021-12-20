@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 # need to ignore flake8 errors because sphinx.autodoc sees the multiline as one line. It is actually the summary line.
-class Element(ModelBase, ABC):  # noqa: D205, D400
+class Element(ModelBase, ABC):
     """
     Base class for :class:`~libpdf.models.chapter.Chapter`,
     :class:`~libpdf.models.paragraph.Paragraph`, :class:`~libpdf.models.table.Table` and
@@ -27,7 +27,7 @@ class Element(ModelBase, ABC):  # noqa: D205, D400
     :vartype b_root: Root
     :ivar b_chapter: parent Chapter instance (mutually exclusive with the b_root parameter)
     :vartype b_chapter: Chapter
-    """
+    """  # noqa: D205, D400
 
     def __init__(
         self,

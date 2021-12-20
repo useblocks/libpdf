@@ -8,7 +8,7 @@ through an API and also as a command line interface.
 
 :copyright: © 2020 by team useblocks
 :license: MIT, see LICENSE for more details
-"""
+"""  # noqa: RST399, RST201  # needed for autodoc
 try:
     import importlib_metadata  # Python 3.6 and 3.7
 except ImportError:

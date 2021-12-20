@@ -62,13 +62,12 @@ wand = "^0.6.5"
 # see https://github.com/readthedocs/readthedocs.org/issues/4912#issuecomment-664002569
 sphinx = { version = "*", optional = true }
 sphinx_rtd_theme = { version = "*", optional = true }
-sphinxcontrib-needs = { version = "*", optional = true }
 sphinxcontrib-plantuml = { version = "*", optional = true }
 
 [tool.poetry.extras]
 tqdm = ["tqdm"]
 colorama = ["colorama"]
-docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-needs", "sphinxcontrib-plantuml"]
+docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-plantuml"]
 
 [tool.poetry.dev-dependencies]
 # forked libraries;
@@ -111,7 +110,6 @@ mypy = "^0.790"
 # docs
 sphinx = "*"
 sphinx_rtd_theme = "*"
-sphinxcontrib-needs = "*"
 sphinxcontrib-plantuml = "*"
 
 [tool.poetry.scripts]
