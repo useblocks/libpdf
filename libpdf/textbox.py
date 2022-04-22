@@ -79,6 +79,7 @@ def extract_paragraphs_chapters(
         LOG.info('Excluding chapters extraction')
     else:
         if catalog['outline']:
+            LOG.info('Extracting chapters ...')
             chapter_list = render_chapters(extracted_lt_textboxes, page_list, pdf)
 
     paragraph_list = []
@@ -165,7 +166,12 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
                 chapters_sorted_by_page[chapter['position']['page']] = []
             chapters_sorted_by_page[chapter['position']['page']].append(chapter)
 
-    for page_number, chapters in chapters_sorted_by_page.items():
+    for page_number, chapters in tqdm(
+        chapters_sorted_by_page.items(),
+        desc='###### Extracting chapters',
+        unit='pages',
+        bar_format=bar_format_lvl2(),
+    ):
         if page_number - 1 in page_lt_textboxes_filtered:
             lt_textboxes = page_lt_textboxes_filtered[page_number - 1]
             for page in page_list:
@@ -477,7 +483,12 @@ def render_paragraphs(  # pylint: disable=too-many-branches
     paragraph_list = []
     paragraph_id = 1
 
-    for page_index, lt_textboxes in page_lt_textboxes_filtered.items():
+    for page_index, lt_textboxes in tqdm(
+        page_lt_textboxes_filtered.items(),
+        desc='###### Extracting paragraphs',
+        unit='pages',
+        bar_format=bar_format_lvl2(),
+    ):
         # add lt_textbox to a list of paragraphs
         for lt_textbox in lt_textboxes:
             # get position of lt_textbox
@@ -848,7 +859,6 @@ def pdfminer_get_lt_textboxes(pdf) -> Dict[int, List[LTTextBox]]:
             desc='###### Extracting layout',
             unit='pages',
             bar_format=bar_format_lvl2(),
-            leave=False,
         ),
     ):
         if logging_needed(idx_page, len(pdf.pages)):
