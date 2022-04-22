@@ -30,6 +30,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     output_path: str = None,
     save_figures: bool = False,
     figure_dir: str = None,
+    no_annotations: bool = False,
     no_chapters: bool = False,
     no_paragraphs: bool = False,
     no_tables: bool = False,
@@ -60,6 +61,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     :param figure_dir: output directory for extracted figures; if it does not exist, it will be created
     :param output_format: only relevant for CLI, allowed values are json, yaml or stdout
     :param output_path: only relevant for CLI, path to the output file for output_formats json or yaml
+    :param no_annotations: flag triggering the extraction of annotations from pdf catalog
     :param no_chapters: flag triggering the exclusion of chapters (flat structure of elements)
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
@@ -106,6 +108,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
         LOG.info('Page range: [%s]', 'all' if not pages else ','.join(str(x) for x in pages))
         LOG.info('Page crop: %s', 'not cropped' if not page_crop else ' '.join(str(x) for x in page_crop))
         LOG.info('Smart page crop: %s', 'on' if smart_page_crop else 'off')
+        LOG.info('Extract annotations: %s', 'no' if no_annotations else 'yes')
         LOG.info('Extract chapters: %s', 'no' if no_chapters else 'yes')
         LOG.info('Extract paragraphs: %s', 'no' if no_paragraphs else 'yes')
         LOG.info('Extract tables: %s', 'no' if no_tables else 'yes')
@@ -118,6 +121,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
                 smart_page_crop,
                 save_figures,
                 figure_dir,
+                no_annotations,
                 no_chapters,
                 no_paragraphs,
                 no_tables,
@@ -153,7 +157,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     return None
 
 
-def main_api(  # pylint: disable=too-many-arguments
+def main_api(  # pylint: disable=too-many-arguments, too-many-locals
     pdf: str,
     verbose: int = 1,  # log level WARNING for library usage is considered a good compromise as a default
     page_range: str = None,
@@ -161,6 +165,7 @@ def main_api(  # pylint: disable=too-many-arguments
     smart_page_crop: bool = False,
     save_figures: bool = False,
     figure_dir: str = 'figures',
+    no_annotations: bool = False,
     no_chapters: bool = False,
     no_paragraphs: bool = False,
     no_tables: bool = False,
@@ -185,6 +190,7 @@ def main_api(  # pylint: disable=too-many-arguments
     :param smart_page_crop: see description in function core.main()
     :param save_figures: flag triggering the export of figures to the figure_dir
     :param figure_dir: output directory for extracted figures; if it does not exist, it will be created
+    :param no_annotations: flag triggering the extraction of annotations from pdf catalog
     :param no_chapters: flag triggering the exclusion of chapters (resulting in a flat list of elements)
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
@@ -227,6 +233,7 @@ def main_api(  # pylint: disable=too-many-arguments
         smart_page_crop=smart_page_crop,
         save_figures=save_figures,
         figure_dir=figure_dir,
+        no_annotations=no_annotations,
         no_chapters=no_chapters,
         no_paragraphs=no_paragraphs,
         no_tables=no_tables,
@@ -408,6 +415,12 @@ class DependentOption(click.Option):
     default='figures',
     show_default=True,
     help='Output directory for extracted figures; if it does not exist, it will be created',
+)
+@click.option(
+    '--no-annotations',
+    is_flag=True,
+    show_default=True,
+    help='Do not extract annotations from catalog. The links will not be resolved.',
 )
 @click.option(
     '--no-chapters',
