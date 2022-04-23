@@ -61,7 +61,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     :param figure_dir: output directory for extracted figures; if it does not exist, it will be created
     :param output_format: only relevant for CLI, allowed values are json, yaml or stdout
     :param output_path: only relevant for CLI, path to the output file for output_formats json or yaml
-    :param no_annotations: flag triggering the extraction of annotations from pdf catalog
+    :param no_annotations: flag triggering the exclusion of annotations from pdf catalog
     :param no_chapters: flag triggering the exclusion of chapters (flat structure of elements)
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
@@ -190,7 +190,7 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
     :param smart_page_crop: see description in function core.main()
     :param save_figures: flag triggering the export of figures to the figure_dir
     :param figure_dir: output directory for extracted figures; if it does not exist, it will be created
-    :param no_annotations: flag triggering the extraction of annotations from pdf catalog
+    :param no_annotations: flag triggering the exclusion of annotations from pdf catalog
     :param no_chapters: flag triggering the exclusion of chapters (resulting in a flat list of elements)
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
@@ -420,7 +420,8 @@ class DependentOption(click.Option):
     '--no-annotations',
     is_flag=True,
     show_default=True,
-    help='Do not extract annotations from catalog. The links will not be resolved.',
+    help='Do not extract annotations from catalog. All PDF-internal links will not be resolved.'
+    ' Chapter detection however will work',
 )
 @click.option(
     '--no-chapters',

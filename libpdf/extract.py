@@ -72,7 +72,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     :param smart_page_crop: see description in function core.main()
     :param save_figures: flag triggering the export of figures to the figure_dir
     :param figure_dir: output directory for extracted figures
-    :param no_annotations: flag triggering the extraction of annotations from pdf catalog
+    :param no_annotations: flag triggering the exclusion of annotations from pdf catalog
     :param no_chapters: flag triggering the exclusion of chapters (flat structure of elements)
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
