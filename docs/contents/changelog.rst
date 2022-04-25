@@ -20,7 +20,12 @@ __ https://github.com/useblocks/libpdf/compare/v0.0.1...HEAD
 Fixed
 ~~~~~
 
-- Fixed catalog outline title resolve issue (`PR #10 <https://github.com/useblocks/libpdf/pull/10>`_)
+- Fixed catalog outline title resolve issue (`PR #10 <https://github.com/useblocks/libpdf/pull/10>`_)+
+
+Added
+~~~~~
+
+- Added flag ´no_annotation´ to exclude annotation extraction from the catalog
 
 __ https://github.com/useblocks/libpdf/releases/tag/v0.0.1
 
