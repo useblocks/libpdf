@@ -54,7 +54,13 @@ colorama = { version = "^0.4.4", optional = true }
 # see [tool.poetry.dev-dependencies] for the forked libraries
 pycryptodome = "^3.9.9"
 sortedcontainers = "^2.3.0"
-pillow = "^8.1.0"
+pillow = [
+    # pdfplumber has bugs when Pollow > 9
+    # https://github.com/jsvine/pdfplumber/discussions/637
+    { version= "9.0.1", python = ">=3.7,<4.0" },
+    # Pillow >= 9 cannot be found in python3.6
+    { version= "^8.0.1", python = "3.6" }
+]
 unicodecsv = "^0.14.1"
 wand = "^0.6.5"
 
