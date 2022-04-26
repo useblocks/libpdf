@@ -270,3 +270,7 @@ pip-selfcheck.json
 .vscode/launch.json
 !.vscode/launch.json.default
 !.vscode/settings.json.default
+
+# Ignore the output from libpdf
+visual_debug*
+out*

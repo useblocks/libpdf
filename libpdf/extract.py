@@ -51,12 +51,13 @@ def folded_str_representer(dumper, text):
 yaml.add_representer(FoldedStr, folded_str_representer)
 
 
-def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-statements, too-many-arguments
     pdf_path: str,
     pages: Optional[List[int]],
     smart_page_crop: bool,
     save_figures: bool,
     figure_dir: Optional[str],
+    no_annotations: bool,
     no_chapters: bool,
     no_paragraphs: bool,
     no_tables: bool,
@@ -71,6 +72,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     :param smart_page_crop: see description in function core.main()
     :param save_figures: flag triggering the export of figures to the figure_dir
     :param figure_dir: output directory for extracted figures
+    :param no_annotations: flag triggering the exclusion of annotations from pdf catalog
     :param no_chapters: flag triggering the exclusion of chapters (flat structure of elements)
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
@@ -138,7 +140,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         overall_pbar.update(1)
 
         # extract annotations, name destinations and outline
-        extract_catalog(pdf)
+        extract_catalog(pdf, no_annotations)
         overall_pbar.update(10)
 
         # In figure_dict, figures are sorted by pages and y coordinates.

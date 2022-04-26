@@ -5,10 +5,12 @@ from typing import Any, Dict, List, Union
 
 from libpdf.log import logging_needed
 from libpdf.parameters import ANNO_X_TOLERANCE, ANNO_Y_TOLERANCE
+from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import decode_title, to_pdfplumber_bbox
 
 from pdfminer.pdftypes import PDFObjRef
 from pdfminer.psparser import PSLiteral
+
 
 LOG = logging.getLogger(__name__)
 
@@ -500,7 +502,9 @@ def annotation_dict_extraction(pdf):
 
     annotation_page_map = {}
 
-    for idx_page, page in enumerate(pdf.pages):
+    for idx_page, page in enumerate(
+        tqdm(pdf.pages, desc='###### Extracting annotations', unit='pages', bar_format=bar_format_lvl2()),
+    ):
         if logging_needed(idx_page, len(pdf.pages)):
             LOG.debug('Catalog extraction: annotations page %s of %s', idx_page + 1, len(pdf.pages))
 
@@ -639,7 +643,7 @@ def _resolve_pdf_obj_refs(
     return resolved_dict, resolved_list
 
 
-def extract_catalog(pdf):
+def extract_catalog(pdf, no_annotations: bool):
     """
     Extract catalog document of a PDF.
 
@@ -658,8 +662,13 @@ def extract_catalog(pdf):
     # resolved_catalog, _ = _resolve_pdf_obj_refs(pdf.doc.catalog, resolved_objects)
     # del resolved_catalog  # denote it is not yet used
 
-    # extract annotation (link source) and store in the dict by pages for further process of links on texts in extract()
-    ann_dict = annotation_dict_extraction(pdf)
+    if no_annotations:
+        ann_dict = None
+        LOG.info('Catalog extraction: annotations is excluded')
+    else:
+        # extract annotation (link source) and store in the dict by pages for further process of links
+        # on texts in extract()
+        ann_dict = annotation_dict_extraction(pdf)
 
     # extract name destination (link target)and store in the dict for further process in extract()
     des_dict = get_named_destination(pdf)

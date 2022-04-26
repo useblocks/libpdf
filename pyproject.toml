@@ -54,7 +54,13 @@ colorama = { version = "^0.4.4", optional = true }
 # see [tool.poetry.dev-dependencies] for the forked libraries
 pycryptodome = "^3.9.9"
 sortedcontainers = "^2.3.0"
-pillow = "^8.1.0"
+pillow = [
+    # pdfplumber has bugs when Pollow > 9
+    # https://github.com/jsvine/pdfplumber/discussions/637
+    { version= "9.0.1", python = ">=3.7,<4.0" },
+    # Pillow >= 9 cannot be found in python3.6
+    { version= "^8.0.1", python = "3.6" }
+]
 unicodecsv = "^0.14.1"
 wand = "^0.6.5"
 
@@ -104,7 +110,9 @@ flake8-tuple = "*"              # Check code for 1 element tuple
 flake8-formatter-abspath = "*"  # Formatter to get absolute file paths for IDE external tool calls
 
 pylint = "*"
-black = { version = "^20.0", allow-prereleases = true }
+# define python version for black
+# https://stackoverflow.com/questions/69912264/python-3-9-8-fails-using-black-and-importing-typed-ast-ast3
+black = { version = "^21.0", allow-prereleases = true, python = ">=3.6.2,<4.0" }
 mypy = "^0.790"
 
 # docs

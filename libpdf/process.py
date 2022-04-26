@@ -474,7 +474,7 @@ def find_target_id(link: Link, pages_list: List[Page], src_element: Element) -> 
 
             text = str(src_element)
             text_shortened = (text[:60] + '..') if len(text) > 60 else text
-            LOG.warning(
+            LOG.debug(
                 'The link "%s" on page %s could not be resolved to a libpdf element; replacing it with the raw '
                 'target page coordinate %s',
                 text_shortened,
