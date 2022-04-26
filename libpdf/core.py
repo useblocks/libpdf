@@ -111,6 +111,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
         LOG.info('Extract tables: %s', 'no' if no_tables else 'yes')
         LOG.info('Extract figures: %s', 'no' if no_figures else 'yes')
         overall_pbar.update(1)
+        # just test
         try:
             objects = extract(
                 pdf,
