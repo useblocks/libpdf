@@ -17,16 +17,27 @@ __ https://github.com/useblocks/libpdf/compare/v0.0.1...HEAD
     `0.0.2`__ - 2020-09-30
     ----------------------
 
+Added
+~~~~~
+
+Changed
+~~~~~~~
+
+- Updated downstream library dependencies
+
+- Added flag ``--no_annotations`` to exclude annotation extraction from the catalog to speed up extraction
+  (`PR #15 <https://github.com/useblocks/libpdf/pull/15>`_)
+
+Removed
+~~~~~~~
+
+- libpdf has dropped support for Python 3.6, which reached end-of-life on 2021-12-23; this also fixes the Pillow 8
+  security vulnerabilities
+
 Fixed
 ~~~~~
 
 - Fixed catalog outline title resolve issue (`PR #10 <https://github.com/useblocks/libpdf/pull/10>`_)
-
-Added
-~~~~~
-
-- Added flag ``--no_annotations`` to exclude annotation extraction from the catalog to speed up extraction
-  (`PR #15 <https://github.com/useblocks/libpdf/pull/15>`_)
 
 __ https://github.com/useblocks/libpdf/releases/tag/v0.0.1
 
