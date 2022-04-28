@@ -53,7 +53,7 @@ colorama = { version = "^0.4.4", optional = true }
 # see [tool.poetry.dev-dependencies] for the forked libraries
 pycryptodome = "^3.9.9"
 sortedcontainers = "^2.3.0"
-pillow = "^9.0.1"
+pillow = "~9.0.1"  # cannot go higher because of this bug https://github.com/jsvine/pdfplumber/discussions/637
 unicodecsv = "^0.14.1"
 wand = "^0.6.5"
 
