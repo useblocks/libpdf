@@ -21,7 +21,6 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
@@ -38,12 +37,12 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-chardet = "^3"
-click = "^7"
-importlib-metadata = { version = "^1.6.0", python = "~3.6 || ~3.7" }
-PyYAML = "^5"
-"ruamel.yaml" = "^0.16.10"
+python = "^3.7"
+chardet = "^4"
+click = "^8"
+importlib-metadata = { version = "^1.6.0", python = "~3.7" }
+PyYAML = "^6"
+"ruamel.yaml" = "^0.17"
 
 # optional deps for progress bars
 tqdm = { version = "^4.50.0", optional = true }
@@ -54,13 +53,7 @@ colorama = { version = "^0.4.4", optional = true }
 # see [tool.poetry.dev-dependencies] for the forked libraries
 pycryptodome = "^3.9.9"
 sortedcontainers = "^2.3.0"
-pillow = [
-    # pdfplumber has bugs when Pollow > 9
-    # https://github.com/jsvine/pdfplumber/discussions/637
-    { version= "9.0.1", python = ">=3.7,<4.0" },
-    # Pillow >= 9 cannot be found in python3.6
-    { version= "^8.0.1", python = "3.6" }
-]
+pillow = "~9.0.1"  # cannot go higher because of this bug https://github.com/jsvine/pdfplumber/discussions/637
 unicodecsv = "^0.14.1"
 wand = "^0.6.5"
 
@@ -84,7 +77,7 @@ pdfplumber = { git = "https://github.com/useblocks/pdfplumber.git" }
 "pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
 
 # testing
-pytest = "<=5.3.5"  # fixed to this version because of https://github.com/pytest-dev/pytest/issues/6925
+pytest = "^7"
 pytest-cov = "*"
 tox = "*"
 pytest-xdist = "*"  # parallelisation
@@ -110,9 +103,7 @@ flake8-tuple = "*"              # Check code for 1 element tuple
 flake8-formatter-abspath = "*"  # Formatter to get absolute file paths for IDE external tool calls
 
 pylint = "*"
-# define python version for black
-# https://stackoverflow.com/questions/69912264/python-3-9-8-fails-using-black-and-importing-typed-ast-ast3
-black = { version = "^21.0", allow-prereleases = true, python = ">=3.6.2,<4.0" }
+black = { version = "^22", allow-prereleases = true }
 mypy = "^0.790"
 
 # docs
