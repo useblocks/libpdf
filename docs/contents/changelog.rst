@@ -38,6 +38,8 @@ Fixed
 ~~~~~
 
 - Fixed catalog outline title resolve issue (`PR #10 <https://github.com/useblocks/libpdf/pull/10>`_)
+- Fixed `duplicate table ID issue #18 <https://github.com/useblocks/libpdf/issues/18>`_
+  (`PR #19 <https://github.com/useblocks/libpdf/pull/19>`_)
 
 __ https://github.com/useblocks/libpdf/releases/tag/v0.0.1
 
