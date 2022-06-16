@@ -79,7 +79,7 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
 
     table_dict = {'page': {}}
     table_list = []
-
+    table_id = 1
     for idx_page, page in enumerate(
         tqdm(pdf.pages, desc='###### Extracting tables', unit='pages', bar_format=bar_format_lvl2()),
     ):
@@ -88,7 +88,6 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
         if len((page.find_tables(table_settings))) != 0:
             table_dict['page'].update({idx_page + 1: []})
             tables = page.find_tables(table_settings)
-            counter = 1
             lt_page = page._layout  # pylint: disable=protected-access  # easiest way to obtain LTPage
             for table in tables:
                 # bbox in tables use pdfplumber bbox coordination (x0, top, y0, bottom), hence, need to
@@ -112,7 +111,7 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
                 if _table_figure_check(table_pos, figure_list) is True:
                     table_dict['page'][idx_page + 1].append(
                         {
-                            'id': 'table.' + str(counter),
+                            'id': 'table.' + str(table_id),
                             'type': 'table',
                             'positions': table_pos,
                             # 'text': table_temp.extract(2, 2),
@@ -123,16 +122,16 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
                     cells = extract_cells(
                         lt_page,
                         table.rows,
-                        table_dict['page'][idx_page + 1][counter - 1]['cell'],
+                        table_dict['page'][idx_page + 1][len(table_dict['page'][idx_page + 1]) - 1]['cell'],
                         pages_list[idx_page],
                     )
 
-                    table = Table(idx=counter, cells=cells, position=table_pos)
+                    table = Table(idx=table_id, cells=cells, position=table_pos)
                     table_list.append(table)
 
-                    counter += 1
+                    table_id += 1
 
-            if counter == 1:  # no table is added
+            if len(table_dict['page'][idx_page + 1]) == 0:  # no table is added
                 del table_dict['page'][idx_page + 1]
 
     return table_list

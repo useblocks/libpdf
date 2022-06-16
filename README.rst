@@ -4,4 +4,3 @@ Introduction
 ============
 
 ``libpdf`` allows the extraction of structured data from machine readable PDFs.
-
