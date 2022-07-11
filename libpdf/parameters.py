@@ -209,3 +209,17 @@ RENDER_ELEMENTS = [
     'table',
     'figure',
 ]  # the elements that shall be rendered
+
+# pdfminer layout analysis parameter from from pdfminer.layout -> LAParams.__init__
+# These are needed for 2 reasons:
+# - pdfplumber wrapper around pdfminer only requests layout analysis if at least one laparam is given
+# - they are adapted to best practice values, the deviations are commented below
+LA_PARAMS = {
+    'line_overlap': 0.5,
+    'char_margin': 6.0,  # default: 2.0
+    'line_margin': 0.4,  # default : 0.5
+    'word_margin': 0.1,
+    'boxes_flow': 0.5,
+    'detect_vertical': False,
+    'all_texts': False,
+}

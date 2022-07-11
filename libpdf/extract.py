@@ -22,6 +22,7 @@ from libpdf.parameters import (
     FIGURE_MIN_HEIGHT,
     FIGURE_MIN_WIDTH,
     HEADER_OR_FOOTER_CONTINUOUS_PERCENTAGE,
+    LA_PARAMS,
     PAGES_MISSING_HEADER_OR_FOOTER_PERCENTAGE,
     UNIQUE_HEADER_OR_FOOTER_ELEMENTS_PERCENTAGE,
 )
@@ -84,21 +85,8 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     LOG.info('PDF extraction started ...')
 
     LOG.info('Loading the PDF with pdfminer LTTextBox analysis ...')
-    # pdfminer layout analysis parameter from from pdfminer.layout -> LAParams.__init__
-    # These are needed for 2 reasons:
-    # - pdfplumber wrapper around pdfminer only requests layout analysis if at least one laparam is given
-    # - they are adapted to best practice values, the deviations are commented below
-    laparams = {
-        'line_overlap': 0.5,
-        'char_margin': 6.0,  # default: 2.0
-        'line_margin': 0.4,  # default : 0.5
-        'word_margin': 0.1,
-        'boxes_flow': 0.5,
-        'detect_vertical': False,
-        'all_texts': False,
-    }
 
-    with pdfplumber.open(pdf_path, laparams=laparams) as pdf:
+    with pdfplumber.open(pdf_path, laparams=LA_PARAMS) as pdf:
         LOG.info('The PDF has %s pages', len(pdf.pages))
         if pages:
             # TODO:
