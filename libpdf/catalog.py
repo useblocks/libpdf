@@ -177,7 +177,7 @@ def chapter_number_giver(chapters_in_outline: List[Dict], virt_hierarchical_leve
     explore to chapter hierarchy.
 
     :param chapters_in_outline: a list of nested chapters extracted from outline catalog
-    :param virt_hierarchical_level: the current level of the outline hierarchy
+    :param virt_hierarchical_level: the current level of the outline hierarchy aka virtual number
     :return: None
     """
     levels = virt_hierarchical_level.split('.')

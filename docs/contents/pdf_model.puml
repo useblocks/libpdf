@@ -150,8 +150,8 @@
             **content**: container for elements of type
             ""Chapter/Table/Figure/Paragraph""
 
-            A chapter may not contain a HoritontalBox, 
-            when the chapter is a virtual one.
+            A chapter does not contain a HoritontalBox, 
+            when it is a ghost chapter.
         }
 
         class Cell {

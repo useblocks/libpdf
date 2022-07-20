@@ -145,7 +145,7 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
     1. Sort the flatten outline chapters into a dict by pages
     2. Iterate the sorted outline chapters by pages
     3. chapter_examiner checks if a certain chapter matches the lt_textboxes on the same page
-    4. Instantiate the chapter if the matched lt_textboxes is found. Otherwise, a virtual chapter is instantiated.
+    4. Instantiate the chapter if the matched lt_textboxes is found. Otherwise, a ghost chapter is instantiated.
     5. The matched lt_textboxes are removed from the list "page_lt_textboxes_filtered"
 
     :param page_lt_textboxes_filtered: all of the LTTextboxes sorted by pages
@@ -190,7 +190,8 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
 
                     if len(chapter_lt_textboxes) == 2 and ('virt.' in chapter['number']):
                         # the case where chapter's number and title are grouped into two different lt_textboxes,
-                        # and outline catalog doesn't have chapter number.
+                        # and the chapter number derives from virtual hierarchical levels because
+                        # outline catalog doesn't have chapter number.
                         chapter['number'] = min(chapter_lt_textboxes, key=lambda x: x.x0).get_text().strip()
 
                     # extract LTPage for textbox_crop() to use
@@ -214,12 +215,15 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
                         lt_textboxes.remove(lt_textbox)
 
                 else:
-                    # if no matched lt_textboxes are found, the position of a virtual chapter is rendered
-                    position = virtual_chapter_position_generator(chapter, chapter_page)
+                    # if no matched lt_textboxes are found for the chapter in the outline, a ghost chapter is rendered.
+                    # The ghost chapter contains only the position from the outline and have no textbox
+                    position = ghost_chapter_position_generator(chapter, chapter_page)
                     horizontal_box = None
                     LOG.info(
-                        'The chapter "%s" on page %s can not be detected. The virtual chapter number "%s" is applied. '
-                        'This number may not be consistent with the numerical order in the content',
+                        'The chapter "%s" on page %s can not be detected. the position of a ghost chapter is rendered. '
+                        'The chapter number "%s" is applied. '
+                        'This number may not be consistent with the numerical order in the content '
+                        'as a virtual number may be introduced.',
                         chapter['title'],
                         chapter['position']['page'],
                         chapter['number'],
@@ -240,9 +244,12 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
     return chapter_list
 
 
-def virtual_chapter_position_generator(chapter: Dict, page: Page) -> Position:
+def ghost_chapter_position_generator(chapter: Dict, page: Page) -> Position:
     """
-    Generate the position of a virtual chapter.
+    Generate the position of a ghost chapter.
+
+    A ghost chapter means the chapter is in the outline, but libpdf cannot find its matched LTTextBox.
+    Therefore, its position directly derives from the chapter in the outline.
 
     :param chapter: an outline chapter from the catalog
     :param page: a libpdf page
@@ -378,7 +385,7 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
         title_winner_idx = title_winners_idx[0]
 
     if 'virt.' in chapter['number']:
-        # if the chapter is virtual, only the title needs to be taken into account.
+        # if the chapter number is virtual, only the title needs to be taken into account.
 
         if similarity_lt_textboxes[title_winner_idx]['title'] > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY:
             winners.append(lt_textboxes_in_rect[title_winner_idx])
