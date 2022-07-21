@@ -220,19 +220,19 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
                     position = ghost_chapter_position_generator(chapter, chapter_page)
                     horizontal_box = None
 
-                    if 'virt.' in chapter['number']:
-                        LOG.info(
-                            'Virtual number %s is applied to chapter number, '
-                            'so this number may not be consistent with the numerical order in the content.',
-                            chapter['number'],
-                        )
-
                     LOG.info(
                         'The chapter "%s %s" on page %s cannot be detected. A ghost chapter is introduced '
                         'at the jump target location. ',
                         chapter['number'],
                         chapter['title'],
                         chapter['position']['page'],
+                    )
+
+                if 'virt.' in chapter['number']:
+                    LOG.info(
+                        'Virtual number %s is applied to chapter number, '
+                        'so this number may not be consistent with the numerical order in the content.',
+                        chapter['number'],
                     )
 
                 chapter_obj = Chapter(
