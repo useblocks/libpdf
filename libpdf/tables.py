@@ -28,6 +28,7 @@ from libpdf.models.page import Page
 from libpdf.models.position import Position
 from libpdf.models.table import Cell
 from libpdf.models.table import Table
+from libpdf.parameters import LA_PARAMS
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import from_pdfplumber_bbox, lt_to_libpdf_hbox_converter
 
@@ -231,8 +232,8 @@ def cell_lttextbox_extraction(position: Position, lt_page: LTPage) -> Union[LTTe
     lt_textbox = utils.lt_textbox_crop(
         cell_bbox,
         lt_page._objs,  # pylint: disable=protected-access  # not publicly available
-        word_margin=1.5,
-        y_tolerance=3,
+        word_margin=LA_PARAMS['word_margin'],
+        y_tolerance=LA_PARAMS['line_overlap'],
     )
 
     return lt_textbox
