@@ -1,4 +1,5 @@
 """PDF catalog extraction."""
+from decimal import Decimal
 import logging
 import re
 from typing import Any, Dict, List, Union
@@ -7,7 +8,6 @@ from libpdf.log import logging_needed
 from libpdf.parameters import ANNO_X_TOLERANCE, ANNO_Y_TOLERANCE
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import decode_title, to_pdfplumber_bbox
-
 from pdfminer.pdftypes import PDFObjRef
 from pdfminer.psparser import PSLiteral
 
@@ -405,7 +405,7 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf):  # 
         page.height,
     )
     page_crop = page.within_bbox(ann_bbox)
-    ann_text = page_crop.extract_text(x_tolerance=1, y_tolerance=4)
+    ann_text = page_crop.extract_text(x_tolerance=float(1), y_tolerance=float(4))
 
     if 'A' in ann_resolved:
         # make sure ann_resolved['A'] is resolved
