@@ -1,9 +1,9 @@
 """Pytest conftest module containing common test configuration and fixtures."""
 import os
 
-from libpdf import load
-
 import pytest
+
+from libpdf import load
 
 # test PDFs from pdfplumber
 PDF_LOREM_IPSUM = os.path.join(os.path.dirname(__file__), 'pdf', 'lorem-ipsum.pdf')

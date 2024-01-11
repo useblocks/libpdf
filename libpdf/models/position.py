@@ -7,9 +7,9 @@ from libpdf.parameters import TARGET_COOR_TOLERANCE
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.table import Cell  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.page import Page  # pylint: disable=cyclic-import
     from libpdf.models.element import Element  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.page import Page  # pylint: disable=cyclic-import
+    from libpdf.models.table import Cell  # noqa: F401  # pylint: disable=cyclic-import
 
 
 class Position:

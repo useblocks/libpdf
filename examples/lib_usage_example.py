@@ -4,7 +4,6 @@ import logging
 import sys
 
 import libpdf
-
 from tests.conftest import PDF_LOREM_IPSUM as TEST_PDF
 
 LOG = logging.getLogger(__name__)

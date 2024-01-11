@@ -2,15 +2,14 @@
 
 from typing import List, NamedTuple
 
+from pdfminer.pdfdocument import PDFDocument
+from pdfplumber.pdf import PDF
+
 from libpdf.models.chapter import Chapter
 from libpdf.models.figure import Figure
 from libpdf.models.paragraph import Paragraph
 from libpdf.models.root import Root
 from libpdf.models.table import Table
-
-from pdfminer.pdfdocument import PDFDocument
-
-from pdfplumber.pdf import PDF
 
 
 # disable too-few-public-methods because this is a data storage class

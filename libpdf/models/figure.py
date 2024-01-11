@@ -1,10 +1,9 @@
 """Definition for PDF figures."""
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from libpdf.models.element import Element
 from libpdf.models.horizontal_box import HorizontalBox
 from libpdf.models.link import Link
-
 
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles

@@ -2,7 +2,6 @@
 from click.testing import CliRunner
 
 import libpdf
-
 from tests.conftest import PDF_OUTLINE_NO_DEST, PDF_PYTHON_LOGGING, PDF_WITH_EMPTY_OUTLINE
 
 

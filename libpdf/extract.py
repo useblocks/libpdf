@@ -6,6 +6,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
+import pdfplumber
+import yaml
+from pdfminer.layout import LTText
+
 from libpdf import parameters
 from libpdf import process as pro
 from libpdf.apiobjects import ApiObjects
@@ -30,12 +34,6 @@ from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.tables import extract_pdf_table
 from libpdf.textbox import extract_linked_chars, extract_paragraphs_chapters
 from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, to_pdfplumber_bbox
-
-from pdfminer.layout import LTText
-
-import pdfplumber
-
-import yaml
 
 LOG = logging.getLogger(__name__)
 

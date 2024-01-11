@@ -11,7 +11,6 @@ from libpdf.models.paragraph import Paragraph
 from libpdf.models.position import Position
 from libpdf.models.root import Root
 from libpdf.models.table import Cell, Table
-
 from tests.conftest import PDF_LOREM_IPSUM
 
 

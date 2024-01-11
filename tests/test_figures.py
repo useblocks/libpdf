@@ -2,8 +2,7 @@
 from click.testing import CliRunner
 
 import libpdf
-
-from tests.conftest import PDF_FIGURES_EXTRACTION, PDF_FIGURE_WITH_INVALID_BBOX, PDF_FULL_FEATURES
+from tests.conftest import PDF_FIGURE_WITH_INVALID_BBOX, PDF_FIGURES_EXTRACTION, PDF_FULL_FEATURES
 
 
 def test_figures_extract_with_invalid_bbox():

@@ -2,7 +2,6 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-
 from libpdf.models.model_base import ModelBase
 
 # avoid import cycles for back reference type hinting

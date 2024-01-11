@@ -1,6 +1,5 @@
 """Test case for JIRA ticket DS-93."""
 import libpdf
-
 from tests.conftest import PDF_CHAPTER_DETECTION
 
 

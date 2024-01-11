@@ -8,18 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Type, Union
 
 import chardet
-
-
-from libpdf.log import logging_needed
-from libpdf.models.chapter import Chapter
-from libpdf.models.element import Element
-from libpdf.models.figure import Figure
-from libpdf.models.horizontal_box import Char, HorizontalBox, HorizontalLine, Word
-from libpdf.models.paragraph import Paragraph
-from libpdf.models.table import Table
-from libpdf.parameters import RENDER_ELEMENTS, VIS_DBG_MAP_ELEMENTS_COLOR
-from libpdf.progress import bar_format_lvl1, tqdm
-
+import pdfplumber
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import (
     LAParams,
@@ -41,7 +30,15 @@ from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 
-import pdfplumber
+from libpdf.log import logging_needed
+from libpdf.models.chapter import Chapter
+from libpdf.models.element import Element
+from libpdf.models.figure import Figure
+from libpdf.models.horizontal_box import Char, HorizontalBox, HorizontalLine, Word
+from libpdf.models.paragraph import Paragraph
+from libpdf.models.table import Table
+from libpdf.parameters import RENDER_ELEMENTS, VIS_DBG_MAP_ELEMENTS_COLOR
+from libpdf.progress import bar_format_lvl1, tqdm
 
 MAP_TYPES = {
     Chapter: 'chapter',

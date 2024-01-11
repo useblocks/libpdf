@@ -3,12 +3,11 @@
 import os
 import sys
 
+import pytest
+
 import libpdf
 from libpdf.models.figure import Figure
 from libpdf.models.table import Table
-
-import pytest
-
 from tests.conftest import PDF_FULL_FEATURES, PDF_SMART_HEADER_FOOTER_DETECTION
 
 

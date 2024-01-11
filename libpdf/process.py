@@ -14,6 +14,9 @@ import os
 import sys
 from typing import Dict, List, Optional, Union
 
+import ruamel.yaml
+from ruamel.yaml.representer import RoundTripRepresenter
+
 from libpdf import parameters
 from libpdf.apiobjects import ApiObjects
 from libpdf.catalog import catalog
@@ -27,10 +30,6 @@ from libpdf.models.paragraph import Paragraph
 from libpdf.models.position import Position
 from libpdf.models.table import Cell, Table
 from libpdf.parameters import HEADLINE_TOLERANCE
-
-import ruamel.yaml
-from ruamel.yaml.representer import RoundTripRepresenter
-
 
 LOG = logging.getLogger(__name__)
 

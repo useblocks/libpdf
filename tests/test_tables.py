@@ -1,7 +1,6 @@
 """Test tables extraction."""
 
 import libpdf
-
 from tests.conftest import PDF_LOREM_IPSUM
 
 

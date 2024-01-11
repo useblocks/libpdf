@@ -3,14 +3,13 @@ import logging
 import re
 from typing import Any, Dict, List, Union
 
+from pdfminer.pdftypes import PDFObjRef, resolve1
+from pdfminer.psparser import PSLiteral
+
 from libpdf.log import logging_needed
 from libpdf.parameters import ANNO_X_TOLERANCE, ANNO_Y_TOLERANCE
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import decode_title, to_pdfplumber_bbox
-
-from pdfminer.pdftypes import PDFObjRef, resolve1
-from pdfminer.psparser import PSLiteral
-
 
 LOG = logging.getLogger(__name__)
 

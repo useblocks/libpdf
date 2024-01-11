@@ -1,6 +1,6 @@
 """Definition for PDF chapters."""
 
-from typing import List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, List, Union
 
 from libpdf.models.element import Element
 from libpdf.models.horizontal_box import HorizontalBox

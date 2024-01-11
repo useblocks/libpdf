@@ -1,10 +1,8 @@
 """Initial test cases for CLI."""
+import pytest
 from click.testing import CliRunner
 
 from libpdf.core import main_cli
-
-import pytest
-
 from tests.conftest import PDF_LOREM_IPSUM, PDF_TWO_COLUMNS
 
 

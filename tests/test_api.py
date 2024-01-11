@@ -2,10 +2,9 @@
 
 import logging
 
-from libpdf import load
-
 import pytest
 
+from libpdf import load
 from tests.conftest import PDF_LOREM_IPSUM, PDF_TWO_COLUMNS
 
 

@@ -18,6 +18,8 @@ pdfminer's layout is used.
 import logging
 from typing import List, Union
 
+from pdfminer.layout import LTPage, LTTextBoxHorizontal
+
 from libpdf import textbox, utils
 from libpdf.catalog import catalog
 from libpdf.log import logging_needed
@@ -28,8 +30,6 @@ from libpdf.models.table import Cell, Table
 from libpdf.parameters import LA_PARAMS
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import from_pdfplumber_bbox, lt_to_libpdf_hbox_converter
-
-from pdfminer.layout import LTPage, LTTextBoxHorizontal
 
 LOG = logging.getLogger(__name__)
 
