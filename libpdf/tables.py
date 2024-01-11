@@ -16,18 +16,15 @@ pdfplumber sees y0 and y1 from the top of the page
 pdfminer's layout is used.
 """
 import logging
-from decimal import Decimal
 from typing import List, Union
 
-from libpdf import textbox
-from libpdf import utils
+from libpdf import textbox, utils
 from libpdf.catalog import catalog
 from libpdf.log import logging_needed
 from libpdf.models.figure import Figure
 from libpdf.models.page import Page
 from libpdf.models.position import Position
-from libpdf.models.table import Cell
-from libpdf.models.table import Table
+from libpdf.models.table import Cell, Table
 from libpdf.parameters import LA_PARAMS
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import from_pdfplumber_bbox, lt_to_libpdf_hbox_converter
@@ -65,17 +62,21 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
         'explicit_vertical_lines': [],
         'explicit_horizontal_lines': [],
         'snap_tolerance': 3,
+        "snap_x_tolerance": 3,
+        "snap_y_tolerance": 3,
         'join_tolerance': 3,
+        "join_x_tolerance": 3,
+        "join_y_tolerance": 3,
         'edge_min_length': 3,
         'min_words_vertical': 3,
         'min_words_horizontal': 1,
-        'keep_blank_chars': False,
+        #'keep_blank_chars': False,
         'text_tolerance': 3,
         'text_x_tolerance': 2,
         'text_y_tolerance': 2,
         'intersection_tolerance': 3,
-        'intersection_x_tolerance': None,
-        'intersection_y_tolerance': None,
+        'intersection_x_tolerance': 3,
+        'intersection_y_tolerance': 3,
     }
 
     table_dict = {'page': {}}
@@ -157,7 +158,7 @@ def extract_cells(lt_page: LTPage, rows: List, list_cell: List[Cell], page: Page
                     row_cell[1],
                     row_cell[2],
                     row_cell[3],
-                    Decimal(lt_page.height),
+                    lt_page.height,
                 )
                 pos_cell = Position(pos_cell_bbox[0], pos_cell_bbox[1], pos_cell_bbox[2], pos_cell_bbox[3], page)
                 # extract cell text

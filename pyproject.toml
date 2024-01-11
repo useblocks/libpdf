@@ -38,24 +38,26 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-chardet = "^4"
-click = "^8"
+chardet = "*"
+click = "*"
 importlib-metadata = { version = "^1.6.0", python = "~3.7" }
-PyYAML = "^6"
-"ruamel.yaml" = "^0.17"
+PyYAML = "*"
+"ruamel.yaml" = "*"
+pdfplumber = "*"
+"pdfminer.six" = "*"
 
 # optional deps for progress bars
-tqdm = { version = "^4.50.0", optional = true }
-colorama = { version = "^0.4.4", optional = true }
+tqdm = { version = "*", optional = true }
+colorama = { version = "*", optional = true }
 
 # dependencies needed by pdfminer.six and pdfplumber which are deliverd as wheels in the deps folder
 # the libs were patched and no upstream PR has been raised yet
 # see [tool.poetry.dev-dependencies] for the forked libraries
-pycryptodome = "^3.9.9"
+pycryptodome = "*"
 sortedcontainers = "^2.3.0"
-pillow = "~9.0.1"  # cannot go higher because of this bug https://github.com/jsvine/pdfplumber/discussions/637
-unicodecsv = "^0.14.1"
-wand = "^0.6.5"
+pillow = "*"
+unicodecsv = "*"
+wand = "*"
 
 # optional deps for docs, needed to make RTD work with pyproject.toml
 # see https://github.com/readthedocs/readthedocs.org/issues/4912#issuecomment-664002569
@@ -73,8 +75,8 @@ docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-plantuml"]
 # they must be dev deps so make them invisible to PyPI and the egg/wheel requires section
 # 'poetry install' installs those by default, so the Git deps are actually used instead of the wheels in the deps
 # folder; see also libpdf/_import_forks.py
-pdfplumber = { git = "https://github.com/useblocks/pdfplumber.git" }
-"pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
+# pdfplumber = { git = "https://github.com/useblocks/pdfplumber.git" }
+# "pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
 
 # testing
 pytest = "^7"

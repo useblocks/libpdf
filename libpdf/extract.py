@@ -536,7 +536,7 @@ def extract_figures(
         lt_page = page._layout  # pylint: disable=protected-access  # easiest way to obtain LTPage
 
         # check and filter figures
-        figures = check_and_filter_figures(page_crop.figures)
+        figures = check_and_filter_figures(page_crop.objects['figure']) if 'figure' in page_crop.objects else []
 
         if len(figures) != 0:
             for idx_figure, figure in enumerate(figures):

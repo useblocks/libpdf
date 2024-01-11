@@ -8,7 +8,7 @@ from libpdf.parameters import ANNO_X_TOLERANCE, ANNO_Y_TOLERANCE
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import decode_title, to_pdfplumber_bbox
 
-from pdfminer.pdftypes import PDFObjRef
+from pdfminer.pdftypes import PDFObjRef, resolve1
 from pdfminer.psparser import PSLiteral
 
 
@@ -48,7 +48,9 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
         if isinstance(pdf_catalog['Names'], PDFObjRef) and 'Dests' in pdf_catalog['Names'].resolve():
             name_tree = pdf_catalog['Names'].resolve()['Dests'].resolve()
         elif isinstance(pdf_catalog['Names'], dict) and 'Dests' in pdf_catalog['Names']:
-            name_tree = pdf_catalog['Names']['Dests'].resolve()
+            name_tree = resolve1(pdf_catalog['Names']['Dests'])
+            #name_tree = pdf_catalog['Names']['Dests'].resolve()
+            #LOG.debug(f"{name_tree}")
         # check if name tree not empty
         if name_tree:
             # map page id to page number
@@ -405,7 +407,7 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf):  # 
         page.height,
     )
     page_crop = page.within_bbox(ann_bbox)
-    ann_text = page_crop.extract_text(x_tolerance=1, y_tolerance=4)
+    ann_text = page_crop.extract_text(x_tolerance=float(1), y_tolerance=float(4))
 
     if 'A' in ann_resolved:
         # make sure ann_resolved['A'] is resolved

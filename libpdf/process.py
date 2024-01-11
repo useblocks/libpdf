@@ -40,9 +40,9 @@ def remove_page_header_footer(single_page):
     page_crop = single_page.within_bbox(
         (
             0,
-            decimal.Decimal(parameters.PAGE_CROP_MARGINS['top']),
+            parameters.PAGE_CROP_MARGINS['top'],
             single_page.width,
-            single_page.height - decimal.Decimal(parameters.PAGE_CROP_MARGINS['bottom']),
+            single_page.height - parameters.PAGE_CROP_MARGINS['bottom'],
         ),
     )
 
