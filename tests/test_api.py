@@ -22,6 +22,7 @@ def test_api_ok(tmpdir, path):
 # TODO implement correctly
 def test_logging(tmpdir, monkeypatch):
     """Check if log messages appear in output."""
+
     # monkeypatch the failing extract function
     def mock_extract(*args, **kwargs):
         # delete unused variables to denote they are not yet used

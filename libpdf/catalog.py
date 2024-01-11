@@ -48,8 +48,8 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
             name_tree = pdf_catalog['Names'].resolve()['Dests'].resolve()
         elif isinstance(pdf_catalog['Names'], dict) and 'Dests' in pdf_catalog['Names']:
             name_tree = resolve1(pdf_catalog['Names']['Dests'])
-            #name_tree = pdf_catalog['Names']['Dests'].resolve()
-            #LOG.debug(f"{name_tree}")
+            # name_tree = pdf_catalog['Names']['Dests'].resolve()
+            # LOG.debug(f"{name_tree}")
         # check if name tree not empty
         if name_tree:
             # map page id to page number

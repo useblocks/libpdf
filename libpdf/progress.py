@@ -14,7 +14,6 @@ try:
 
     TQDM_AVAILABLE = True
 except ImportError:
-
     # class name is constrained by the tqdm library
     class tqdm:  # pylint: disable=invalid-name
         """Mock tqdm.tqdm class and provide the least amount of functionality."""

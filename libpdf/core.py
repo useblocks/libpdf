@@ -255,6 +255,7 @@ def docstring_parameter(*sub):
     This is used in below main function to get the version and description
     of the package to the click help screen.
     """
+
     # decorator definition
     def dec(obj):
         obj.__doc__ = obj.__doc__.format(*sub)

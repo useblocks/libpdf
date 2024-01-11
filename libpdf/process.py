@@ -313,7 +313,6 @@ def mapping_chapters(
     :return:
     """
     for outline_chapter in outline_content:
-
         # use a list to contain the filtered chapter because I don't know how to process a filtered object.
         # check if the title and page number are matched.
         filter_chapter = [
