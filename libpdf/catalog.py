@@ -405,6 +405,12 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf):  # 
         float(ann_resolved['Rect'][3]) + ANNO_Y_TOLERANCE,
         page.height,
     )
+    
+    left, top, right, bottom = ann_bbox
+    if top > bottom:
+        LOG.error(f"invalid annotation bbox: {ann_resolved['Rect']}, {ann_bbox}")
+        return
+
     page_crop = page.within_bbox(ann_bbox)
     ann_text = page_crop.extract_text(x_tolerance=float(1), y_tolerance=float(4))
 
