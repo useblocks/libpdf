@@ -39,6 +39,7 @@ from libpdf.catalog import catalog
 from libpdf.log import logging_needed
 from libpdf.models.chapter import Chapter
 from libpdf.models.figure import Figure
+from libpdf.models.rect import Rect
 from libpdf.models.link import Link
 from libpdf.models.page import Page
 from libpdf.models.paragraph import Paragraph
@@ -56,17 +57,18 @@ from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, textbox_crop
 
 LOG = logging.getLogger(__name__)
 
-
 def extract_paragraphs_chapters(
     pdf,
     figure_list: List[Figure],
     table_list: List[Table],
+    rect_list: List[Rect],
     page_list: List[Page],
     no_chapters,
     no_paragraphs,
 ) -> Tuple[List[Paragraph], List[Chapter]]:
     """Extract paragraphs and chapter's headline from given pdf."""
-    extracted_lt_textboxes = extract_lt_textboxes(pdf, figure_list, table_list, page_list)
+    extracted_lt_textboxes = extract_lt_textboxes(pdf, figure_list, table_list, rect_list, page_list)
+
     chapter_list = []
     if no_chapters:
         LOG.info('Excluding chapters extraction')
@@ -84,7 +86,7 @@ def extract_paragraphs_chapters(
     return paragraph_list, chapter_list
 
 
-def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
+def extract_lt_textboxes(pdf, figure_list, table_list, rect_list, page_list):
     """
     Extract and filter lt_textboxes using pdfminer.
 
@@ -94,6 +96,7 @@ def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
     :param pdf:
     :param figure_list:
     :param table_list:
+    :param rect_list:
     :param page_list:
     :return:
     """
@@ -104,8 +107,8 @@ def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
         if idx_page + 1 not in [page.number for page in page_list]:
             del page_lt_textboxes[idx_page]
 
-    if table_list is not None or figure_list is not None:
-        page_lt_textboxes_filtered = remove_lt_textboxes_in_tables_figures(page_lt_textboxes, figure_list, table_list)
+    if table_list is not None or figure_list is not None or rect_list is not None:
+        page_lt_textboxes_filtered = remove_lt_textboxes_in_tables_figures_rect(page_lt_textboxes, figure_list, table_list, rect_list)
     else:
         page_lt_textboxes_filtered = page_lt_textboxes
 
@@ -780,10 +783,11 @@ def _flatten_outline(nested_outline, flatten_outline: List):
             _flatten_outline(chapter['content'], flatten_outline)
 
 
-def remove_lt_textboxes_in_tables_figures(
+def remove_lt_textboxes_in_tables_figures_rect(
     page_lt_textboxes: Dict[int, List[LTTextBox]],
     figure_list: List[Figure],
     table_list: List[Table],
+    rect_list: List[Rect]
 ):
     """
     Remove lt_textboxes in the coverage of tables or figures from page_lt_textboxes.
@@ -794,11 +798,12 @@ def remove_lt_textboxes_in_tables_figures(
     :param page_lt_textboxes:
     :param figure_list:
     :param table_list:
+    :param rect_list:
     :return:
     """
     page_lt_textboxes_filter = {}
     for page_index, lt_textboxes in page_lt_textboxes.items():
-        figures_tables_list = tables_figures_merge(figure_list, table_list, page_index)
+        figures_tables_list = tables_figures_rect_merge(figure_list, table_list, rect_list, page_index)
         if figures_tables_list is not None:  # figures or tables exists in the current page
             for element in figures_tables_list:
                 # The lt_textbox inside the elements will be filtered out. It returns only the boxes
@@ -819,9 +824,10 @@ def remove_lt_textboxes_in_tables_figures(
     return page_lt_textboxes_filter
 
 
-def tables_figures_merge(
+def tables_figures_rect_merge(
     figure_list: List[Figure],
     table_list: List[Table],
+    rect_list: List[Rect],
     page_index: int,
 ) -> List[Union[Figure, Table]]:
     """
@@ -832,12 +838,14 @@ def tables_figures_merge(
 
     :param figure_list: A list of all figures extracted from the pages in this pdf
     :param table_list: A list of all tables extracted from the pages in this pdf
+    :param rect_list:
     :param page_index: index of current page number
     :return:
     """
     filter_list_table = list(filter(lambda x: x.position.page.number == page_index + 1, table_list))
     filter_list_figure = list(filter(lambda x: x.position.page.number == page_index + 1, figure_list))
-    merge_list: List[Union[Figure, Table]] = filter_list_table + filter_list_figure
+    filter_list_rect = list(filter(lambda x: x.position.page.number == page_index + 1, rect_list))
+    merge_list: List[Union[Figure, Table]] = filter_list_table + filter_list_figure + filter_list_rect
     if merge_list:
         merge_list.sort(key=lambda x: x.position.y0, reverse=True)
 

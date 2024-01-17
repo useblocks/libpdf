@@ -192,6 +192,7 @@ COLORS = {
     'green': (0, 255, 0),
     'blue': (0, 0, 255),
     'yellow': (255, 255, 0),
+    'cyan': (255,255,1)
 }
 
 # Map extracted elements with color
@@ -201,6 +202,7 @@ VIS_DBG_MAP_ELEMENTS_COLOR = {
     'paragraph': COLORS['blue'] + (40,),
     'table': COLORS['red'] + (40,),
     'figure': COLORS['yellow'] + (80,),
+    'rect': COLORS['cyan'] + (40,),
 }
 
 RENDER_ELEMENTS = [
@@ -208,6 +210,7 @@ RENDER_ELEMENTS = [
     'paragraph',
     'table',
     'figure',
+    'rect'
 ]  # the elements that shall be rendered
 
 # pdfminer layout analysis parameter from from pdfminer.layout -> LAParams.__init__
