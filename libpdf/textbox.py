@@ -39,11 +39,11 @@ from libpdf.catalog import catalog
 from libpdf.log import logging_needed
 from libpdf.models.chapter import Chapter
 from libpdf.models.figure import Figure
-from libpdf.models.rect import Rect
 from libpdf.models.link import Link
 from libpdf.models.page import Page
 from libpdf.models.paragraph import Paragraph
 from libpdf.models.position import Position
+from libpdf.models.rect import Rect
 from libpdf.models.table import Table
 from libpdf.parameters import (
     ANNO_X_TOLERANCE,
@@ -56,6 +56,7 @@ from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, textbox_crop
 
 LOG = logging.getLogger(__name__)
+
 
 def extract_paragraphs_chapters(
     pdf,
@@ -108,7 +109,9 @@ def extract_lt_textboxes(pdf, figure_list, table_list, rect_list, page_list):
             del page_lt_textboxes[idx_page]
 
     if table_list is not None or figure_list is not None or rect_list is not None:
-        page_lt_textboxes_filtered = remove_lt_textboxes_in_tables_figures_rect(page_lt_textboxes, figure_list, table_list, rect_list)
+        page_lt_textboxes_filtered = remove_lt_textboxes_in_tables_figures_rect(
+            page_lt_textboxes, figure_list, table_list, rect_list
+        )
     else:
         page_lt_textboxes_filtered = page_lt_textboxes
 
@@ -787,7 +790,7 @@ def remove_lt_textboxes_in_tables_figures_rect(
     page_lt_textboxes: Dict[int, List[LTTextBox]],
     figure_list: List[Figure],
     table_list: List[Table],
-    rect_list: List[Rect]
+    rect_list: List[Rect],
 ):
     """
     Remove lt_textboxes in the coverage of tables or figures from page_lt_textboxes.

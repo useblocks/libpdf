@@ -411,7 +411,7 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf):  # 
         LOG.debug(f"invalid annotation bbox: {ann_resolved['Rect']}, {ann_bbox}")
         return
         # maybe continue with swapped bbox
-        #ann_bbox = [left, bottom, right, top]
+        # ann_bbox = [left, bottom, right, top]
 
     page_crop = page.within_bbox(ann_bbox)
     ann_text = page_crop.extract_text(x_tolerance=float(1), y_tolerance=float(4))

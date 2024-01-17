@@ -17,11 +17,11 @@ from libpdf.catalog import catalog, extract_catalog
 from libpdf.exceptions import LibpdfException
 from libpdf.log import logging_needed
 from libpdf.models.figure import Figure
-from libpdf.models.rect import Rect
 from libpdf.models.file import File
 from libpdf.models.file_meta import FileMeta
 from libpdf.models.page import Page
 from libpdf.models.position import Position
+from libpdf.models.rect import Rect
 from libpdf.models.root import Root
 from libpdf.parameters import (
     FIGURE_MIN_HEIGHT,
@@ -156,7 +156,6 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
             if smart_page_crop:
                 rect_list = smart_page_crop_header_footer(pdf, rect_list)
         overall_pbar.update(15)
-
 
         if no_tables:
             LOG.info('Excluding tables extraction')
@@ -595,6 +594,7 @@ def extract_figures(
 
     return figure_list
 
+
 def extract_rects(
     pdf,
     pages_list,
@@ -615,10 +615,9 @@ def extract_rects(
         lt_page = page._layout  # pylint: disable=protected-access  # easiest way to obtain LTPage
 
         # check and filter figures
-        #figures = check_and_filter_figures(page_crop.objects['figure']) if 'figure' in page_crop.objects else []
-        #rects = page_crop.objects['rects'] if 'rects' in page_crop.objects else []
+        # figures = check_and_filter_figures(page_crop.objects['figure']) if 'figure' in page_crop.objects else []
+        # rects = page_crop.objects['rects'] if 'rects' in page_crop.objects else []
         rects = page.objects['rect'] if 'rect' in page.objects else []
-
 
         if len(rects) != 0:
             for idx_rect, rect in enumerate(rects):
@@ -635,7 +634,7 @@ def extract_rects(
 
                 bbox = (rect_pos.x0, rect_pos.y0, rect_pos.x1, rect_pos.y1)
 
-                LOG.info(f"found rect at {bbox} at page {idx_page+1}: color {non_stroking_color}");
+                LOG.info(f"found rect at {bbox} at page {idx_page+1}: color {non_stroking_color}")
 
                 lt_textboxes = lt_page_crop(
                     bbox,
@@ -662,16 +661,15 @@ def extract_rects(
 
                 rect_path = os.path.abspath(os.path.join(figure_dir, rect_name))
 
-                #figure = Figure(idx_figure + 1, image_path, fig_pos, links, textboxes, 'None')
-                #figure_list.append(figure)
-                rect = Rect( idx_rect + 1, rect_pos, links, textboxes, non_stroking_color )
+                # figure = Figure(idx_figure + 1, image_path, fig_pos, links, textboxes, 'None')
+                # figure_list.append(figure)
+                rect = Rect(idx_rect + 1, rect_pos, links, textboxes, non_stroking_color)
                 rect_list.append(rect)
 
         else:
             LOG.info(f"found no rects on page {idx_page+1}: {page_crop.objects.keys()}")
 
-
-    #return figure_list
+    # return figure_list
     return rect_list
 
 
@@ -738,9 +736,9 @@ def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
             filtered_figures.append(figure)
 
     if len(filtered_figures) < len(figures_list):
-        LOG.debug(f"check_and_filter_figures removed {len(figures_list) - len(filtered_figures)} out of {len(figures_list)}  due to invalid height/width")
-
-
+        LOG.debug(
+            f"check_and_filter_figures removed {len(figures_list) - len(filtered_figures)} out of {len(figures_list)}  due to invalid height/width"
+        )
 
     for figure in filtered_figures:
         # if figure exceed the boundary of the page, then only keep the part of figure that inside this page
@@ -789,6 +787,8 @@ def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
                         filtered_figures.remove(fig1)
 
     if len(filtered_figures) < len(figures_list):
-        LOG.debug(f"check_and_filter_figures removed {len(figures_list) - len(filtered_figures)} out of {len(figures_list)} figures")
+        LOG.debug(
+            f"check_and_filter_figures removed {len(figures_list) - len(filtered_figures)} out of {len(figures_list)} figures"
+        )
 
     return filtered_figures
