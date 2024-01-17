@@ -46,6 +46,7 @@ from libpdf.catalog import catalog
 from libpdf.log import logging_needed
 from libpdf.models.chapter import Chapter
 from libpdf.models.figure import Figure
+from libpdf.models.rect import Rect
 from libpdf.models.link import Link
 from libpdf.models.page import Page
 from libpdf.models.paragraph import Paragraph
@@ -63,11 +64,11 @@ from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, textbox_crop
 
 LOG = logging.getLogger(__name__)
 
-
 def extract_paragraphs_chapters(
     pdf,
     figure_list: List[Figure],
     table_list: List[Table],
+    rect_list: List[Rect],
     page_list: List[Page],
     no_chapters,
     no_paragraphs,
@@ -93,7 +94,7 @@ def extract_paragraphs_chapters(
     return paragraph_list, chapter_list
 
 
-def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
+def extract_lt_textboxes(pdf, figure_list, table_list, rect_list, page_list):
     """
     Extract and filter lt_textboxes using pdfminer.
 
@@ -103,6 +104,7 @@ def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
     :param pdf:
     :param figure_list:
     :param table_list:
+    :param rect_list:
     :param page_list:
     :return:
     """
@@ -862,10 +864,11 @@ def _flatten_outline(nested_outline, flatten_outline: List):
             _flatten_outline(chapter["content"], flatten_outline)
 
 
-def remove_lt_textboxes_in_tables_figures(
+def remove_lt_textboxes_in_tables_figures_rect(
     page_lt_textboxes: Dict[int, List[LTTextBox]],
     figure_list: List[Figure],
     table_list: List[Table],
+    rect_list: List[Rect]
 ):
     """
     Remove lt_textboxes in the coverage of tables or figures from page_lt_textboxes.
@@ -876,6 +879,7 @@ def remove_lt_textboxes_in_tables_figures(
     :param page_lt_textboxes:
     :param figure_list:
     :param table_list:
+    :param rect_list:
     :return:
     """
     page_lt_textboxes_filter = {}
@@ -904,9 +908,10 @@ def remove_lt_textboxes_in_tables_figures(
     return page_lt_textboxes_filter
 
 
-def tables_figures_merge(
+def tables_figures_rect_merge(
     figure_list: List[Figure],
     table_list: List[Table],
+    rect_list: List[Rect],
     page_index: int,
 ) -> List[Union[Figure, Table]]:
     """
@@ -917,6 +922,7 @@ def tables_figures_merge(
 
     :param figure_list: A list of all figures extracted from the pages in this pdf
     :param table_list: A list of all tables extracted from the pages in this pdf
+    :param rect_list:
     :param page_index: index of current page number
     :return:
     """

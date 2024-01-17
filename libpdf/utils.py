@@ -34,6 +34,7 @@ from libpdf.log import logging_needed
 from libpdf.models.chapter import Chapter
 from libpdf.models.element import Element
 from libpdf.models.figure import Figure
+from libpdf.models.rect import Rect
 from libpdf.models.horizontal_box import Char, HorizontalBox, HorizontalLine, Word
 from libpdf.models.paragraph import Paragraph
 from libpdf.models.table import Table
@@ -41,19 +42,20 @@ from libpdf.parameters import RENDER_ELEMENTS, VIS_DBG_MAP_ELEMENTS_COLOR
 from libpdf.progress import bar_format_lvl1, tqdm
 
 MAP_TYPES = {
-    Chapter: "chapter",
-    Paragraph: "paragraph",
-    Table: "table",
-    Figure: "figure",
-    LTChar: "paragraph",
-    LTCurve: "figure",
-    LTTextBox: "paragraph",
-    LTTextBoxHorizontal: "paragraph",
-    LTTextLineHorizontal: "paragraph",
-    LTFigure: "figure",
-    LTLine: "figure",
-    LTRect: "figure",
-    LTImage: "figure",
+    Chapter: 'chapter',
+    Paragraph: 'paragraph',
+    Table: 'table',
+    Figure: 'figure',
+    Rect: 'rect',
+    LTChar: 'paragraph',
+    LTCurve: 'figure',
+    LTTextBox: 'paragraph',
+    LTTextBoxHorizontal: 'paragraph',
+    LTTextLineHorizontal: 'paragraph',
+    LTFigure: 'figure',
+    LTLine: 'figure',
+    LTRect: 'rect',
+    LTImage: 'figure',
 }
 
 LOG = logging.getLogger(__name__)
@@ -639,10 +641,7 @@ def visual_debug_libpdf(  # pylint: disable=too-many-branches
     LOG.info("Starting visual debug...")
     # collect all elements
     all_elements = (
-        objects.flattened.chapters
-        + objects.flattened.paragraphs
-        + objects.flattened.tables
-        + objects.flattened.figures
+        objects.flattened.chapters + objects.flattened.paragraphs + objects.flattened.tables + objects.flattened.figures + objects.flattened.rects
     )
 
     # prepare for calling the common draw and output function
@@ -727,7 +726,7 @@ def render_pages(
                                     3: {...}
                                 }
 
-    :param render_elements: list of elements to render, options are chapter, paragraph, table, figure
+    :param render_elements: list of elements to render, options are chapter, paragraph, table, figure, rect
     :return: None
     """
     render_elements_joined = ", ".join(render_elements)

@@ -35,6 +35,8 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     no_paragraphs: bool = False,
     no_tables: bool = False,
     no_figures: bool = False,
+    no_rects: bool = False,
+    crop_rects_text: bool = False,
     cli_usage: bool = False,
     visual_debug: bool = False,
     visual_debug_output_dir: str = None,
@@ -66,6 +68,8 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
     :param no_figures: flag triggering the exclusion of figures
+    :param no_rects: flag triggering the exclusion of rects
+    :param crop_rects_text: flag triggering that rects text should be cropped from text like paragraphs
     :param cli_usage: flag indicating that the function was called through CLI
     :param visual_debug: flag triggering visual debug feature
     :param visual_debug_output_dir: output directory for visualized pdf pages
@@ -106,20 +110,17 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
         if output_path:
             LOG.info("Output path: %s", output_path)
         else:
-            LOG.info("Writing extracted data to stdout")
-        LOG.info(
-            "Page range: [%s]", "all" if not pages else ",".join(str(x) for x in pages)
-        )
-        LOG.info(
-            "Page crop: %s",
-            "not cropped" if not page_crop else " ".join(str(x) for x in page_crop),
-        )
-        LOG.info("Smart page crop: %s", "on" if smart_page_crop else "off")
-        LOG.info("Extract annotations: %s", "no" if no_annotations else "yes")
-        LOG.info("Extract chapters: %s", "no" if no_chapters else "yes")
-        LOG.info("Extract paragraphs: %s", "no" if no_paragraphs else "yes")
-        LOG.info("Extract tables: %s", "no" if no_tables else "yes")
-        LOG.info("Extract figures: %s", "no" if no_figures else "yes")
+            LOG.info('Writing extracted data to stdout')
+        LOG.info('Page range: [%s]', 'all' if not pages else ','.join(str(x) for x in pages))
+        LOG.info('Page crop: %s', 'not cropped' if not page_crop else ' '.join(str(x) for x in page_crop))
+        LOG.info('Smart page crop: %s', 'on' if smart_page_crop else 'off')
+        LOG.info('Extract annotations: %s', 'no' if no_annotations else 'yes')
+        LOG.info('Extract chapters: %s', 'no' if no_chapters else 'yes')
+        LOG.info('Extract paragraphs: %s', 'no' if no_paragraphs else 'yes')
+        LOG.info('Extract tables: %s', 'no' if no_tables else 'yes')
+        LOG.info('Extract figures: %s', 'no' if no_figures else 'yes')
+        LOG.info('Extract rects: %s', 'no' if no_rects else 'yes')
+        LOG.info('Text rects crop: %s', 'no' if crop_rects_text else 'no')
         overall_pbar.update(1)
         try:
             objects = extract(
@@ -133,6 +134,8 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
                 no_paragraphs,
                 no_tables,
                 no_figures,
+                no_rects,
+                crop_rects_text,
                 overall_pbar,
             )
         except LibpdfException:
@@ -177,6 +180,8 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
     no_paragraphs: bool = False,
     no_tables: bool = False,
     no_figures: bool = False,
+    no_rects: bool = False,
+    crop_rects_text: bool = False,
     init_logging: bool = True,
     visual_debug: bool = False,
     visual_debug_output_dir: str = "visual_debug_libpdf",
@@ -202,6 +207,8 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
     :param no_figures: flag triggering the exclusion of figures
+    :param no_rects: flag triggering the exclusion of rects
+    :param crop_rects_text: flag triggering that rects text should be cropped from text like paragraphs
     :param init_logging: flag indicating whether libpdf shall instantiate a root log handler that is capable of
                          handling both log messages and progress bars; it does so by passing all log messages to
                          tqdm.write()
@@ -245,6 +252,8 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
         no_paragraphs=no_paragraphs,
         no_tables=no_tables,
         no_figures=no_figures,
+        no_rects = no_rects,
+        crop_rects_text = crop_rects_text,
         cli_usage=False,
         visual_debug=visual_debug,
         visual_debug_output_dir=visual_debug_output_dir,

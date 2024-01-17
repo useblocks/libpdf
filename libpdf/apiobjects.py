@@ -7,6 +7,7 @@ from pdfplumber.pdf import PDF
 
 from libpdf.models.chapter import Chapter
 from libpdf.models.figure import Figure
+from libpdf.models.rect import Rect
 from libpdf.models.paragraph import Paragraph
 from libpdf.models.root import Root
 from libpdf.models.table import Table
@@ -36,6 +37,7 @@ class ApiObjects:  # pylint: disable = too-few-public-methods
         paragraphs: List[Paragraph],
         tables: List[Table],
         figures: List[Figure],
+        rects: List[Rect],
         pdfplumber: PDF,
         pdfminer: PDFDocument,
     ):
@@ -44,9 +46,7 @@ class ApiObjects:  # pylint: disable = too-few-public-methods
         self.root = root
 
         # attributes for API convenience
-        self.flattened = Flattened(
-            chapters=chapters, paragraphs=paragraphs, tables=tables, figures=figures
-        )
+        self.flattened = Flattened(chapters=chapters, paragraphs=paragraphs, tables=tables, figures=figures, rects=rects)
 
         # exposing the pdfplumber PDF object
         self.pdfplumber = pdfplumber
@@ -71,3 +71,4 @@ class Flattened(NamedTuple):
     paragraphs: List[Paragraph]
     tables: List[Table]
     figures: List[Figure]
+    rects: List[Rect]

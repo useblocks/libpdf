@@ -24,6 +24,7 @@ from libpdf.catalog import catalog
 from libpdf.models.chapter import Chapter
 from libpdf.models.element import Element
 from libpdf.models.figure import Figure
+from libpdf.models.rect import Rect
 from libpdf.models.link import Link
 from libpdf.models.model_base import ModelBase
 from libpdf.models.page import Page
@@ -66,7 +67,7 @@ def to_dict_output(obj: Union[ModelBase, Position]) -> Dict:  # pylint: disable=
     """Turn all objects attributes into a dictionary."""
     vars_dict = vars(obj).copy()
 
-    if isinstance(obj, (Chapter, Figure, Page, Paragraph, Table)):
+    if isinstance(obj, (Chapter, Figure, Page, Paragraph, Table, Rect)):
         # insert id as first key into vars_dict
         # After python3.6/3.7, a dict is sorted in insertion order
         #     https://docs.python.org/3.6/whatsnew/3.6.html#whatsnew36-compactdict
@@ -74,7 +75,7 @@ def to_dict_output(obj: Union[ModelBase, Position]) -> Dict:  # pylint: disable=
         temp_dict = {"id": obj.id_}
         temp_dict.update(vars_dict)
         vars_dict = temp_dict
-    if isinstance(obj, (Figure, Paragraph, Table)):
+    if isinstance(obj, (Figure, Paragraph, Table, Rect)):
         # idx is not part of the UML model and should not be exported
         del vars_dict["idx"]
     if isinstance(obj, Page):
@@ -84,9 +85,9 @@ def to_dict_output(obj: Union[ModelBase, Position]) -> Dict:  # pylint: disable=
         # textboxes with positions are not interest of the output file
         if obj.textbox:
             text = obj.textbox.text
-            vars_dict["text"] = text
-        del vars_dict["textbox"]
-    if isinstance(obj, Figure):
+            vars_dict['text'] = text
+        del vars_dict['textbox']
+    if isinstance(obj, (Figure, Rect)):
         # textboxes with positions are not interest of the output file
         if obj.textboxes:
             text = "\n".join(x.text for x in obj.textboxes)
@@ -219,13 +220,13 @@ def filter_out_outline_page(outline_dict):
 
 
 def map_elements_outline(
-    element_list: List[Union[Chapter, Figure, Table, Paragraph]],
+    element_list: List[Union[Chapter, Figure, Table, Paragraph, Rect]],
     outline_dict,
-) -> List[Union[Chapter, Figure, Table, Paragraph]]:
+) -> List[Union[Chapter, Figure, Table, Paragraph, Rect]]:
     """
     Map elements into a nested outline structure.
 
-    :param element_list: a list of elements including chapters, figures, tables, and paragraphs in a flatten structure.
+    :param element_list: a list of elements including chapters, figures, rects, tables, and paragraphs in a flatten structure.
     :param outline_dict: a nested outline structure from catalogs.
     :return:
     """
@@ -272,7 +273,7 @@ def map_elements_outline(
             del elements_in_outline[:idx]
             break
 
-    # acquire a list of chapters where their contents are filled with the corresponding elements, figures, tables
+    # acquire a list of chapters where their contents are filled with the corresponding elements, figures, rects, tables
     # and paragraphs. This chapter list is still in a flatten structure
     chapters_content_filled = fill_elements_content(elements_in_outline)
 
@@ -292,11 +293,9 @@ def map_elements_outline(
     return nested_elements
 
 
-def fill_elements_content(
-    elements_in_outline: List[Union[Chapter, Figure, Table, Paragraph]],
-) -> List[Chapter]:
+def fill_elements_content(elements_in_outline: List[Union[Chapter, Figure, Rect, Table, Paragraph]]) -> List[Chapter]:
     """
-    Fill the elements, tables, figures and paragraphs into their corresponding chapters' contents.
+    Fill the elements, tables, figures, rects and paragraphs into their corresponding chapters' contents.
 
     The back chapter's reference of tables, figures, and paragraphs are added in this function
 
@@ -305,7 +304,7 @@ def fill_elements_content(
     """
     for index_element, element in enumerate(elements_in_outline):
         if isinstance(element, Chapter):
-            id_dict = {"table": 1, "figure": 1, "paragraph": 1}
+            id_dict = {'table': 1, 'figure': 1, 'paragraph': 1, 'rect': 1}
             content = elements_in_outline[index_element].content
             index_b_chapter = index_element
         else:
@@ -452,7 +451,7 @@ def libpdf_target_explorer(  # pylint: disable=too-many-nested-blocks # local al
 
 def elements_with_anno_finder(
     elements_on_page: List[Union[Paragraph, Table]],
-) -> Union[List[Union[Chapter, Paragraph, Figure, Table, Cell]], None]:
+) -> Union[List[Union[Chapter, Paragraph, Figure, Rect, Table, Cell]], None]:
     """
     Find the elements, tables or paragraphs containing source links.
 
@@ -536,7 +535,7 @@ def find_target_id(link: Link, pages_list: List[Page], src_element: Element) -> 
     return target_id
 
 
-def get_elements_page(target_page: Page) -> List[Union[Paragraph, Table, Figure]]:
+def get_elements_page(target_page: Page) -> List[Union[Paragraph, Table, Figure, Rect]]:
     """
     Collect the elements, which occurs on a certain target page.
 
@@ -552,7 +551,7 @@ def get_elements_page(target_page: Page) -> List[Union[Paragraph, Table, Figure]
     return elements_target_page
 
 
-def nest_explorer(element: Union[Figure, Table, Chapter, Paragraph]) -> str:
+def nest_explorer(element: Union[Figure, Rect, Table, Chapter, Paragraph]) -> str:
     """
     Explore the nested target ID path recursively.
 
