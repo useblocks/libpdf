@@ -145,6 +145,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
                 visual_debug_exclude_elements,
             )
 
+
         if not cli_usage:
             return objects
 
