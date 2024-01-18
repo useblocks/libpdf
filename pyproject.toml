@@ -132,10 +132,12 @@ target-version = "py311"
 select = ["ALL"]
 # select = [] # commented out (don't want to fix all issues with this PR)
 ignore = [
-    "D212",   # D212 and D213 are mutually exclusive: https://stackoverflow.com/a/45990465
-    "D203",   # D203 and D211 are mutually exclusive: https://github.com/PyCQA/pydocstyle/issues/141
+    "COM812", # may conflict with Ruff formatter
     "D107",   # undocumented-public-init - commonly the docstring provides no helpful information
+    "D203",   # D203 and D211 are mutually exclusive: https://github.com/PyCQA/pydocstyle/issues/141
+    "D212",   # D212 and D213 are mutually exclusive: https://stackoverflow.com/a/45990465
     "FIX002", # line-contains-todo - TODOs are considered helpful
+    "ISC001", # may conflict with Ruff formatter
     "TD003",  # missing-todo-link - no big processes for us
 ]
 
