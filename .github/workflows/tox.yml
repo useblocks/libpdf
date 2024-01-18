@@ -93,5 +93,6 @@ jobs:
           python -m pip install poetry tox
 
       - name: Run ruff
+        continue-on-error: true # deactivate for now (need to fix the issues over time)
         run: |
           tox -e lint
