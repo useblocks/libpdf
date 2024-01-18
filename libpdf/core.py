@@ -145,11 +145,10 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
                 visual_debug_exclude_elements,
             )
 
-
         if not cli_usage:
             return objects
 
-        LOG.info('Write output...')
+        LOG.info('Write output....')
         output_dump(output_format, output_path, objects)
         LOG.info('Write output... done')
 
