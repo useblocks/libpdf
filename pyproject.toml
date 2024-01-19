@@ -21,9 +21,11 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
     'Topic :: Scientific/Engineering',
     'Topic :: Scientific/Engineering :: Information Analysis',
     'Topic :: Software Development',
@@ -37,10 +39,9 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 chardet = "^4"
 click = "^8"
-importlib-metadata = { version = "^1.6.0", python = "~3.7" }
 PyYAML = "^6"
 "ruamel.yaml" = "^0.17"
 
@@ -82,29 +83,7 @@ pytest-cov = "*"
 tox = "*"
 pytest-xdist = "*"  # parallelisation
 
-# linters / formatting
-flake8 = "*"
-flake8-blind-except = "*"       # Checks for blind, catch-all except statements (only py27)
-flake8-bugbear = "*"            # Finding likely bugs and design problems in your program
-flake8-builtins = "*"           # Check for Python builtins being used as variables or parameters
-flake8-commas = "*"             # Flake8 lint for trailing commas
-flake8-comprehensions = "*"     # Help you write better list/set/dict comprehensions
-flake8-debugger = "*"           # ipdb/pdb statement checker plugin for flake8
-flake8-deprecated = "*"         # Warns about deprecated method calls.
-flake8-docstrings = "*"         # Uses pydocstyle to check docstrings (PEP 257)
-flake8-import-order = "*"       # Checks the ordering of import statements.
-flake8-mutable = "*"            # Checks for mutable defaults
-flake8-pep3101 = "*"            # Checks for old string formatting.
-flake8-quotes = "*"             # Enforce single quotes instead of double quotes
-flake8-rst-docstrings = "*"     # Validating Python docstrings markup as reStructuredText (RST)
-flake8-string-format = "*"      # Check the strings and parameters using str.format
-flake8-tidy-imports = "*"       # Find unnecessary import aliases
-flake8-tuple = "*"              # Check code for 1 element tuple
-flake8-formatter-abspath = "*"  # Formatter to get absolute file paths for IDE external tool calls
-
-pylint = "*"
 black = { version = "^22", allow-prereleases = true }
-mypy = "^0.790"
 
 # docs
 sphinx = "*"

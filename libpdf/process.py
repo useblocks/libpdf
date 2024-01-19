@@ -119,7 +119,7 @@ def to_dict_output(obj: Union[ModelBase, Position]) -> Dict:  # pylint: disable=
 def json_datetime_converter(obj):
     """Serialize datetime instance for JSON."""
     if isinstance(obj, datetime.datetime):
-        return obj.__str__()
+        return str(obj)
     return obj
 
 
