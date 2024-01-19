@@ -83,20 +83,82 @@ pytest-cov = "*"
 tox = "*"
 pytest-xdist = "*"  # parallelisation
 
-black = { version = "^22", allow-prereleases = true }
+# linting, formatting
+ruff = "^0.1.13"
 
 # docs
 sphinx = "*"
 sphinx_rtd_theme = "*"
 sphinxcontrib-plantuml = "*"
 
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    ".venv",
+]
+
+# use Black's default
+line-length = 88
+
+# Assume Python 3.11.
+target-version = "py311"
+
+[tool.ruff.lint]
+# concept: select all rules by default and ignore unwanted (maybe just per file)
+# this comes at a cost: new added rules are applied automatically, so a CI that
+# runs green today might fail tomorow in case ruff gets updated
+# (which brings more good than bad)
+# TODO ENABLE NEXT LINE
+select = ["ALL"]
+# select = [] # commented out (don't want to fix all issues with this PR)
+ignore = [
+    "COM812", # may conflict with Ruff formatter
+    "D107",   # undocumented-public-init - commonly the docstring provides no helpful information
+    "D203",   # D203 and D211 are mutually exclusive: https://github.com/PyCQA/pydocstyle/issues/141
+    "D212",   # D212 and D213 are mutually exclusive: https://stackoverflow.com/a/45990465
+    "FIX002", # line-contains-todo - TODOs are considered helpful
+    "ISC001", # may conflict with Ruff formatter
+    "TD003",  # missing-todo-link - no big processes for us
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = [
+    "D400",   # ends-in-period - dangerous to use (ruff may confuse summary line and content)
+    "ERA001", # commented-out-code - commented code is commonly there for a reason
+]
+
+[tool.ruff.mccabe]
+max-complexity = 20
+
+[tool.ruff.per-file-ignores]
+# "docs/conf.py" = ["E402"]
+"**/__init__.py" = [
+    "D104",
+] # Missing docstring in public package - not needed for inits
+
 [tool.poetry.scripts]
 libpdf = 'libpdf.core:main_cli'
-
-[tool.black]
-line-length = 120
-target-version = ['py38']
-skip-string-normalization = 'True'
 
 [build-system]
 requires = ["poetry>=0.12"]

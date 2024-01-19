@@ -58,7 +58,7 @@ jobs:
         shell: cmd
         if: runner.os == 'Windows'
 
-  docs_black:
+  docs:
     runs-on: ubuntu-latest
 
     steps:
@@ -77,6 +77,22 @@ jobs:
         run: |
           tox -e docs
 
-      - name: Run tox env black
+  ruff:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12
+
+      - name: Install poetry and tox
         run: |
-          tox -e black
+          python -m pip install poetry tox
+
+      - name: Run ruff
+        continue-on-error: true # deactivate for now (need to fix the issues over time)
+        run: |
+          tox -e lint
