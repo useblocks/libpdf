@@ -1,18 +1,23 @@
 """Definition for PDF textblocks."""
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from libpdf.models.element import Element
 from libpdf.models.horizontal_box import HorizontalBox
 from libpdf.models.link import Link
 
-
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.chapter import Chapter  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
-    from libpdf.models.position import Position  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
-    from libpdf.models.root import Root  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
+    from libpdf.models.chapter import (
+        Chapter,  # pylint: disable=cyclic-import, ungrouped-imports
+    )
+    from libpdf.models.position import (
+        Position,  # pylint: disable=cyclic-import, ungrouped-imports
+    )
+    from libpdf.models.root import (
+        Root,  # pylint: disable=cyclic-import, ungrouped-imports
+    )
 
 
 class Paragraph(Element):
@@ -34,11 +39,11 @@ class Paragraph(Element):
     def __init__(
         self,
         idx: int,
-        position: 'Position',
+        position: "Position",
         links: List[Link],
         textbox: HorizontalBox = None,
-        root: 'Root' = None,
-        chapter: 'Chapter' = None,
+        root: "Root" = None,
+        chapter: "Chapter" = None,
     ):
         """Initialize the instance."""
         super().__init__(position=position, root=root, chapter=chapter)
@@ -63,7 +68,7 @@ class Paragraph(Element):
 
         :type: str
         """
-        return f'paragraph.{self.idx}'
+        return f"paragraph.{self.idx}"
 
     def set_links_backref(self):
         """Set b_source back reference on all links."""
@@ -72,4 +77,4 @@ class Paragraph(Element):
 
     def __repr__(self):
         """Make paragraph text part of the repr for better debugging."""
-        return f'{type(self).__name__}({self.id_})({self.textbox.text})'
+        return f"{type(self).__name__}({self.id_})({self.textbox.text})"

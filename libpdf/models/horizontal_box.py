@@ -36,7 +36,7 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f'{type(self).__name__}({self.text})'
+        return f"{type(self).__name__}({self.text})"
 
 
 class Word:
@@ -73,11 +73,11 @@ class Word:
     @property
     def text(self):
         """Return plain text."""
-        return ''.join([x.text for x in self.chars])
+        return "".join([x.text for x in self.chars])
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f'{type(self).__name__}({self.text})'
+        return f"{type(self).__name__}({self.text})"
 
 
 class HorizontalLine:
@@ -114,11 +114,11 @@ class HorizontalLine:
     @property
     def text(self):
         """Return plain text."""
-        return ' '.join([x.text for x in self.words])
+        return " ".join([x.text for x in self.words])
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
-        return f'{type(self).__name__}({self.text})'
+        return f"{type(self).__name__}({self.text})"
 
 
 class HorizontalBox:
@@ -155,10 +155,10 @@ class HorizontalBox:
     @property
     def text(self):
         """Return plain text."""
-        return '\n'.join([x.text for x in self.lines])
+        return "\n".join([x.text for x in self.lines])
 
     def __repr__(self):
         """Make the text part of the repr for better debugging."""
         if self.lines:
-            return f'{type(self).__name__}({self.text})'
+            return f"{type(self).__name__}({self.text})"
         return None

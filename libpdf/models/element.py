@@ -2,16 +2,19 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-
 from libpdf.models.model_base import ModelBase
 
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.chapter import Chapter  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.position import Position  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.root import Root  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.chapter import (
+        Chapter,  # pylint: disable=cyclic-import
+    )
+    from libpdf.models.position import (
+        Position,  # pylint: disable=cyclic-import
+    )
+    from libpdf.models.root import Root  # pylint: disable=cyclic-import
 
 
 # need to ignore flake8 errors because sphinx.autodoc sees the multiline as one line. It is actually the summary line.
@@ -27,13 +30,13 @@ class Element(ModelBase, ABC):
     :vartype b_root: Root
     :ivar b_chapter: parent Chapter instance (mutually exclusive with the b_root parameter)
     :vartype b_chapter: Chapter
-    """  # noqa: D205, D400
+    """  # noqa: D205
 
     def __init__(
         self,
-        position: 'Position',
-        root: 'Root' = None,
-        chapter: 'Chapter' = None,
+        position: "Position",
+        root: "Root" = None,
+        chapter: "Chapter" = None,
     ):
         """Initialize the instance."""
         self.type = self.__class__.__name__.lower()
@@ -69,11 +72,11 @@ class Element(ModelBase, ABC):
             curr_chapter = self.b_chapter
             uid_prefix = curr_chapter.id_
             while curr_chapter.b_chapter:
-                uid_prefix = curr_chapter.b_chapter.id_ + '/' + uid_prefix
+                uid_prefix = curr_chapter.b_chapter.id_ + "/" + uid_prefix
                 curr_chapter = curr_chapter.b_chapter
-            uid = f'{uid_prefix}/{self.id_}'
+            uid = f"{uid_prefix}/{self.id_}"
         else:
-            uid = f'{self.id_}'
+            uid = f"{self.id_}"
 
         return uid
 

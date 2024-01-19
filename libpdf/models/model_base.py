@@ -16,7 +16,7 @@ class ModelBase:
         vars_dict = vars(self).copy()
         delete_backref_keys = []
         for key, value in vars_dict.items():
-            if key.startswith('b_'):
+            if key.startswith("b_"):
                 delete_backref_keys.append(key)
             else:
                 if isinstance(value, ModelBase):
@@ -31,10 +31,12 @@ class ModelBase:
         """Check if members are not set."""
         for key, value in vars(self).items():
             if value is None:
-                LOG.warning('The member %s of class %s is None', key, type(self).__name__)
+                LOG.warning(
+                    "The member %s of class %s is None", key, type(self).__name__
+                )
 
     def __repr__(self):
         """Overwrite the object representation for better debugging."""
-        if hasattr(self, 'id_'):
-            return f'{self.__class__.__name__}({self.id_!r})'  # pylint: disable=no-member
-        return f'{self.__class__.__name__}()'
+        if hasattr(self, "id_"):
+            return f"{self.__class__.__name__}({self.id_!r})"  # pylint: disable=no-member
+        return f"{self.__class__.__name__}()"

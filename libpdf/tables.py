@@ -1,4 +1,5 @@
-"""Extracts tables cells and texts inside.
+"""
+Extracts tables cells and texts inside.
 
 Coordinate system (positions) of tables is defined below:
 
@@ -19,20 +20,18 @@ import logging
 from decimal import Decimal
 from typing import List, Union
 
-from libpdf import textbox
-from libpdf import utils
+from pdfminer.layout import LTPage, LTTextBoxHorizontal
+
+from libpdf import textbox, utils
 from libpdf.catalog import catalog
 from libpdf.log import logging_needed
 from libpdf.models.figure import Figure
 from libpdf.models.page import Page
 from libpdf.models.position import Position
-from libpdf.models.table import Cell
-from libpdf.models.table import Table
+from libpdf.models.table import Cell, Table
 from libpdf.parameters import LA_PARAMS
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import from_pdfplumber_bbox, lt_to_libpdf_hbox_converter
-
-from pdfminer.layout import LTPage, LTTextBoxHorizontal
 
 LOG = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ class FoldedStr(str):
 
 def folded_str_representer(dumper, text):
     """Warp function of the representer."""
-    return dumper.represent_scalar('tag', text, style='>')
+    return dumper.represent_scalar("tag", text, style=">")
 
 
 def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
@@ -58,36 +57,41 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
     :param figure_list: a list of libpdf Figure objects, used to see if tables and figures are overlapped
     :return: a list of tables
     """
-    LOG.info('Extracting tables ...')
+    LOG.info("Extracting tables ...")
     table_settings = {
-        'vertical_strategy': 'lines',
-        'horizontal_strategy': 'lines',
-        'explicit_vertical_lines': [],
-        'explicit_horizontal_lines': [],
-        'snap_tolerance': 3,
-        'join_tolerance': 3,
-        'edge_min_length': 3,
-        'min_words_vertical': 3,
-        'min_words_horizontal': 1,
-        'keep_blank_chars': False,
-        'text_tolerance': 3,
-        'text_x_tolerance': 2,
-        'text_y_tolerance': 2,
-        'intersection_tolerance': 3,
-        'intersection_x_tolerance': None,
-        'intersection_y_tolerance': None,
+        "vertical_strategy": "lines",
+        "horizontal_strategy": "lines",
+        "explicit_vertical_lines": [],
+        "explicit_horizontal_lines": [],
+        "snap_tolerance": 3,
+        "join_tolerance": 3,
+        "edge_min_length": 3,
+        "min_words_vertical": 3,
+        "min_words_horizontal": 1,
+        "keep_blank_chars": False,
+        "text_tolerance": 3,
+        "text_x_tolerance": 2,
+        "text_y_tolerance": 2,
+        "intersection_tolerance": 3,
+        "intersection_x_tolerance": None,
+        "intersection_y_tolerance": None,
     }
 
-    table_dict = {'page': {}}
+    table_dict = {"page": {}}
     table_list = []
     table_id = 1
     for idx_page, page in enumerate(
-        tqdm(pdf.pages, desc='###### Extracting tables', unit='pages', bar_format=bar_format_lvl2()),
+        tqdm(
+            pdf.pages,
+            desc="###### Extracting tables",
+            unit="pages",
+            bar_format=bar_format_lvl2(),
+        ),
     ):
         if logging_needed(idx_page, len(pdf.pages)):
-            LOG.debug('Extracting tables page %s of %s', idx_page + 1, len(pdf.pages))
-        if len((page.find_tables(table_settings))) != 0:
-            table_dict['page'].update({idx_page + 1: []})
+            LOG.debug("Extracting tables page %s of %s", idx_page + 1, len(pdf.pages))
+        if len(page.find_tables(table_settings)) != 0:
+            table_dict["page"].update({idx_page + 1: []})
             tables = page.find_tables(table_settings)
             lt_page = page._layout  # pylint: disable=protected-access  # easiest way to obtain LTPage
             for table in tables:
@@ -110,20 +114,22 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
                 )
 
                 if _table_figure_check(table_pos, figure_list) is True:
-                    table_dict['page'][idx_page + 1].append(
+                    table_dict["page"][idx_page + 1].append(
                         {
-                            'id': 'table.' + str(table_id),
-                            'type': 'table',
-                            'positions': table_pos,
+                            "id": "table." + str(table_id),
+                            "type": "table",
+                            "positions": table_pos,
                             # 'text': table_temp.extract(2, 2),
-                            'cell': [],
+                            "cell": [],
                         },
                     )
 
                     cells = extract_cells(
                         lt_page,
                         table.rows,
-                        table_dict['page'][idx_page + 1][len(table_dict['page'][idx_page + 1]) - 1]['cell'],
+                        table_dict["page"][idx_page + 1][
+                            len(table_dict["page"][idx_page + 1]) - 1
+                        ]["cell"],
                         pages_list[idx_page],
                     )
 
@@ -132,8 +138,8 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
 
                     table_id += 1
 
-            if len(table_dict['page'][idx_page + 1]) == 0:  # no table is added
-                del table_dict['page'][idx_page + 1]
+            if len(table_dict["page"][idx_page + 1]) == 0:  # no table is added
+                del table_dict["page"][idx_page + 1]
 
     return table_list
 
@@ -159,14 +165,20 @@ def extract_cells(lt_page: LTPage, rows: List, list_cell: List[Cell], page: Page
                     row_cell[3],
                     Decimal(lt_page.height),
                 )
-                pos_cell = Position(pos_cell_bbox[0], pos_cell_bbox[1], pos_cell_bbox[2], pos_cell_bbox[3], page)
+                pos_cell = Position(
+                    pos_cell_bbox[0],
+                    pos_cell_bbox[1],
+                    pos_cell_bbox[2],
+                    pos_cell_bbox[3],
+                    page,
+                )
                 # extract cell text
                 lt_textbox = cell_lttextbox_extraction(pos_cell, lt_page)
                 links = []
-                text_cell = ''
+                text_cell = ""
                 if lt_textbox:
                     text_cell = lt_textbox.get_text()
-                    if catalog['annos']:
+                    if catalog["annos"]:
                         links = textbox.extract_linked_chars(lt_textbox, lt_page.pageid)
 
                     hbox = lt_to_libpdf_hbox_converter([lt_textbox])
@@ -174,16 +186,18 @@ def extract_cells(lt_page: LTPage, rows: List, list_cell: List[Cell], page: Page
                     hbox = None
 
                 cell = {
-                    'row': idx_row + 1,
-                    'col': idx_cell + 1,
-                    'positions': pos_cell_bbox,
-                    'text': FoldedStr(text_cell),
-                    'links': links,
+                    "row": idx_row + 1,
+                    "col": idx_cell + 1,
+                    "positions": pos_cell_bbox,
+                    "text": FoldedStr(text_cell),
+                    "links": links,
                 }
 
                 list_cell.append(cell)
 
-                cell_obj = Cell(idx_row + 1, idx_cell + 1, pos_cell, links, textbox=hbox)
+                cell_obj = Cell(
+                    idx_row + 1, idx_cell + 1, pos_cell, links, textbox=hbox
+                )
                 cell_obj_list.append(cell_obj)
 
     return cell_obj_list
@@ -201,7 +215,9 @@ def _table_figure_check(positions: Position, figure_list: List[Figure]):
     :return: True means only table is recognised.
     """
     if len(figure_list) > 0:
-        filter_list_figure = list(filter(lambda x: x.position.page.number == positions.page, figure_list))
+        filter_list_figure = list(
+            filter(lambda x: x.position.page.number == positions.page, figure_list)
+        )
         if len(filter_list_figure) > 0:
             margin_offset = 5
             for figure in filter_list_figure:
@@ -217,7 +233,9 @@ def _table_figure_check(positions: Position, figure_list: List[Figure]):
     return True
 
 
-def cell_lttextbox_extraction(position: Position, lt_page: LTPage) -> Union[LTTextBoxHorizontal, None]:
+def cell_lttextbox_extraction(
+    position: Position, lt_page: LTPage
+) -> Union[LTTextBoxHorizontal, None]:
     """
     Extract the lttextbox in the cell.
 
@@ -228,12 +246,17 @@ def cell_lttextbox_extraction(position: Position, lt_page: LTPage) -> Union[LTTe
     # TODO: offset explanation
     offset = 5
 
-    cell_bbox = [position.x0 - offset, position.y0 - offset, position.x1 + offset, position.y1 + offset]
+    cell_bbox = [
+        position.x0 - offset,
+        position.y0 - offset,
+        position.x1 + offset,
+        position.y1 + offset,
+    ]
     lt_textbox = utils.lt_textbox_crop(
         cell_bbox,
         lt_page._objs,  # pylint: disable=protected-access  # not publicly available
-        word_margin=LA_PARAMS['word_margin'],
-        y_tolerance=LA_PARAMS['line_overlap'],
+        word_margin=LA_PARAMS["word_margin"],
+        y_tolerance=LA_PARAMS["line_overlap"],
     )
 
     return lt_textbox

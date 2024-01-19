@@ -121,7 +121,7 @@ exclude = [
 line-length = 88
 
 # Assume Python 3.11.
-target-version = "py311"
+target-version = "py38"
 
 [tool.ruff.lint]
 # concept: select all rules by default and ignore unwanted (maybe just per file)
@@ -156,6 +156,9 @@ max-complexity = 20
 "**/__init__.py" = [
     "D104",
 ] # Missing docstring in public package - not needed for inits
+"tests/**/*.py" = [
+    "S101", # Use of `assert` detected
+]
 
 [tool.poetry.scripts]
 libpdf = 'libpdf.core:main_cli'

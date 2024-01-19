@@ -6,6 +6,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
+import pdfplumber
+import yaml
+from pdfminer.layout import LTText
+
 from libpdf import parameters
 from libpdf import process as pro
 from libpdf.apiobjects import ApiObjects
@@ -31,12 +35,6 @@ from libpdf.tables import extract_pdf_table
 from libpdf.textbox import extract_linked_chars, extract_paragraphs_chapters
 from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, to_pdfplumber_bbox
 
-from pdfminer.layout import LTText
-
-import pdfplumber
-
-import yaml
-
 LOG = logging.getLogger(__name__)
 
 
@@ -46,7 +44,7 @@ class FoldedStr(str):
 
 def folded_str_representer(dumper, text):
     """Warp function of the representer."""
-    return dumper.represent_scalar('tag', text, style='>')
+    return dumper.represent_scalar("tag", text, style=">")
 
 
 yaml.add_representer(FoldedStr, folded_str_representer)
@@ -82,21 +80,23 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     :return: instance of Objects class
     :raise LibpdfException: PDF contains no pages
     """
-    LOG.info('PDF extraction started ...')
+    LOG.info("PDF extraction started ...")
 
-    LOG.info('Loading the PDF with pdfminer LTTextBox analysis ...')
+    LOG.info("Loading the PDF with pdfminer LTTextBox analysis ...")
 
     with pdfplumber.open(pdf_path, laparams=LA_PARAMS) as pdf:
-        LOG.info('The PDF has %s pages', len(pdf.pages))
+        LOG.info("The PDF has %s pages", len(pdf.pages))
         if pages:
             # TODO:
             #  2. checkout if delete pages works before pdfplumber loading pdf, which can probably improve performance
             #  3. page_range extract cover feature header/footer???
-            includelist_non_existent = [page for page in pages if page <= 0 or page > len(pdf.pages)]
+            includelist_non_existent = [
+                page for page in pages if page <= 0 or page > len(pdf.pages)
+            ]
             if includelist_non_existent:
                 LOG.error(
-                    'The selected page number(s) [%s] do not exist in the pdf. They will be skipped.',
-                    ','.join([str(x) for x in includelist_non_existent]),
+                    "The selected page number(s) [%s] do not exist in the pdf. They will be skipped.",
+                    ",".join([str(x) for x in includelist_non_existent]),
                 )
 
             # delete pages from pdfplumber that are not in the extracted_pages list
@@ -106,7 +106,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
                     pdf.pages.remove(page)
 
             if len(pdf.pages) == 0:
-                message = 'Page range selection: no pages left in the PDF to analyze.'
+                message = "Page range selection: no pages left in the PDF to analyze."
                 LOG.critical(message)
                 raise LibpdfException(message)
 
@@ -123,7 +123,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         pages_list = extract_page_metadata(pdf)
 
         if not pages_list:
-            raise LibpdfException('PDF contains no pages')
+            raise LibpdfException("PDF contains no pages")
 
         overall_pbar.update(1)
 
@@ -135,7 +135,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         # It is the pre-process for the table extraction to see if the table is recognised as the figure
         # In some cases, an element is recognised as a table and a figure at the same time
         if no_figures:
-            LOG.info('Excluding figures extraction')
+            LOG.info("Excluding figures extraction")
             figure_list = []
         else:
             figure_list = extract_figures(pdf, pages_list, figure_dir)
@@ -145,7 +145,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         overall_pbar.update(30)
 
         if no_tables:
-            LOG.info('Excluding tables extraction')
+            LOG.info("Excluding tables extraction")
             table_list = []
         else:
             table_list = extract_pdf_table(pdf, pages_list, figure_list)
@@ -168,15 +168,17 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         if smart_page_crop:
             paragraph_list = smart_page_crop_header_footer(pdf, paragraph_list)
 
-        element_list = pro.merge_all_elements(figure_list, table_list, paragraph_list, chapter_list)
+        element_list = pro.merge_all_elements(
+            figure_list, table_list, paragraph_list, chapter_list
+        )
 
         # to check if elements shall be mapped into nested outline structure.
-        if catalog['outline'] is not None and not no_chapters:
-            element_list = pro.map_elements_outline(element_list, catalog['outline'])
+        if catalog["outline"] is not None and not no_chapters:
+            element_list = pro.map_elements_outline(element_list, catalog["outline"])
 
         root = Root(file, pages_list, element_list)
 
-        if catalog['annos']:
+        if catalog["annos"]:
             pro.libpdf_target_explorer(paragraph_list, pages_list)
             pro.libpdf_target_explorer(table_list, pages_list)
 
@@ -200,7 +202,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     return objects
 
 
-def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-many-locals  # noqa: C901  # too-complex
+def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-many-locals  # too-complex
     pdf,
     elements_list,
 ):
@@ -230,7 +232,9 @@ def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-man
     page_height = float(pdf.pages[0].mediabox[3])
 
     header_elements_list = []
-    default_header_bottom = (1 - parameters.SMART_PAGE_CROP_REL_MARGINS['top']) * page_height
+    default_header_bottom = (
+        1 - parameters.SMART_PAGE_CROP_REL_MARGINS["top"]
+    ) * page_height
 
     for pot_header_elements in elements_page_dict.values():  # pylint: disable=too-many-nested-blocks
         # potential header element
@@ -242,8 +246,16 @@ def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-man
                     element_cnt = 0
                     for header_element in header_elements:
                         if (
-                            abs(pot_header_element.position.y0 - header_element.position.y0) < 1
-                            and abs(pot_header_element.position.y1 - header_element.position.y1) < 1
+                            abs(
+                                pot_header_element.position.y0
+                                - header_element.position.y0
+                            )
+                            < 1
+                            and abs(
+                                pot_header_element.position.y1
+                                - header_element.position.y1
+                            )
+                            < 1
                         ):
                             element_cnt += 1
                     # on one page several header elements may have same y coordination but count only once
@@ -251,20 +263,26 @@ def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-man
                     page_cnt = page_cnt + element_cnt
             # occur on more than HEADER_FOOTER_OCCURRENCE_PERCENTAGE pages, considered as header element
             # and remove from list
-            if page_cnt >= parameters.HEADER_FOOTER_OCCURRENCE_PERCENTAGE * len(pdf.pages):
+            if page_cnt >= parameters.HEADER_FOOTER_OCCURRENCE_PERCENTAGE * len(
+                pdf.pages
+            ):
                 header_elements_list.append(pot_header_element)
 
     # remove false header elements from potential header elements list
     if header_elements_list:
-        real_header_elements_list = check_false_positive_header_footer(pdf, header_elements_list)
+        real_header_elements_list = check_false_positive_header_footer(
+            pdf, header_elements_list
+        )
     else:
         real_header_elements_list = header_elements_list
 
     # remove header elements
-    elements_list = [element for element in elements_list if element not in real_header_elements_list]
+    elements_list = [
+        element for element in elements_list if element not in real_header_elements_list
+    ]
 
     footer_elements_list = []
-    default_footer_top = parameters.SMART_PAGE_CROP_REL_MARGINS['bottom'] * page_height
+    default_footer_top = parameters.SMART_PAGE_CROP_REL_MARGINS["bottom"] * page_height
     for pot_footer_elements in elements_page_dict.values():  # pylint: disable=too-many-nested-blocks
         # potential footer element
         for pot_footer_element in pot_footer_elements:
@@ -275,8 +293,16 @@ def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-man
                     element_cnt = 0
                     for footer_element in footer_elements:
                         if (
-                            abs(pot_footer_element.position.y0 - footer_element.position.y0) < 1
-                            and abs(pot_footer_element.position.y1 - footer_element.position.y1) < 1
+                            abs(
+                                pot_footer_element.position.y0
+                                - footer_element.position.y0
+                            )
+                            < 1
+                            and abs(
+                                pot_footer_element.position.y1
+                                - footer_element.position.y1
+                            )
+                            < 1
                         ):
                             element_cnt += 1
                     # on one page several footer elements may have same y coordination but count only once
@@ -284,17 +310,23 @@ def smart_page_crop_header_footer(  # pylint: disable=too-many-branches, too-man
                     page_cnt = page_cnt + element_cnt
             # occur on more than HEADER_FOOTER_OCCURRENCE_PERCENTAGE pages, considered as footer element
             # and remove from list
-            if page_cnt >= parameters.HEADER_FOOTER_OCCURRENCE_PERCENTAGE * len(pdf.pages):
+            if page_cnt >= parameters.HEADER_FOOTER_OCCURRENCE_PERCENTAGE * len(
+                pdf.pages
+            ):
                 footer_elements_list.append(pot_footer_element)
 
     # filter out false footer elements
     if footer_elements_list:
-        real_footer_elements_list = check_false_positive_header_footer(pdf, footer_elements_list)
+        real_footer_elements_list = check_false_positive_header_footer(
+            pdf, footer_elements_list
+        )
     else:
         real_footer_elements_list = footer_elements_list
 
     # remove footer elements
-    elements_list = [element for element in elements_list if element not in real_footer_elements_list]
+    elements_list = [
+        element for element in elements_list if element not in real_footer_elements_list
+    ]
 
     return elements_list
 
@@ -331,9 +363,13 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
     # search the lowest element height on each page
     element_low_pos_dict = {}
     for page_num, elements in elements_page_dict.items():
-        lowest_element_pos = float(f'{elements[0].position.y0:.4f}')  # restrict to 4 digits precision
+        lowest_element_pos = float(
+            f"{elements[0].position.y0:.4f}"
+        )  # restrict to 4 digits precision
         for element in elements:
-            lowest_element_pos = min(lowest_element_pos, float(f'{element.position.y0:.4f}'))
+            lowest_element_pos = min(
+                lowest_element_pos, float(f"{element.position.y0:.4f}")
+            )
         element_low_pos_dict[page_num] = lowest_element_pos
 
     start_page_low_pos = list(element_low_pos_dict)[0]
@@ -342,7 +378,10 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
     # find the lowest y0
     header_low_pos = min(set(element_low_pos_dict.values()))
     # check continuous of potential header/footer element from start page to end page
-    if page_breaks / (end_page_low_pos - start_page_low_pos + 1) <= PAGES_MISSING_HEADER_OR_FOOTER_PERCENTAGE:
+    if (
+        page_breaks / (end_page_low_pos - start_page_low_pos + 1)
+        <= PAGES_MISSING_HEADER_OR_FOOTER_PERCENTAGE
+    ):
         # check unique low_pos
         if len(set(element_low_pos_dict.values())) != 1:
             # a list of page numbers to check the element's continuous
@@ -352,7 +391,9 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
                     continuous_page_list.append(page)
             # check header/footer continuous
             sorted_continuous_page_list = sorted(continuous_page_list)
-            continuous_list_length = sorted_continuous_page_list[-1] - sorted_continuous_page_list[0] + 1
+            continuous_list_length = (
+                sorted_continuous_page_list[-1] - sorted_continuous_page_list[0] + 1
+            )
             # TODO: need to improve the parameter UNIQUE_HEADER_OR_FOOTER_ELEMENTS_PERCENTAGE to solve
             #  partially continuous header or footer elements
             if len(
@@ -364,7 +405,7 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
                 UNIQUE_HEADER_OR_FOOTER_ELEMENTS_PERCENTAGE * len(pdf.pages),
             ):
                 for idx, element in enumerate(elements_list):
-                    if float(f'{element.position.y0:.4f}') == header_low_pos:
+                    if float(f"{element.position.y0:.4f}") == header_low_pos:
                         del elements_list[idx]
                 # recursively check again, to find the next min_low_pos, which will determine the header/footer boundary
                 if elements_list:
@@ -374,7 +415,7 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
                 elements_list.pop()
     else:
         for idx, element in enumerate(elements_list):
-            if float(f'{element.position.y0:.4f}') == header_low_pos:
+            if float(f"{element.position.y0:.4f}") == header_low_pos:
                 del elements_list[idx]
         # recursively check again, to find the next min_low_pos, which will determine the header/footer boundary
         if elements_list:
@@ -397,26 +438,31 @@ def delete_page_ann(pdf):
     :param pdf:
     :return:
     """
-    LOG.info('Deleting strange anno objects created by layout analysis ...')
+    LOG.info("Deleting strange anno objects created by layout analysis ...")
     for idx_page, page in enumerate(
-        tqdm(pdf.pages, desc='###### Deleting anno objects', unit='pages', bar_format=bar_format_lvl2()),
+        tqdm(
+            pdf.pages,
+            desc="###### Deleting anno objects",
+            unit="pages",
+            bar_format=bar_format_lvl2(),
+        ),
     ):
         if logging_needed(idx_page, len(pdf.pages)):
             LOG.debug(
-                'Deleting strange anno objects created by layout analysis page %s of %s',
+                "Deleting strange anno objects created by layout analysis page %s of %s",
                 idx_page + 1,
                 len(pdf.pages),
             )
         # filter out the strange items
-        if 'anno' in page.objects:
-            page.objects['anno'] = [
+        if "anno" in page.objects:
+            page.objects["anno"] = [
                 item
-                for item in page.objects['anno']
-                if not (item['object_type'] == 'anno' and item['text'] in [' ', '\n'])
+                for item in page.objects["anno"]
+                if not (item["object_type"] == "anno" and item["text"] in [" ", "\n"])
             ]
-            if not page.objects['anno']:
+            if not page.objects["anno"]:
                 #  remove the whole key if it's empty after above operation
-                del page.objects['anno']
+                del page.objects["anno"]
 
     return pdf
 
@@ -432,13 +478,13 @@ def file_info_extraction(pdf, pdf_path):
     :param pdf_path: path to the PDF to read
     :return: File object containing file and file meta information
     """
-    LOG.info('Extracting file information ...')
+    LOG.info("Extracting file information ...")
     file_name = os.path.basename(pdf_path)
 
     # date format string example D:20110120163651-05'00'
     # zulu timezone Z0000 will be converted to +0000
     def _time_preprocess(date_str):  # converts to 20110120163651-0500
-        return date_str.replace('D:', '').replace("'", '').replace('Z', '+')
+        return date_str.replace("D:", "").replace("'", "").replace("Z", "+")
 
     def _get_datetime_format(date: str):
         """
@@ -446,33 +492,37 @@ def file_info_extraction(pdf, pdf_path):
 
         The returned format string is valid after pre-processing, see _time_preprocess().
         """
-        if '+' in date or '-' in date:
-            return '%Y%m%d%H%M%S%z'  # with timezone
-        return '%Y%m%d%H%M%S'  # without timezone
+        if "+" in date or "-" in date:
+            return "%Y%m%d%H%M%S%z"  # with timezone
+        return "%Y%m%d%H%M%S"  # without timezone
 
     file_meta_params = {}
-    if 'Author' in pdf.metadata:
-        file_meta_params.update({'author': pdf.metadata['Author']})
-    if 'Title' in pdf.metadata:
-        file_meta_params.update({'title': pdf.metadata['Title']})
-    if 'Subject' in pdf.metadata:
-        file_meta_params.update({'subject': pdf.metadata['Subject']})
-    if 'Creator' in pdf.metadata:
-        file_meta_params.update({'creator': pdf.metadata['Creator']})
-    if 'Producer' in pdf.metadata:
-        file_meta_params.update({'producer': pdf.metadata['Producer']})
-    if 'Keywords' in pdf.metadata:
-        file_meta_params.update({'keywords': pdf.metadata['Keywords']})
-    if 'CreationDate' in pdf.metadata:
-        preprocessed_date = _time_preprocess(pdf.metadata['CreationDate'])
+    if "Author" in pdf.metadata:
+        file_meta_params.update({"author": pdf.metadata["Author"]})
+    if "Title" in pdf.metadata:
+        file_meta_params.update({"title": pdf.metadata["Title"]})
+    if "Subject" in pdf.metadata:
+        file_meta_params.update({"subject": pdf.metadata["Subject"]})
+    if "Creator" in pdf.metadata:
+        file_meta_params.update({"creator": pdf.metadata["Creator"]})
+    if "Producer" in pdf.metadata:
+        file_meta_params.update({"producer": pdf.metadata["Producer"]})
+    if "Keywords" in pdf.metadata:
+        file_meta_params.update({"keywords": pdf.metadata["Keywords"]})
+    if "CreationDate" in pdf.metadata:
+        preprocessed_date = _time_preprocess(pdf.metadata["CreationDate"])
         time_format = _get_datetime_format(preprocessed_date)
-        file_meta_params.update({'creation_date': datetime.strptime(preprocessed_date, time_format)})
-    if 'ModDate' in pdf.metadata:
-        preprocessed_date = _time_preprocess(pdf.metadata['ModDate'])
+        file_meta_params.update(
+            {"creation_date": datetime.strptime(preprocessed_date, time_format)}
+        )
+    if "ModDate" in pdf.metadata:
+        preprocessed_date = _time_preprocess(pdf.metadata["ModDate"])
         time_format = _get_datetime_format(preprocessed_date)
-        file_meta_params.update({'modified_date': datetime.strptime(preprocessed_date, time_format)})
-    if 'Trapped' in pdf.metadata:
-        file_meta_params.update({'trapped': pdf.metadata['Trapped']})
+        file_meta_params.update(
+            {"modified_date": datetime.strptime(preprocessed_date, time_format)}
+        )
+    if "Trapped" in pdf.metadata:
+        file_meta_params.update({"trapped": pdf.metadata["Trapped"]})
 
     file_meta_data = FileMeta(**file_meta_params)
 
@@ -480,10 +530,10 @@ def file_info_extraction(pdf, pdf_path):
         file_name,
         pdf_path,
         len(pdf.pages),
-        parameters.PAGE_CROP_MARGINS['top'],
-        parameters.PAGE_CROP_MARGINS['bottom'],
-        parameters.PAGE_CROP_MARGINS['left'],
-        parameters.PAGE_CROP_MARGINS['right'],
+        parameters.PAGE_CROP_MARGINS["top"],
+        parameters.PAGE_CROP_MARGINS["bottom"],
+        parameters.PAGE_CROP_MARGINS["left"],
+        parameters.PAGE_CROP_MARGINS["right"],
         file_meta_data,
     )
 
@@ -502,14 +552,19 @@ def extract_page_metadata(pdf):
     :param pdf: instance of pdfplumber.pdf.PDF class
     :return: A list of Page objects
     """
-    LOG.info('Extracting page metadata ...')
+    LOG.info("Extracting page metadata ...")
     page_list = []
 
     for idx_page, page in enumerate(
-        tqdm(pdf.pages, desc='###### Extracting metadata', unit='pages', bar_format=bar_format_lvl2()),
+        tqdm(
+            pdf.pages,
+            desc="###### Extracting metadata",
+            unit="pages",
+            bar_format=bar_format_lvl2(),
+        ),
     ):
         if logging_needed(idx_page, len(pdf.pages)):
-            LOG.debug('Extracting metadata page %s of %s', idx_page + 1, len(pdf.pages))
+            LOG.debug("Extracting metadata page %s of %s", idx_page + 1, len(pdf.pages))
         page_obj = Page(page.page_number, float(page.width), float(page.height))
         page_list.append(page_obj)
 
@@ -520,18 +575,21 @@ def extract_figures(
     pdf,
     pages_list,
     figure_dir,
-) -> List[
-    Figure
-]:  # pylint: disable=too-many-nested-blocks, too-many-branches  # local algorithm, easier to read when not split up
+) -> List[Figure]:  # pylint: disable=too-many-nested-blocks, too-many-branches  # local algorithm, easier to read when not split up
     """Extract figures in PDF."""
-    LOG.info('Extracting figures ...')
+    LOG.info("Extracting figures ...")
     figure_list = []
 
     for idx_page, page in enumerate(  # pylint: disable=too-many-nested-blocks
-        tqdm(pdf.pages, desc='###### Extracting figures', unit='pages', bar_format=bar_format_lvl2()),
+        tqdm(
+            pdf.pages,
+            desc="###### Extracting figures",
+            unit="pages",
+            bar_format=bar_format_lvl2(),
+        ),
     ):
         if logging_needed(idx_page, len(pdf.pages)):
-            LOG.debug('Extracting figures page %s of %s', idx_page + 1, len(pdf.pages))
+            LOG.debug("Extracting figures page %s of %s", idx_page + 1, len(pdf.pages))
         page_crop = pro.remove_page_header_footer(page)
         lt_page = page._layout  # pylint: disable=protected-access  # easiest way to obtain LTPage
 
@@ -541,10 +599,10 @@ def extract_figures(
         if len(figures) != 0:
             for idx_figure, figure in enumerate(figures):
                 fig_pos = Position(
-                    float(figure['x0']),
-                    float(figure['y0']),
-                    float(figure['x1']),
-                    float(figure['y1']),
+                    float(figure["x0"]),
+                    float(figure["y0"]),
+                    float(figure["x1"]),
+                    float(figure["y1"]),
                     pages_list[idx_page],
                 )
                 bbox = (fig_pos.x0, fig_pos.y0, fig_pos.x1, fig_pos.y1)
@@ -559,7 +617,7 @@ def extract_figures(
                 textboxes = []
                 links = []
                 for lt_textbox in lt_textboxes:
-                    if catalog['annos']:
+                    if catalog["annos"]:
                         links.extend(extract_linked_chars(lt_textbox, lt_page.pageid))
                     bbox = (lt_textbox.x0, lt_textbox.y0, lt_textbox.x1, lt_textbox.y1)
 
@@ -567,14 +625,16 @@ def extract_figures(
 
                     textboxes.append(hbox)
 
-                image_name = f'page_{page.page_number}_figure.{idx_figure + 1}.png'
+                image_name = f"page_{page.page_number}_figure.{idx_figure + 1}.png"
 
                 # create figures directory if not exist
                 Path(figure_dir).mkdir(parents=True, exist_ok=True)
 
                 image_path = os.path.abspath(os.path.join(figure_dir, image_name))
 
-                figure = Figure(idx_figure + 1, image_path, fig_pos, links, textboxes, 'None')
+                figure = Figure(
+                    idx_figure + 1, image_path, fig_pos, links, textboxes, "None"
+                )
                 figure_list.append(figure)
 
     return figure_list
@@ -589,12 +649,18 @@ def images_to_save(pdf, figure_list):
 
         page_crop = pro.remove_page_header_footer(page)
 
-        bbox = to_pdfplumber_bbox(fig.position.x0, fig.position.y0, fig.position.x1, fig.position.y1, page.height)
+        bbox = to_pdfplumber_bbox(
+            fig.position.x0,
+            fig.position.y0,
+            fig.position.x1,
+            fig.position.y1,
+            page.height,
+        )
         crop_page_figure = page_crop.within_bbox(bbox)
         image_path = fig.rel_path
 
         image = crop_page_figure.to_image(resolution=300)
-        image.save(image_path, format='png')
+        image.save(image_path, format="png")
 
 
 def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
@@ -639,28 +705,33 @@ def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
     filtered_figures = []
     for figure in figures_list:
         # check if figure really exist and figure's size if it's human readable
-        if figure['height'] > FIGURE_MIN_HEIGHT and figure['width'] > FIGURE_MIN_WIDTH:
+        if figure["height"] > FIGURE_MIN_HEIGHT and figure["width"] > FIGURE_MIN_WIDTH:
             filtered_figures.append(figure)
 
     for figure in filtered_figures:
         # if figure exceed the boundary of the page, then only keep the part of figure that inside this page
-        if not (figure['x0'] >= 0 and figure['y0'] >= 0 and figure['x1'] >= 0 and figure['y1'] >= 0):
-            if figure['x0'] < 0:
-                figure['x0'] = 0
-            if figure['y0'] < 0:
-                figure['y0'] = 0
-            if figure['x1'] < 0:
-                figure['x1'] = 0
-            if figure['y1'] < 0:
-                figure['y1'] = 0
+        if not (
+            figure["x0"] >= 0
+            and figure["y0"] >= 0
+            and figure["x1"] >= 0
+            and figure["y1"] >= 0
+        ):
+            if figure["x0"] < 0:
+                figure["x0"] = 0
+            if figure["y0"] < 0:
+                figure["y0"] = 0
+            if figure["x1"] < 0:
+                figure["x1"] = 0
+            if figure["y1"] < 0:
+                figure["y1"] = 0
 
     # check if figures completely inside another figures and remove small figures
     for fig0, fig1 in itertools.combinations(filtered_figures, 2):
         if (
-            fig0['x0'] <= fig1['x0']
-            and fig0['y0'] <= fig1['y0']
-            and fig0['x1'] >= fig1['x1']
-            and fig0['y1'] >= fig1['y1']
+            fig0["x0"] <= fig1["x0"]
+            and fig0["y0"] <= fig1["y0"]
+            and fig0["x1"] >= fig1["x1"]
+            and fig0["y1"] >= fig1["y1"]
         ):
             if fig1 in filtered_figures:
                 filtered_figures.remove(fig1)
@@ -669,16 +740,19 @@ def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
     for fig0, fig1 in itertools.combinations(filtered_figures, 2):
         # check partially overlap
         if not (
-            fig0['x0'] > fig1['x1'] or fig0['x1'] < fig1['x0'] or fig0['y0'] > fig1['y1'] or fig0['y1'] < fig1['y0']
+            fig0["x0"] > fig1["x1"]
+            or fig0["x1"] < fig1["x0"]
+            or fig0["y0"] > fig1["y1"]
+            or fig0["y1"] < fig1["y0"]
         ):
             if not (
-                fig0['x0'] <= fig1['x0']
-                and fig0['y0'] <= fig1['y0']
-                and fig0['x1'] >= fig1['x1']
-                and fig0['y1'] >= fig1['y1']
+                fig0["x0"] <= fig1["x0"]
+                and fig0["y0"] <= fig1["y0"]
+                and fig0["x1"] >= fig1["x1"]
+                and fig0["y1"] >= fig1["y1"]
             ):
                 # compare the size of two figures, keep the bigger figure
-                if fig0['width'] * fig0['height'] <= fig1['width'] * fig1['height']:
+                if fig0["width"] * fig0["height"] <= fig1["width"] * fig1["height"]:
                     if fig0 in filtered_figures:
                         filtered_figures.remove(fig0)
                 else:

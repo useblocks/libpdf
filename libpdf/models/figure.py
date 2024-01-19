@@ -1,16 +1,17 @@
 """Definition for PDF figures."""
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from libpdf.models.element import Element
 from libpdf.models.horizontal_box import HorizontalBox
 from libpdf.models.link import Link
 
-
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.position import Position  # noqa: F401, pylint: disable=ungrouped-imports
+    from libpdf.models.position import (
+        Position,  # , pylint: disable=ungrouped-imports
+    )
 
 
 class Figure(Element):
@@ -42,7 +43,7 @@ class Figure(Element):
         self,
         idx: int,
         rel_path: str,
-        position: 'Position',
+        position: "Position",
         links: List[Link],
         textboxes: List[HorizontalBox],
         text: str = None,
@@ -74,7 +75,7 @@ class Figure(Element):
 
         :type: str
         """
-        return f'figure.{self.idx}'
+        return f"figure.{self.idx}"
 
     def set_links_backref(self):
         """Set b_source back reference on all links."""

@@ -75,17 +75,17 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     :return: instance of Object class for API usage, None for CLI usage
     """
     if page_crop:
-        parameters.PAGE_CROP_MARGINS['top'] = page_crop[0]
-        parameters.PAGE_CROP_MARGINS['right'] = page_crop[1]
-        parameters.PAGE_CROP_MARGINS['bottom'] = page_crop[2]
-        parameters.PAGE_CROP_MARGINS['left'] = page_crop[3]
+        parameters.PAGE_CROP_MARGINS["top"] = page_crop[0]
+        parameters.PAGE_CROP_MARGINS["right"] = page_crop[1]
+        parameters.PAGE_CROP_MARGINS["bottom"] = page_crop[2]
+        parameters.PAGE_CROP_MARGINS["left"] = page_crop[3]
     if cli_usage:
-        LOG.info('libpdf version %s - %s', __version__, __summary__)
+        LOG.info("libpdf version %s - %s", __version__, __summary__)
     with tqdm(
         total=100,
-        desc='### libpdf progress',
+        desc="### libpdf progress",
         bar_format=bar_format_lvl1(),
-        unit='%',
+        unit="%",
         leave=False,
     ) as overall_pbar:
         pages = None
@@ -96,23 +96,30 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
             LOG.warning("Install optional dependency 'tqdm' for progress bars")
 
         if TQDM_AVAILABLE and not COLORAMA_AVAILABLE:
-            LOG.warning("Install optional dependency 'colorama' for colored progress bars")
+            LOG.warning(
+                "Install optional dependency 'colorama' for colored progress bars"
+            )
 
-        LOG.info('Verbosity level: %s', get_level_name(verbose))
-        LOG.info('Input file: %s', pdf)
-        LOG.info('Output format: %s', output_format)
+        LOG.info("Verbosity level: %s", get_level_name(verbose))
+        LOG.info("Input file: %s", pdf)
+        LOG.info("Output format: %s", output_format)
         if output_path:
-            LOG.info('Output path: %s', output_path)
+            LOG.info("Output path: %s", output_path)
         else:
-            LOG.info('Writing extracted data to stdout')
-        LOG.info('Page range: [%s]', 'all' if not pages else ','.join(str(x) for x in pages))
-        LOG.info('Page crop: %s', 'not cropped' if not page_crop else ' '.join(str(x) for x in page_crop))
-        LOG.info('Smart page crop: %s', 'on' if smart_page_crop else 'off')
-        LOG.info('Extract annotations: %s', 'no' if no_annotations else 'yes')
-        LOG.info('Extract chapters: %s', 'no' if no_chapters else 'yes')
-        LOG.info('Extract paragraphs: %s', 'no' if no_paragraphs else 'yes')
-        LOG.info('Extract tables: %s', 'no' if no_tables else 'yes')
-        LOG.info('Extract figures: %s', 'no' if no_figures else 'yes')
+            LOG.info("Writing extracted data to stdout")
+        LOG.info(
+            "Page range: [%s]", "all" if not pages else ",".join(str(x) for x in pages)
+        )
+        LOG.info(
+            "Page crop: %s",
+            "not cropped" if not page_crop else " ".join(str(x) for x in page_crop),
+        )
+        LOG.info("Smart page crop: %s", "on" if smart_page_crop else "off")
+        LOG.info("Extract annotations: %s", "no" if no_annotations else "yes")
+        LOG.info("Extract chapters: %s", "no" if no_chapters else "yes")
+        LOG.info("Extract paragraphs: %s", "no" if no_paragraphs else "yes")
+        LOG.info("Extract tables: %s", "no" if no_tables else "yes")
+        LOG.info("Extract figures: %s", "no" if no_figures else "yes")
         overall_pbar.update(1)
         try:
             objects = extract(
@@ -130,7 +137,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
             )
         except LibpdfException:
             if cli_usage:
-                LOG.critical('Exiting with code 1')
+                LOG.critical("Exiting with code 1")
                 sys.exit(1)
             else:
                 raise
@@ -148,9 +155,9 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
         if not cli_usage:
             return objects
 
-        LOG.info('Write output...')
+        LOG.info("Write output...")
         output_dump(output_format, output_path, objects)
-        LOG.info('Write output... done')
+        LOG.info("Write output... done")
 
         overall_pbar.update(7)
 
@@ -164,7 +171,7 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
     page_crop: Tuple[float, float, float, float] = None,
     smart_page_crop: bool = False,
     save_figures: bool = False,
-    figure_dir: str = 'figures',
+    figure_dir: str = "figures",
     no_annotations: bool = False,
     no_chapters: bool = False,
     no_paragraphs: bool = False,
@@ -172,7 +179,7 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
     no_figures: bool = False,
     init_logging: bool = True,
     visual_debug: bool = False,
-    visual_debug_output_dir: str = 'visual_debug_libpdf',
+    visual_debug_output_dir: str = "visual_debug_libpdf",
     visual_split_elements: bool = False,
     visual_debug_include_elements: List[str] = None,
     visual_debug_exclude_elements: List[str] = None,
@@ -214,16 +221,16 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
             for visual_incl_element in visual_debug_include_elements:
                 if visual_incl_element not in RENDER_ELEMENTS:
                     raise ValueError(
-                        f'Given visual included elements {visual_incl_element} not in {RENDER_ELEMENTS}',
+                        f"Given visual included elements {visual_incl_element} not in {RENDER_ELEMENTS}",
                     )
         if visual_debug_exclude_elements:
             for visual_excl_element in visual_debug_exclude_elements:
                 if visual_excl_element not in RENDER_ELEMENTS:
                     raise ValueError(
-                        f'Given visual excluded elements {visual_excl_element} not in {RENDER_ELEMENTS}',
+                        f"Given visual excluded elements {visual_excl_element} not in {RENDER_ELEMENTS}",
                     )
         if visual_debug_include_elements and visual_debug_exclude_elements:
-            raise ValueError('Can not visual include and exclude at the same time.')
+            raise ValueError("Can not visual include and exclude at the same time.")
 
     objects = main(
         pdf,
@@ -255,6 +262,7 @@ def docstring_parameter(*sub):
     This is used in below main function to get the version and description
     of the package to the click help screen.
     """
+
     # decorator definition
     def dec(obj):
         obj.__doc__ = obj.__doc__.format(*sub)
@@ -272,12 +280,12 @@ def validate_range(ctx, param, value):
     if value is None:
         # this can only happen when the range is not given
         return value
-    match = re.match(r'^(\d+-\d+|\d+)(,(\d+-\d+|\d+))*$', value)
+    match = re.match(r"^(\d+-\d+|\d+)(,(\d+-\d+|\d+))*$", value)
     if match is None:
-        raise click.BadParameter('must follow the example pattern 2-3,6,8-12')
-    numbers = value.replace('-', ',').split(',')
+        raise click.BadParameter("must follow the example pattern 2-3,6,8-12")
+    numbers = value.replace("-", ",").split(",")
     if not all(int(x) < int(y) for x, y in zip(numbers, numbers[1:])):
-        raise click.BadParameter('values must increase monotonic')
+        raise click.BadParameter("values must increase monotonic")
     return value
 
 
@@ -293,19 +301,25 @@ def validate_visual_elements(ctx, param, value):
         # check if multiple options are given, e.g. -ve chapter -ve table
         # TODO check this
         if len(value) > 1:
-            raise click.BadParameter('Option cannot be given multiple times. Use comma separation instead.')
+            raise click.BadParameter(
+                "Option cannot be given multiple times. Use comma separation instead."
+            )
         value = value[0]
 
-    elements = value.split(',')
+    elements = value.split(",")
     if len(elements) != len(set(elements)):
-        raise click.BadParameter(f'Option {param.name} contains duplicate entries.')
+        raise click.BadParameter(f"Option {param.name} contains duplicate entries.")
     for element in elements:
         if element not in RENDER_ELEMENTS:
-            raise click.BadParameter(f"Option {param.name} contains an unknown entry '{element}'.")
-    if param.name == 'visual_debug_exclude_elements':
+            raise click.BadParameter(
+                f"Option {param.name} contains an unknown entry '{element}'."
+            )
+    if param.name == "visual_debug_exclude_elements":
         if len(elements) == len(RENDER_ELEMENTS):
             # TODO Why is this not supported? It will just save the pages as images which might also be useful.
-            raise click.BadParameter('Cannot exclude all elements from visual debugging.')
+            raise click.BadParameter(
+                "Cannot exclude all elements from visual debugging."
+            )
 
     return elements
 
@@ -322,15 +336,17 @@ class DependentOption(click.Option):
 
     def __init__(self, *args, **kwargs):
         """Initialize class."""
-        self.depends_on = set(kwargs.pop('depends_on', []))
-        self.mutually_exclusive = set(kwargs.pop('mutually_exclusive', []))
+        self.depends_on = set(kwargs.pop("depends_on", []))
+        self.mutually_exclusive = set(kwargs.pop("mutually_exclusive", []))
 
         help_msgs = []
         if self.depends_on:
             help_msgs.append(f"this option depends on [{', '.join(self.depends_on)}]")
         if self.mutually_exclusive:
-            help_msgs.append(f"this option is mutually exclusive with [{', '.join(self.mutually_exclusive)}]")
-        kwargs['help'] = kwargs.get('help', '') + (f' NOTE: {"; ".join(help_msgs)}')
+            help_msgs.append(
+                f"this option is mutually exclusive with [{', '.join(self.mutually_exclusive)}]"
+            )
+        kwargs["help"] = kwargs.get("help", "") + (f' NOTE: {"; ".join(help_msgs)}')
         super().__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
@@ -342,21 +358,25 @@ class DependentOption(click.Option):
         if self.mutually_exclusive.intersection(opts) and self.name in opts:
             raise click.UsageError(
                 f"Illegal usage: '{self.name}' is mutually exclusive with '{', '.join(self.mutually_exclusive)}' "
-                'which is also given.',
+                "which is also given.",
             )
 
         return super().handle_parse_result(ctx, opts, args)
 
 
-@click.command(context_settings={'help_option_names': ['-h', '--help']}, no_args_is_help=True)
+@click.command(
+    context_settings={"help_option_names": ["-h", "--help"]}, no_args_is_help=True
+)
 @click.argument(
-    'pdf',
+    "pdf",
     required=True,
-    type=click.Path(exists=True, readable=True, resolve_path=True, file_okay=True, dir_okay=False),
+    type=click.Path(
+        exists=True, readable=True, resolve_path=True, file_okay=True, dir_okay=False
+    ),
 )
 @click.option(
-    '-v',
-    '--verbose',
+    "-v",
+    "--verbose",
     count=True,
     help="""Verbosity level, can be passed repeatedly.
 
@@ -368,134 +388,135 @@ class DependentOption(click.Option):
          """,
 )
 @click.option(
-    '-p',
-    '--page-range',
+    "-p",
+    "--page-range",
     callback=validate_range,
-    help='Page range to extract. No spaces allowed. Examples: 3-5 or 3,4,7 or 3-5,7',
+    help="Page range to extract. No spaces allowed. Examples: 3-5 or 3,4,7 or 3-5,7",
 )
 @click.option(
-    '-m',
-    '--page-crop',
+    "-m",
+    "--page-crop",
     nargs=4,
     type=float,
-    help='Margins for all pages given as space delimited floats in the order top right bottom left.'
-    ' The margins will be ignored during extraction, so this can be used to crop all pages.'
-    ' The values are given in points (72 points = 1 inch = 25.4 mm). Example: 30 0 45 0',
+    help="Margins for all pages given as space delimited floats in the order top right bottom left."
+    " The margins will be ignored during extraction, so this can be used to crop all pages."
+    " The values are given in points (72 points = 1 inch = 25.4 mm). Example: 30 0 45 0",
 )
 @click.option(
-    '--smart-page-crop',
+    "--smart-page-crop",
     is_flag=True,
-    help='Flag enabling a smart header/footer detection. The algorithm will get the'
-    ' bounding boxes of all paragraphs, tables and figures inside a defined area (given by'
-    ' default parameters) at the top/bottom parts of all pages.'
-    ' If a certain box is found on multiple pages it is considered a header/footer element and will be'
-    ' ignored for the extraction. This feature can be used together with --page-crop. In this case the pages will'
-    ' first be cropped to the values defined in page_margins and then the header/footer detection will run.',
+    help="Flag enabling a smart header/footer detection. The algorithm will get the"
+    " bounding boxes of all paragraphs, tables and figures inside a defined area (given by"
+    " default parameters) at the top/bottom parts of all pages."
+    " If a certain box is found on multiple pages it is considered a header/footer element and will be"
+    " ignored for the extraction. This feature can be used together with --page-crop. In this case the pages will"
+    " first be cropped to the values defined in page_margins and then the header/footer detection will run.",
 )
 @click.option(
-    '-f',
-    '--output-format',
-    type=click.Choice(['yaml', 'json'], case_sensitive=False),
-    default='yaml',
-    help='Output format.',
+    "-f",
+    "--output-format",
+    type=click.Choice(["yaml", "json"], case_sensitive=False),
+    default="yaml",
+    help="Output format.",
 )
-@click.option('-o', '--output-path', type=click.Path(file_okay=True, dir_okay=False))
+@click.option("-o", "--output-path", type=click.Path(file_okay=True, dir_okay=False))
 @click.option(
-    '-sf',
-    '--save-figures',
+    "-sf",
+    "--save-figures",
     is_flag=True,
     show_default=True,
-    help='Flag enabling the export of PDF figures into the directory given in --figure-dir.'
-    ' Has no effect if --no-figures is also given.',
+    help="Flag enabling the export of PDF figures into the directory given in --figure-dir."
+    " Has no effect if --no-figures is also given.",
 )
 @click.option(
-    '-d',
-    '--figure-dir',
+    "-d",
+    "--figure-dir",
     type=click.Path(file_okay=False, dir_okay=True),
-    default='figures',
+    default="figures",
     show_default=True,
-    help='Output directory for extracted figures; if it does not exist, it will be created',
+    help="Output directory for extracted figures; if it does not exist, it will be created",
 )
 @click.option(
-    '--no-annotations',
+    "--no-annotations",
     is_flag=True,
     show_default=True,
-    help='Do not extract annotations from catalog. All PDF-internal links will not be resolved.'
-    ' Chapter detection however will work',
+    help="Do not extract annotations from catalog. All PDF-internal links will not be resolved."
+    " Chapter detection however will work",
 )
 @click.option(
-    '--no-chapters',
+    "--no-chapters",
     is_flag=True,
     show_default=True,
-    help='Do not extract chapter/outline structure. The list of paragraphs, tables and figures will be flattened.',
+    help="Do not extract chapter/outline structure. The list of paragraphs, tables and figures will be flattened.",
 )
 @click.option(
-    '--no-paragraphs',
+    "--no-paragraphs",
     is_flag=True,
     show_default=True,
-    help='Skip paragraphs. The chapter structure will still be preserved.',
+    help="Skip paragraphs. The chapter structure will still be preserved.",
 )
-@click.option('--no-tables', is_flag=True, help='Skip tables.')
+@click.option("--no-tables", is_flag=True, help="Skip tables.")
 @click.option(
-    '--no-figures',
+    "--no-figures",
     is_flag=True,
     show_default=True,
-    help='Skip figures. Figures will not be part of the output JSON/YAML structures and also not saved if'
-    ' --save-figures is given.',
+    help="Skip figures. Figures will not be part of the output JSON/YAML structures and also not saved if"
+    " --save-figures is given.",
 )
-@click.option('-vd', '--visual-debug', is_flag=True, help='Visual debug libpdf.')
+@click.option("-vd", "--visual-debug", is_flag=True, help="Visual debug libpdf.")
 @click.option(
-    '-vo',
-    '--visual-debug-output-dir',
+    "-vo",
+    "--visual-debug-output-dir",
     cls=DependentOption,
-    depends_on=['visual_debug'],
+    depends_on=["visual_debug"],
     type=click.Path(file_okay=False, dir_okay=True),
-    default='visual_debug_libpdf',
+    default="visual_debug_libpdf",
     show_default=True,
-    help='Output directory for visualized pdf pages.',
+    help="Output directory for visualized pdf pages.",
 )
 @click.option(
-    '-vs',
-    '--visual-split-elements',
+    "-vs",
+    "--visual-split-elements",
     is_flag=True,
     show_default=True,
-    help='Put visual debugging elements into separate directories.',
+    help="Put visual debugging elements into separate directories.",
 )
 @click.option(
-    '-vi',
-    '--visual-debug-include-elements',
+    "-vi",
+    "--visual-debug-include-elements",
     cls=DependentOption,
     type=str,
     callback=validate_visual_elements,
-    help='Included visualized elements when visual debugging. '
+    help="Included visualized elements when visual debugging. "
     'No space allowed. Example: "chapter,table" or "paragraph"',
-    mutually_exclusive=['visual_debug_exclude_elements'],
-    depends_on=['visual_debug'],
+    mutually_exclusive=["visual_debug_exclude_elements"],
+    depends_on=["visual_debug"],
     multiple=True,  # this error conditions is handled in the callback
 )
 @click.option(
-    '-ve',
-    '--visual-debug-exclude-elements',
+    "-ve",
+    "--visual-debug-exclude-elements",
     cls=DependentOption,
     type=str,
     callback=validate_visual_elements,
     help='Excluded visualized elements when visual debugging. No space allowed. Example: "chapter,table,paragraph"',
-    mutually_exclusive=['visual_debug_include_elements'],
-    depends_on=['visual_debug'],
+    mutually_exclusive=["visual_debug_include_elements"],
+    depends_on=["visual_debug"],
     multiple=True,  # this error conditions is handled in the callback
 )
 @click.version_option(version=__version__)
-@click.help_option('-h', '--help')
+@click.help_option("-h", "--help")
 @docstring_parameter(__version__, __summary__)
 # flake8 ignore of docstring issues D400 (end with period) and D403 (first word capitalized) not reasonable here
 # as the docstring is used by click in the CLI help page
 def main_cli(**kwargs):
-    """libpdf version {0}: {1}
+    """
+    libpdf version {0}: {1}
 
     The argument PDF points to the PDF path that shall be extracted.
-    """  # noqa: D400, D403
+    """  # noqa: D400
     config_logger(cli=True)
-    set_log_level(kwargs['verbose'])  # if not given it's 0 which means log level ERROR
+    set_log_level(kwargs["verbose"])  # if not given it's 0 which means log level ERROR
     main(**kwargs, cli_usage=True)
 
 
@@ -506,12 +527,12 @@ def calculate_pages(page_range_string) -> List[int]:
     :param page_range_string: CLI parameter page-range
     :return: list of pages in given range
     """
-    page_ranges = page_range_string.split(',')
+    page_ranges = page_range_string.split(",")
     pages = []
     for page_range in page_ranges:
-        if '-' in page_range:
-            start_page = int(page_range.split('-')[0])
-            end_page = int(page_range.split('-')[1])
+        if "-" in page_range:
+            start_page = int(page_range.split("-")[0])
+            end_page = int(page_range.split("-")[1])
         else:
             start_page = int(page_range)
             end_page = int(page_range)

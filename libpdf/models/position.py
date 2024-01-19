@@ -7,9 +7,11 @@ from libpdf.parameters import TARGET_COOR_TOLERANCE
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.table import Cell  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.element import (
+        Element,  # pylint: disable=cyclic-import
+    )
     from libpdf.models.page import Page  # pylint: disable=cyclic-import
-    from libpdf.models.element import Element  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.table import Cell  # pylint: disable=cyclic-import
 
 
 class Position:
@@ -82,9 +84,9 @@ class Position:
         y0: float,
         x1: float,
         y1: float,
-        page: 'Page',
-        element: 'Element' = None,
-        cell: 'Cell' = None,
+        page: "Page",
+        element: "Element" = None,
+        cell: "Cell" = None,
     ):
         """Init the class with rectangular coordinates and a page reference."""
         self.x0 = x0
@@ -122,4 +124,4 @@ class Position:
         else:
             ref_type = self.b_cell
 
-        return f'Page {self.page.number} [{self.x0}, {self.y0}, {self.x1}, {self.y1}] ({ref_type})'
+        return f"Page {self.page.number} [{self.x0}, {self.y0}, {self.x1}, {self.y1}] ({ref_type})"

@@ -1,6 +1,6 @@
 """Definition for PDF chapters."""
 
-from typing import List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, List, Union
 
 from libpdf.models.element import Element
 from libpdf.models.horizontal_box import HorizontalBox
@@ -9,10 +9,18 @@ from libpdf.models.horizontal_box import HorizontalBox
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.figure import Figure  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
-    from libpdf.models.paragraph import Paragraph  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
-    from libpdf.models.position import Position  # pylint: disable=cyclic-import, ungrouped-imports
-    from libpdf.models.table import Table  # noqa: F401  # pylint: disable=cyclic-import, ungrouped-imports
+    from libpdf.models.figure import (
+        Figure,  # pylint: disable=cyclic-import, ungrouped-imports
+    )
+    from libpdf.models.paragraph import (
+        Paragraph,  # pylint: disable=cyclic-import, ungrouped-imports
+    )
+    from libpdf.models.position import (
+        Position,  # pylint: disable=cyclic-import, ungrouped-imports
+    )
+    from libpdf.models.table import (
+        Table,  # pylint: disable=cyclic-import, ungrouped-imports
+    )
 
 
 class Chapter(Element):
@@ -42,9 +50,9 @@ class Chapter(Element):
         self,
         title: str,
         number: str,
-        position: 'Position',
-        content: List[Union['Chapter', 'Paragraph', 'Table', 'Figure']] = None,
-        chapter: 'Chapter' = None,
+        position: "Position",
+        content: List[Union["Chapter", "Paragraph", "Table", "Figure"]] = None,
+        chapter: "Chapter" = None,
         textbox: HorizontalBox = None,
     ):
         """Initialize the instance."""
@@ -69,7 +77,7 @@ class Chapter(Element):
 
         :type: str
         """
-        return f'chapter.{self.number}'
+        return f"chapter.{self.number}"
 
     def set_backref(self):
         """Set b_chapter property on all elements under contents."""
@@ -82,4 +90,4 @@ class Chapter(Element):
 
         The purpose of it is to improve the readability in the debugger.
         """
-        return f'{self.number} {self.title}'
+        return f"{self.number} {self.title}"

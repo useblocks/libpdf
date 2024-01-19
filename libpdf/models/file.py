@@ -9,7 +9,7 @@ from libpdf.utils import string_to_identifier
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.root import Root  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.root import Root  # pylint: disable=cyclic-import
 
 
 # TODO the page cropping is defined by the user and must not be stored; the
@@ -68,7 +68,7 @@ class File(ModelBase):
         crop_left: float = 0,
         crop_right: float = 0,
         file_meta: FileMeta = None,
-        root: 'Root' = None,
+        root: "Root" = None,
     ):
         """Initialize the instance."""
         self.name = name
@@ -98,4 +98,4 @@ class File(ModelBase):
         is used. The file identifier is built from the file name including extension. All characters are removed that
         do not follow the Python identifier character set (Regex character set ``[_a-zA-Z0-9]``).
         """
-        return 'file.' + string_to_identifier(self.name)
+        return "file." + string_to_identifier(self.name)
