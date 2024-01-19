@@ -8,18 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Type, Union
 
 import chardet
-
-
-from libpdf.log import logging_needed
-from libpdf.models.chapter import Chapter
-from libpdf.models.element import Element
-from libpdf.models.figure import Figure
-from libpdf.models.horizontal_box import Char, HorizontalBox, HorizontalLine, Word
-from libpdf.models.paragraph import Paragraph
-from libpdf.models.table import Table
-from libpdf.parameters import RENDER_ELEMENTS, VIS_DBG_MAP_ELEMENTS_COLOR
-from libpdf.progress import bar_format_lvl1, tqdm
-
+import pdfplumber
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import (
     LAParams,
@@ -41,22 +30,30 @@ from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 
-import pdfplumber
+from libpdf.log import logging_needed
+from libpdf.models.chapter import Chapter
+from libpdf.models.element import Element
+from libpdf.models.figure import Figure
+from libpdf.models.horizontal_box import Char, HorizontalBox, HorizontalLine, Word
+from libpdf.models.paragraph import Paragraph
+from libpdf.models.table import Table
+from libpdf.parameters import RENDER_ELEMENTS, VIS_DBG_MAP_ELEMENTS_COLOR
+from libpdf.progress import bar_format_lvl1, tqdm
 
 MAP_TYPES = {
-    Chapter: 'chapter',
-    Paragraph: 'paragraph',
-    Table: 'table',
-    Figure: 'figure',
-    LTChar: 'paragraph',
-    LTCurve: 'figure',
-    LTTextBox: 'paragraph',
-    LTTextBoxHorizontal: 'paragraph',
-    LTTextLineHorizontal: 'paragraph',
-    LTFigure: 'figure',
-    LTLine: 'figure',
-    LTRect: 'figure',
-    LTImage: 'figure',
+    Chapter: "chapter",
+    Paragraph: "paragraph",
+    Table: "table",
+    Figure: "figure",
+    LTChar: "paragraph",
+    LTCurve: "figure",
+    LTTextBox: "paragraph",
+    LTTextBoxHorizontal: "paragraph",
+    LTTextLineHorizontal: "paragraph",
+    LTFigure: "figure",
+    LTLine: "figure",
+    LTRect: "figure",
+    LTImage: "figure",
 }
 
 LOG = logging.getLogger(__name__)
@@ -66,9 +63,9 @@ def decode_title(obj_bytes: bytes) -> str:
     """Decode catalog headline using chardet library."""
     chardet_ret = chardet.detect(obj_bytes)
     try:
-        str_ret = obj_bytes.decode(chardet_ret['encoding'])
+        str_ret = obj_bytes.decode(chardet_ret["encoding"])
     except UnicodeDecodeError:
-        str_ret = obj_bytes.decode(chardet_ret['encoding'], 'backslashreplace')
+        str_ret = obj_bytes.decode(chardet_ret["encoding"], "backslashreplace")
         LOG.warning(
             'Could not fully decode catalog headline "%s". Replaced character(s) with escaped hex value.',
             str_ret,
@@ -116,14 +113,14 @@ def string_to_identifier(text: str):
     :raises: ValueError: text contains newline chars \r or \n
     :return: identifier
     """
-    newline_chars = ['\r', '\n']
+    newline_chars = ["\r", "\n"]
     for newline_char in newline_chars:
         if newline_char in text:
             raise ValueError(f'Input text "{text}" contains a new line character.')
-    allowed_chars_regex = re.compile(r'[^_a-zA-Z0-9]')
-    replace_string = allowed_chars_regex.sub('_', text)
+    allowed_chars_regex = re.compile(r"[^_a-zA-Z0-9]")
+    replace_string = allowed_chars_regex.sub("_", text)
     if replace_string[0].isdigit():
-        replace_string = '_' + replace_string
+        replace_string = "_" + replace_string
     return replace_string
 
 
@@ -221,7 +218,12 @@ def check_lt_obj_in_bbox(lt_obj, bbox: Tuple[float, float, float, float]):
     :return: True if lt_obj is completely containd in bbox else False
     """
     lt_obj_in_bbox = False
-    if lt_obj.x0 > bbox[0] and lt_obj.y0 > bbox[1] and lt_obj.x1 < bbox[2] and lt_obj.y1 < bbox[3]:
+    if (
+        lt_obj.x0 > bbox[0]
+        and lt_obj.y0 > bbox[1]
+        and lt_obj.x1 < bbox[2]
+        and lt_obj.y1 < bbox[3]
+    ):
         lt_obj_in_bbox = True
 
     return lt_obj_in_bbox
@@ -302,7 +304,7 @@ def find_lt_obj_in_bbox(
     else:
         # This is the case when a LT object is intersected with the given box. In this case, the LT objects inside the
         # given bounding box need to be hierarchically and recursively found.
-        if hasattr(lt_obj, '_objs'):
+        if hasattr(lt_obj, "_objs"):
             # All the downwards hierarchical LT objects are stored in the attribute "_objs".
             # If the _objs attribute doesn't exist, it means it's the bottom of the hierarchy.
             text_inside_bbox = False  # True on LTTextLine level when the first LTChar is inside the BBOX
@@ -393,7 +395,9 @@ def lt_page_crop(
     return lt_objs_in_bbox
 
 
-def lt_to_libpdf_hbox_converter(lt_objs: List[LTTextBoxHorizontal]) -> Union[HorizontalBox, None]:
+def lt_to_libpdf_hbox_converter(
+    lt_objs: List[LTTextBoxHorizontal],
+) -> Union[HorizontalBox, None]:
     """Convert a LTTextBox to a HorizontalBox."""
     flatten_lt_objs = []
     flatten_hiearchical_lttext(lt_objs, flatten_lt_objs)
@@ -450,7 +454,7 @@ def assemble_to_textlines(
     #     last_ltobj = flatten_lt_objs[1]
 
     for lt_obj in flatten_lt_objs:
-        if lt_obj.get_text() != ' ' and lt_obj.get_text() != '\n':
+        if lt_obj.get_text() != " " and lt_obj.get_text() != "\n":
             # instantiate Char
             char = Char(lt_obj.get_text(), lt_obj.x0, lt_obj.y0, lt_obj.x1, lt_obj.y1)
             chars.append(char)
@@ -464,7 +468,7 @@ def assemble_to_textlines(
                 words.clear()
                 textlines.append(textline)
 
-        elif lt_obj.get_text() == ' ' and chars:
+        elif lt_obj.get_text() == " " and chars:
             word = Word(copy.deepcopy(chars))
             chars.clear()
             words.append(word)
@@ -475,7 +479,7 @@ def assemble_to_textlines(
                 words.clear()
                 textlines.append(textline)
 
-        elif isinstance(lt_obj, LTAnno) and lt_obj.get_text() == '\n':
+        elif isinstance(lt_obj, LTAnno) and lt_obj.get_text() == "\n":
             if chars:
                 word = Word(copy.deepcopy(chars))
                 chars.clear()
@@ -566,10 +570,16 @@ def assemble_to_lt_textlines(
 
     for lt_obj in flatten_lt_objs:
         if isinstance(lt_obj, LTChar):
-            if abs((lt_obj.y0 + (lt_obj.height / 2)) - (last_ltobj.y0 + (last_ltobj.height / 2))) < y_tolerance:
+            if (
+                abs(
+                    (lt_obj.y0 + (lt_obj.height / 2))
+                    - (last_ltobj.y0 + (last_ltobj.height / 2))
+                )
+                < y_tolerance
+            ):
                 lt_textlines[-1].add(lt_obj)
             else:
-                lt_textlines[-1]._objs.append(LTAnno('\n'))  # pylint: disable=protected-access # access needed
+                lt_textlines[-1]._objs.append(LTAnno("\n"))  # pylint: disable=protected-access # access needed
                 lt_textlines.append(LTTextLineHorizontal(word_margin))
                 lt_textlines[-1].add(lt_obj)
 
@@ -590,7 +600,7 @@ def flatten_hiearchical_lttext(lt_objs: List[LTText], flatten_lt_objs: List[LTCh
     """
     for lt_obj in lt_objs:
         if isinstance(lt_obj, (LTTextBoxHorizontal, LTTextLineHorizontal)):
-            if hasattr(lt_obj, '_objs'):
+            if hasattr(lt_obj, "_objs"):
                 flatten_hiearchical_lttext(
                     lt_obj._objs,  # pylint: disable=protected-access  # not publicly available
                     flatten_lt_objs,
@@ -626,30 +636,35 @@ def visual_debug_libpdf(  # pylint: disable=too-many-branches
     visual_debug_exclude_elements,
 ):
     """Visual debug."""
-    LOG.info('Starting visual debug...')
+    LOG.info("Starting visual debug...")
     # collect all elements
     all_elements = (
-        objects.flattened.chapters + objects.flattened.paragraphs + objects.flattened.tables + objects.flattened.figures
+        objects.flattened.chapters
+        + objects.flattened.paragraphs
+        + objects.flattened.tables
+        + objects.flattened.figures
     )
 
     # prepare for calling the common draw and output function
     draw_elements = {}
-    for page in tqdm(objects.root.pages, desc='###### Calculating bboxes', unit='pages'):
+    for page in tqdm(
+        objects.root.pages, desc="###### Calculating bboxes", unit="pages"
+    ):
         page_elements = get_elements_on_page(all_elements, page.number)
         for page_element in page_elements:
             draw_element = {
-                'element': page_element,
-                'x0': page_element.position.x0,
-                'y0': page_element.position.y0,
-                'x1': page_element.position.x1,
-                'y1': page_element.position.y1,
+                "element": page_element,
+                "x0": page_element.position.x0,
+                "y0": page_element.position.y0,
+                "x1": page_element.position.x1,
+                "y1": page_element.position.y1,
             }
             if page.number not in draw_elements:
                 draw_elements[page.number] = [draw_element]
             else:
                 draw_elements[page.number].append(draw_element)
 
-    LOG.info('Rendering images')
+    LOG.info("Rendering images")
 
     if visual_debug_include_elements:
         rendered_elements = visual_debug_include_elements
@@ -668,7 +683,7 @@ def visual_debug_libpdf(  # pylint: disable=too-many-branches
                 render_pages(
                     pdf_pages=objects.pdfplumber.pages,
                     target_dir=target_dir,
-                    name_prefix='libpdf_',
+                    name_prefix="libpdf_",
                     draw_elements=draw_elements,
                     render_elements=[render_element],
                 )
@@ -678,11 +693,11 @@ def visual_debug_libpdf(  # pylint: disable=too-many-branches
             render_pages(
                 pdf_pages=objects.pdfplumber.pages,
                 target_dir=visual_output_dir,
-                name_prefix='libpdf_',
+                name_prefix="libpdf_",
                 draw_elements=draw_elements,
                 render_elements=rendered_elements,
             )
-        LOG.info('Visual debug finished successfully.')
+        LOG.info("Visual debug finished successfully.")
 
 
 def render_pages(
@@ -715,13 +730,13 @@ def render_pages(
     :param render_elements: list of elements to render, options are chapter, paragraph, table, figure
     :return: None
     """
-    render_elements_joined = ', '.join(render_elements)
-    LOG.info('Saving annotated images for %s ...', render_elements_joined)
+    render_elements_joined = ", ".join(render_elements)
+    LOG.info("Saving annotated images for %s ...", render_elements_joined)
 
     for page in tqdm(
         pdf_pages,
-        desc=f'### Saving {render_elements_joined}',
-        unit='pages',
+        desc=f"### Saving {render_elements_joined}",
+        unit="pages",
         bar_format=bar_format_lvl1(),
         leave=False,
     ):
@@ -729,7 +744,7 @@ def render_pages(
 
         if logging_needed(page_no - 1, len(pdf_pages)):
             LOG.info(
-                'Saving annotated images for %s page %s of %s',
+                "Saving annotated images for %s page %s of %s",
                 render_elements_joined,
                 page_no,
                 len(pdf_pages),
@@ -743,10 +758,10 @@ def render_pages(
         # filter for elements that shall get rendered
         target_draw_elements = []
         for draw_element in draw_elements_page:
-            element_type = type(draw_element['element'])
+            element_type = type(draw_element["element"])
             if element_type not in MAP_TYPES:
                 continue
-            str_type = MAP_TYPES[type(draw_element['element'])]
+            str_type = MAP_TYPES[type(draw_element["element"])]
             if str_type in render_elements:
                 target_draw_elements.append(draw_element)
 
@@ -755,40 +770,42 @@ def render_pages(
         image = page.to_image(resolution=150)
         for target_draw_element in target_draw_elements:
             bbox = to_pdfplumber_bbox(
-                target_draw_element['x0'],
-                target_draw_element['y0'],
-                target_draw_element['x1'],
-                target_draw_element['y1'],
+                target_draw_element["x0"],
+                target_draw_element["y0"],
+                target_draw_element["x1"],
+                target_draw_element["y1"],
                 page.height,
             )
             image.draw_rect(
                 bbox,
-                fill=VIS_DBG_MAP_ELEMENTS_COLOR[MAP_TYPES[type(target_draw_element['element'])]],
+                fill=VIS_DBG_MAP_ELEMENTS_COLOR[
+                    MAP_TYPES[type(target_draw_element["element"])]
+                ],
                 stroke_width=2,
             )
 
-        image.save(os.path.join(target_dir, name_prefix + f'{page_no}.png'))
+        image.save(os.path.join(target_dir, name_prefix + f"{page_no}.png"))
 
 
 def visual_debug_pdfminer(pdf_path, vd_pdfminer_output):
     """Visual debug pdfminer."""
-    logging.basicConfig(format='[%(levelname)5s] %(message)s', level=logging.DEBUG)
+    logging.basicConfig(format="[%(levelname)5s] %(message)s", level=logging.DEBUG)
 
-    LOG.info('Starting layout extraction using only pdfminer')
+    LOG.info("Starting layout extraction using only pdfminer")
 
-    logging.getLogger('pdfminer').level = logging.WARNING
-    logging.getLogger('PIL').level = logging.WARNING
+    logging.getLogger("pdfminer").level = logging.WARNING
+    logging.getLogger("PIL").level = logging.WARNING
 
     page_containers = extract_layout(pdf_path)
     draw_elements = {}
     for page_no, page_container in page_containers.items():
-        for lt_element in page_container['elements']:
+        for lt_element in page_container["elements"]:
             draw_element = {
-                'element': lt_element,
-                'x0': lt_element.x0,
-                'y0': lt_element.y0,
-                'x1': lt_element.x1,
-                'y1': lt_element.y1,
+                "element": lt_element,
+                "x0": lt_element.x0,
+                "y0": lt_element.y0,
+                "x1": lt_element.x1,
+                "y1": lt_element.y1,
             }
             if page_no not in draw_elements:
                 draw_elements[page_no] = [draw_element]
@@ -801,18 +818,18 @@ def visual_debug_pdfminer(pdf_path, vd_pdfminer_output):
     render_pages(
         pdf_pages=pages_list,
         target_dir=vd_pdfminer_output,
-        name_prefix='pdfminer_',
+        name_prefix="pdfminer_",
         draw_elements=draw_elements,
         render_elements=RENDER_ELEMENTS,
     )
-    LOG.info('Finished successfully')
+    LOG.info("Finished successfully")
 
 
 def extract_layout(path_pdf, idx_single_page=None):
     """Use pdfminer.six to extract LTContainer layout boxes."""
-    LOG.info('Extracting layout ...')
+    LOG.info("Extracting layout ...")
     parser = None
-    with open(path_pdf, 'rb') as file_pointer:
+    with open(path_pdf, "rb") as file_pointer:
         # init pdfminer elements
         parser = PDFParser(file_pointer)
     doc = PDFDocument(parser)
@@ -824,10 +841,10 @@ def extract_layout(path_pdf, idx_single_page=None):
 
     page_containers = {}  # return dictionary
 
-    page_count = doc.catalog['Pages'].resolve()['Count']
+    page_count = doc.catalog["Pages"].resolve()["Count"]
     for idx_page, page in enumerate(pages):
         if logging_needed(idx_page, page_count):
-            LOG.debug('Extracting layout page %s of %s', idx_page + 1, page_count)
+            LOG.debug("Extracting layout page %s of %s", idx_page + 1, page_count)
         if idx_single_page is not None and idx_single_page != idx_page:
             continue
 
@@ -835,11 +852,11 @@ def extract_layout(path_pdf, idx_single_page=None):
         interpreter.process_page(page)
         lt_page: LTPage = device.get_result()
 
-        page_containers[idx_page + 1] = {'page': page, 'elements': list(lt_page)}
+        page_containers[idx_page + 1] = {"page": page, "elements": list(lt_page)}
 
-    LOG.info('Finished layout extraction')
+    LOG.info("Finished layout extraction")
     container_count = 0
     for page_container in page_containers.values():
-        container_count += len(page_container['elements'])
-    LOG.info('Extracted %s containers from %s pages', container_count, page_count)
+        container_count += len(page_container["elements"])
+    LOG.info("Extracted %s containers from %s pages", container_count, page_count)
     return page_containers

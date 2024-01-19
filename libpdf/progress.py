@@ -14,7 +14,6 @@ try:
 
     TQDM_AVAILABLE = True
 except ImportError:
-
     # class name is constrained by the tqdm library
     class tqdm:  # pylint: disable=invalid-name
         """Mock tqdm.tqdm class and provide the least amount of functionality."""
@@ -71,7 +70,7 @@ except ImportError:
 
         def __getattr__(cls, key):
             """Return an empty string for all class attributes if used as a metaclass."""
-            return ''
+            return ""
 
     class Fore(metaclass=CatchAllAttributesType):  # pylint: disable=too-few-public-methods
         """
@@ -85,15 +84,15 @@ except ImportError:
 # all libpdf modules should only access tqdm and colorama through this module
 # COLOR_MAP is used to decouple from colorama.Fore which could be a missing dependency
 COLOR_MAP = {
-    'black': Fore.BLACK,
-    'red': Fore.RED,
-    'green': Fore.GREEN,
-    'yellow': Fore.YELLOW,
-    'blue': Fore.BLUE,
-    'magenta': Fore.MAGENTA,
-    'cyan': Fore.CYAN,
-    'white': Fore.WHITE,
-    'reset': Fore.RESET,
+    "black": Fore.BLACK,
+    "red": Fore.RED,
+    "green": Fore.GREEN,
+    "yellow": Fore.YELLOW,
+    "blue": Fore.BLUE,
+    "magenta": Fore.MAGENTA,
+    "cyan": Fore.CYAN,
+    "white": Fore.WHITE,
+    "reset": Fore.RESET,
 }
 
 
@@ -104,14 +103,14 @@ def bar_format(color):
 
 def bar_format_lvl0():
     """bar_format for the top level instance of nested tqdm progress bars."""
-    return bar_format('red')
+    return bar_format("red")
 
 
 def bar_format_lvl1():
     """bar_format for the 1st level instance of nested tqdm progress bars."""
-    return bar_format('cyan')
+    return bar_format("cyan")
 
 
 def bar_format_lvl2():
     """bar_format for the 2nd level instance of nested tqdm progress bars."""
-    return bar_format('green')
+    return bar_format("green")

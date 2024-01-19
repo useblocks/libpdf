@@ -1,4 +1,5 @@
-"""Extract paragraphs and chapters from LTTextBox by pdfminer.six.
+"""
+Extract paragraphs and chapters from LTTextBox by pdfminer.six.
 
 Coordinate system of pdfminer LTTextBox is defined below::
 
@@ -32,6 +33,14 @@ import re
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple, Union
 
+from pdfminer.layout import (
+    LTAnno,
+    LTChar,
+    LTText,
+    LTTextBox,
+    LTTextLineHorizontal,
+)
+
 from libpdf import parameters
 from libpdf.catalog import catalog
 from libpdf.log import logging_needed
@@ -52,15 +61,6 @@ from libpdf.parameters import (
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, textbox_crop
 
-from pdfminer.layout import (
-    LTAnno,
-    LTChar,
-    LTText,
-    LTTextBox,
-    LTTextLineHorizontal,
-)
-
-
 LOG = logging.getLogger(__name__)
 
 
@@ -73,20 +73,22 @@ def extract_paragraphs_chapters(
     no_paragraphs,
 ) -> Tuple[List[Paragraph], List[Chapter]]:
     """Extract paragraphs and chapter's headline from given pdf."""
-    extracted_lt_textboxes = extract_lt_textboxes(pdf, figure_list, table_list, page_list)
+    extracted_lt_textboxes = extract_lt_textboxes(
+        pdf, figure_list, table_list, page_list
+    )
     chapter_list = []
     if no_chapters:
-        LOG.info('Excluding chapters extraction')
+        LOG.info("Excluding chapters extraction")
     else:
-        if catalog['outline']:
-            LOG.info('Extracting chapters ...')
+        if catalog["outline"]:
+            LOG.info("Extracting chapters ...")
             chapter_list = render_chapters(extracted_lt_textboxes, page_list, pdf)
 
     paragraph_list = []
     if no_paragraphs:
-        LOG.info('Excluding paragraphs extraction')
+        LOG.info("Excluding paragraphs extraction")
     else:
-        LOG.info('Extracting paragraphs ...')
+        LOG.info("Extracting paragraphs ...")
         paragraph_list = render_paragraphs(extracted_lt_textboxes, page_list)
     return paragraph_list, chapter_list
 
@@ -104,7 +106,7 @@ def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
     :param page_list:
     :return:
     """
-    page_lt_textboxes = pdfminer_get_lt_textboxes(pdf)  # noqa: F841  # flake8 not used warning
+    page_lt_textboxes = pdfminer_get_lt_textboxes(pdf)  # flake8 not used warning
 
     for idx_page, _ in page_lt_textboxes.copy().items():
         # pages that shall be extracted
@@ -112,7 +114,9 @@ def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
             del page_lt_textboxes[idx_page]
 
     if table_list is not None or figure_list is not None:
-        page_lt_textboxes_filtered = remove_lt_textboxes_in_tables_figures(page_lt_textboxes, figure_list, table_list)
+        page_lt_textboxes_filtered = remove_lt_textboxes_in_tables_figures(
+            page_lt_textboxes, figure_list, table_list
+        )
     else:
         page_lt_textboxes_filtered = page_lt_textboxes
 
@@ -122,9 +126,9 @@ def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
         lt_textboxes_without_noise = []
         for lt_textbox in lt_textboxes:
             # remove empty texbox only contains whitespaces or newlines
-            if not re.match(r'^\s*$', lt_textbox.get_text()):
+            if not re.match(r"^\s*$", lt_textbox.get_text()):
                 # remove all the \n at the end of lt_textbox
-                if lt_textbox._objs[-1]._objs[-1].get_text() == '\n':  # pylint: disable=protected-access
+                if lt_textbox._objs[-1]._objs[-1].get_text() == "\n":  # pylint: disable=protected-access
                     del lt_textbox._objs[-1]._objs[-1]  # pylint: disable=protected-access
                     lt_textboxes_without_noise.append(lt_textbox)
         page_lt_textboxes_filtered_noise[page_idx] = lt_textboxes_without_noise
@@ -155,21 +159,23 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
     """
     chapter_list = []
     flatten_outline = []
-    _flatten_outline(nested_outline=catalog['outline']['content'], flatten_outline=flatten_outline)
+    _flatten_outline(
+        nested_outline=catalog["outline"]["content"], flatten_outline=flatten_outline
+    )
 
     # sort the flatten outline chapters into a dict by pages
     chapters_sorted_by_page = {}
     extracted_page_nums = [page.number for page in page_list]
     for chapter in flatten_outline:
-        if chapter['position']['page'] in extracted_page_nums:
-            if chapter['position']['page'] not in chapters_sorted_by_page:
-                chapters_sorted_by_page[chapter['position']['page']] = []
-            chapters_sorted_by_page[chapter['position']['page']].append(chapter)
+        if chapter["position"]["page"] in extracted_page_nums:
+            if chapter["position"]["page"] not in chapters_sorted_by_page:
+                chapters_sorted_by_page[chapter["position"]["page"]] = []
+            chapters_sorted_by_page[chapter["position"]["page"]].append(chapter)
 
     for page_number, chapters in tqdm(
         chapters_sorted_by_page.items(),
-        desc='###### Extracting chapters',
-        unit='pages',
+        desc="###### Extracting chapters",
+        unit="pages",
         bar_format=bar_format_lvl2(),
     ):
         if page_number - 1 in page_lt_textboxes_filtered:
@@ -178,7 +184,9 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
                 if page.number == page_number:
                     chapter_page = page
             for chapter in chapters:
-                chapter_lt_textboxes = chapter_examiner(chapter, lt_textboxes, chapter_page)
+                chapter_lt_textboxes = chapter_examiner(
+                    chapter, lt_textboxes, chapter_page
+                )
 
                 if chapter_lt_textboxes:
                     # render chapter based on the lt_textbox
@@ -188,11 +196,17 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
                     y1 = max(chapter_lt_textboxes, key=lambda x: x.y1).y1
                     position = Position(x0, y0, x1, y1, chapter_page)
 
-                    if len(chapter_lt_textboxes) == 2 and ('virt.' in chapter['number']):
+                    if len(chapter_lt_textboxes) == 2 and (
+                        "virt." in chapter["number"]
+                    ):
                         # the case where chapter's number and title are grouped into two different lt_textboxes,
                         # and the chapter number derives from virtual hierarchical levels because
                         # outline catalog doesn't have chapter number.
-                        chapter['number'] = min(chapter_lt_textboxes, key=lambda x: x.x0).get_text().strip()
+                        chapter["number"] = (
+                            min(chapter_lt_textboxes, key=lambda x: x.x0)
+                            .get_text()
+                            .strip()
+                        )
 
                     # extract LTPage for textbox_crop() to use
                     lt_page = pdf.pages[page_number - 1].layout
@@ -222,22 +236,22 @@ def render_chapters(  # pylint: disable=too-many-branches, too-many-locals
 
                     LOG.info(
                         'The chapter "%s %s" on page %s cannot be detected. A ghost chapter is introduced '
-                        'at the jump target location. ',
-                        chapter['number'],
-                        chapter['title'],
-                        chapter['position']['page'],
+                        "at the jump target location. ",
+                        chapter["number"],
+                        chapter["title"],
+                        chapter["position"]["page"],
                     )
 
-                if 'virt.' in chapter['number']:
+                if "virt." in chapter["number"]:
                     LOG.info(
-                        'Virtual number %s is applied to chapter number, '
-                        'so this number may not be consistent with the numerical order in the content.',
-                        chapter['number'],
+                        "Virtual number %s is applied to chapter number, "
+                        "so this number may not be consistent with the numerical order in the content.",
+                        chapter["number"],
                     )
 
                 chapter_obj = Chapter(
-                    chapter['title'],
-                    chapter['number'],
+                    chapter["title"],
+                    chapter["number"],
                     position,
                     content=[],
                     chapter=None,
@@ -261,25 +275,29 @@ def ghost_chapter_position_generator(chapter: Dict, page: Page) -> Position:
     :param page: a libpdf page
     :return: an instance of libpdf position
     """
-    if chapter['position']['y1'] - CHAPTER_RECTANGLE_EXTEND > 0:
-        y0 = chapter['position']['y1'] - CHAPTER_RECTANGLE_EXTEND
+    if chapter["position"]["y1"] - CHAPTER_RECTANGLE_EXTEND > 0:
+        y0 = chapter["position"]["y1"] - CHAPTER_RECTANGLE_EXTEND
     else:
         # expand to bottom
         y0 = 0
 
         # calculate chapter lt_textbox x1
-    if chapter['position']['x0'] + CHAPTER_RECTANGLE_EXTEND < page.width:
-        x1 = chapter['position']['x0'] + CHAPTER_RECTANGLE_EXTEND
+    if chapter["position"]["x0"] + CHAPTER_RECTANGLE_EXTEND < page.width:
+        x1 = chapter["position"]["x0"] + CHAPTER_RECTANGLE_EXTEND
     else:
         # expand to right side
         x1 = page.width
 
-    position = Position(chapter['position']['x0'], y0, x1, chapter['position']['y1'], page)
+    position = Position(
+        chapter["position"]["x0"], y0, x1, chapter["position"]["y1"], page
+    )
 
     return position
 
 
-def chapter_examiner(chapter: Dict, lt_textboxes: List[LTTextBox], page: Page) -> Union[None, List[LTTextBox]]:
+def chapter_examiner(
+    chapter: Dict, lt_textboxes: List[LTTextBox], page: Page
+) -> Union[None, List[LTTextBox]]:
     """
     Check if certain lt_textboxes are or a certain lt_textbox is the chapter.
 
@@ -316,8 +334,8 @@ def chapter_examiner(chapter: Dict, lt_textboxes: List[LTTextBox], page: Page) -
     # center of the outline chapter.
     # The coordinates of the rectangle are rect = (x0, y0, x1, y1).
     # This assumption may not work in PDFs with multiple columns.
-    y0 = chapter['position']['y1'] - (page.height / 4)
-    y1 = chapter['position']['y1'] + (page.height / 4)
+    y0 = chapter["position"]["y1"] - (page.height / 4)
+    y1 = chapter["position"]["y1"] + (page.height / 4)
     y0 = max(y0, 0)
     if y1 > page.height:
         y1 = page.height
@@ -325,7 +343,9 @@ def chapter_examiner(chapter: Dict, lt_textboxes: List[LTTextBox], page: Page) -
     rect = (0, y0, page.width, y1)
 
     # get the lt_textboxes completely in the detection rectangle
-    lt_textboxes_in_rect = lt_page_crop(rect, lt_textboxes, LTText, contain_completely=True)
+    lt_textboxes_in_rect = lt_page_crop(
+        rect, lt_textboxes, LTText, contain_completely=True
+    )
 
     if not lt_textboxes_in_rect:
         return None
@@ -334,12 +354,16 @@ def chapter_examiner(chapter: Dict, lt_textboxes: List[LTTextBox], page: Page) -
     # evaluate the similarities of number, title and content of lt_textboxes with a chapter
     for lt_textbox in lt_textboxes_in_rect:
         # check if lt_textbox text and headline text has a certain similarity
-        similarity_title = SequenceMatcher(None, lt_textbox.get_text().strip(), chapter['title']).ratio()
-        if 'virt.' in chapter['number']:
+        similarity_title = SequenceMatcher(
+            None, lt_textbox.get_text().strip(), chapter["title"]
+        ).ratio()
+        if "virt." in chapter["number"]:
             similarity_number = None
             similarity_content = None
         else:
-            similarity_number = SequenceMatcher(None, lt_textbox.get_text().strip(), chapter['number']).ratio()
+            similarity_number = SequenceMatcher(
+                None, lt_textbox.get_text().strip(), chapter["number"]
+            ).ratio()
             similarity_content = SequenceMatcher(
                 None,
                 lt_textbox.get_text().strip(),
@@ -347,7 +371,11 @@ def chapter_examiner(chapter: Dict, lt_textboxes: List[LTTextBox], page: Page) -
             ).ratio()
 
         similarity_lt_textboxes.append(
-            {'title': similarity_title, 'number': similarity_number, 'content': similarity_content},
+            {
+                "title": similarity_title,
+                "number": similarity_number,
+                "content": similarity_content,
+            },
         )
 
     winners = similarity_referee(similarity_lt_textboxes, lt_textboxes_in_rect, chapter)
@@ -377,7 +405,9 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
 
     # find the winner of the title similarity
     title_winners_idx = [
-        i for i, x in enumerate(similarity_lt_textboxes) if x == max(similarity_lt_textboxes, key=lambda x: x['title'])
+        i
+        for i, x in enumerate(similarity_lt_textboxes)
+        if x == max(similarity_lt_textboxes, key=lambda x: x["title"])
     ]
     if len(title_winners_idx) > 1:
         # find the winner who has the shortest vertical distance to the jumping point of the outline chapter.
@@ -385,15 +415,18 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
 
         title_winner_idx = min(
             title_winners_idx,
-            key=lambda x: abs(lt_textboxes_in_rect[x].y1 - chapter['position']['y1']),
+            key=lambda x: abs(lt_textboxes_in_rect[x].y1 - chapter["position"]["y1"]),
         )
     else:
         title_winner_idx = title_winners_idx[0]
 
-    if 'virt.' in chapter['number']:
+    if "virt." in chapter["number"]:
         # if the chapter number is virtual, only the title needs to be taken into account.
 
-        if similarity_lt_textboxes[title_winner_idx]['title'] > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY:
+        if (
+            similarity_lt_textboxes[title_winner_idx]["title"]
+            > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY
+        ):
             winners.append(lt_textboxes_in_rect[title_winner_idx])
             # search for the lt_textbox which may be the number of the chapter
             # The assumption is that the number is always located on the left of the chapter
@@ -401,15 +434,21 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
                 x
                 for x in lt_textboxes_in_rect
                 if x.x0 < lt_textboxes_in_rect[title_winner_idx].x0
-                and abs(x.y0 - lt_textboxes_in_rect[title_winner_idx].y0) < CHAPTER_RECTANGLE_EXTEND
-                and abs(x.y1 - lt_textboxes_in_rect[title_winner_idx].y1) < CHAPTER_RECTANGLE_EXTEND
+                and abs(x.y0 - lt_textboxes_in_rect[title_winner_idx].y0)
+                < CHAPTER_RECTANGLE_EXTEND
+                and abs(x.y1 - lt_textboxes_in_rect[title_winner_idx].y1)
+                < CHAPTER_RECTANGLE_EXTEND
             ]
             if len(potential_chapter_number) == 1:
                 # In case 5, the unexpected chapter number may be extracted. To avoid it, the potential chapter number
                 # extracted around the chapter title shall be checked if it matches the patterns of comman chapter
                 # nummber e.g. 3.9.3, XII.I.V, or A.B.D.
-                pattern = re.compile(r'^(?=\w)((^|\.)(([iIvVxX]{1,8})|[a-zA-Z]|[0-9]+))+\.?(?!.)')
-                chapter_number_matches = re.match(pattern, potential_chapter_number[0].get_text().strip())
+                pattern = re.compile(
+                    r"^(?=\w)((^|\.)(([iIvVxX]{1,8})|[a-zA-Z]|[0-9]+))+\.?(?!.)"
+                )
+                chapter_number_matches = re.match(
+                    pattern, potential_chapter_number[0].get_text().strip()
+                )
                 if chapter_number_matches:
                     # to prevent wrong chapter numbers from being extracted
                     winners.append(potential_chapter_number[0])
@@ -420,12 +459,14 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
         content_winners_idx = [
             i
             for i, x in enumerate(similarity_lt_textboxes)
-            if x == max(similarity_lt_textboxes, key=lambda x: x['content'])
+            if x == max(similarity_lt_textboxes, key=lambda x: x["content"])
         ]
         if len(content_winners_idx) > 1:
             content_winner_idx = min(
                 content_winners_idx,
-                key=lambda x: abs(lt_textboxes_in_rect[x].y1 - chapter['position']['y1']),
+                key=lambda x: abs(
+                    lt_textboxes_in_rect[x].y1 - chapter["position"]["y1"]
+                ),
             )
         else:
             content_winner_idx = content_winners_idx[0]
@@ -434,26 +475,31 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
         number_winners_idx = [
             i
             for i, x in enumerate(similarity_lt_textboxes)
-            if x == max(similarity_lt_textboxes, key=lambda x: x['number'])
+            if x == max(similarity_lt_textboxes, key=lambda x: x["number"])
         ]
         if len(number_winners_idx) > 1:
             number_winner_idx = min(
                 number_winners_idx,
-                key=lambda x: abs(lt_textboxes_in_rect[x].y1 - chapter['position']['y1']),
+                key=lambda x: abs(
+                    lt_textboxes_in_rect[x].y1 - chapter["position"]["y1"]
+                ),
             )
         else:
             number_winner_idx = number_winners_idx[0]
 
         # If the lt_textbox is 100% similar to the chapter in terms of its content (chapter number amd title),
         # it is considered the outline chapter jump target.
-        if similarity_lt_textboxes[content_winner_idx]['content'] == 1:
+        if similarity_lt_textboxes[content_winner_idx]["content"] == 1:
             # The case where the content of the lt_textbox is 100% identical to the chapter's number plus title.
             winners.append(lt_textboxes_in_rect[content_winner_idx])
         elif (
-            similarity_lt_textboxes[content_winner_idx]['content'] < similarity_lt_textboxes[title_winner_idx]['title']
+            similarity_lt_textboxes[content_winner_idx]["content"]
+            < similarity_lt_textboxes[title_winner_idx]["title"]
             and number_winner_idx != title_winner_idx
-            and similarity_lt_textboxes[number_winner_idx]['number'] > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY
-            and similarity_lt_textboxes[title_winner_idx]['title'] > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY
+            and similarity_lt_textboxes[number_winner_idx]["number"]
+            > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY
+            and similarity_lt_textboxes[title_winner_idx]["title"]
+            > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY
         ):
             # The case where chapter number and chapter title are broken into two different lt_textboxes by pdfminer.
             # For the lt_textbox which wins on the basis of the content, if the similarity of its title is bigger
@@ -463,9 +509,10 @@ def similarity_referee(  # pylint: disable=too-many-branches  # for readability
             winners.append(lt_textboxes_in_rect[title_winner_idx])
         elif (
             title_winner_idx == content_winner_idx
-            and similarity_lt_textboxes[content_winner_idx]['content']
-            >= similarity_lt_textboxes[title_winner_idx]['title']
-            and similarity_lt_textboxes[content_winner_idx]['content'] > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY
+            and similarity_lt_textboxes[content_winner_idx]["content"]
+            >= similarity_lt_textboxes[title_winner_idx]["title"]
+            and similarity_lt_textboxes[content_winner_idx]["content"]
+            > MIN_OUTLINE_TITLE_TEXTBOX_SIMILARITY
         ):
             # The case where chapter number and its title are in the same lt_textbox
             # For the lt_textbox which has high potential to be a chapter, it shall win the similarity
@@ -498,8 +545,8 @@ def render_paragraphs(  # pylint: disable=too-many-branches
 
     for page_index, lt_textboxes in tqdm(
         page_lt_textboxes_filtered.items(),
-        desc='###### Extracting paragraphs',
-        unit='pages',
+        desc="###### Extracting paragraphs",
+        unit="pages",
         bar_format=bar_format_lvl2(),
     ):
         # add lt_textbox to a list of paragraphs
@@ -508,10 +555,18 @@ def render_paragraphs(  # pylint: disable=too-many-branches
             for page in page_list:
                 if page.number == page_index + 1:
                     paragraph_page = page
-            position = Position(lt_textbox.x0, lt_textbox.y0, lt_textbox.x1, lt_textbox.y1, paragraph_page)
+            position = Position(
+                lt_textbox.x0,
+                lt_textbox.y0,
+                lt_textbox.x1,
+                lt_textbox.y1,
+                paragraph_page,
+            )
 
             page_number = page_index + 1
-            paragraph = render_single_paragraph(lt_textbox, page_number, paragraph_id, position)
+            paragraph = render_single_paragraph(
+                lt_textbox, page_number, paragraph_id, position
+            )
             paragraph_list.append(paragraph)
             paragraph_id += 1
 
@@ -534,12 +589,14 @@ def render_single_paragraph(
     :return: instance of a paragraph
     """
     links = []
-    if catalog['annos']:
+    if catalog["annos"]:
         links = extract_linked_chars(lt_textbox, page_number)
 
     hbox = lt_to_libpdf_hbox_converter([lt_textbox])
 
-    paragraph = Paragraph(idx=paragraph_id, textbox=hbox, position=position, links=links)
+    paragraph = Paragraph(
+        idx=paragraph_id, textbox=hbox, position=position, links=links
+    )
     return paragraph
 
 
@@ -563,15 +620,15 @@ def extract_linked_chars(lt_textbox: LTTextBox, page_number: int) -> List[Link]:
     # rect[2] is x1 (right)
     # rect[3] is y1 (top)
     links = []
-    if page_number in catalog['annos']:
+    if page_number in catalog["annos"]:
         # collect the annos which are intersected with or in the lt_textbox
         anno_textboxes = [
             x
-            for x in catalog['annos'][page_number]['annotation']
-            if x['rect'][0] < lt_textbox.x1
-            and x['rect'][1] < lt_textbox.y1
-            and x['rect'][2] > lt_textbox.x0
-            and x['rect'][3] > lt_textbox.y0
+            for x in catalog["annos"][page_number]["annotation"]
+            if x["rect"][0] < lt_textbox.x1
+            and x["rect"][1] < lt_textbox.y1
+            and x["rect"][2] > lt_textbox.x0
+            and x["rect"][3] > lt_textbox.y0
         ]
 
         if anno_textboxes:
@@ -585,14 +642,18 @@ def extract_linked_chars(lt_textbox: LTTextBox, page_number: int) -> List[Link]:
                 annos_line = [
                     x
                     for x in anno_textboxes
-                    if x['rect'][0] < line_horizontal.x1
-                    and x['rect'][2] > line_horizontal.x0
-                    and line_horizontal.y1 > (x['rect'][1] + abs(x['rect'][1] - x['rect'][3]) / 2) > line_horizontal.y0
+                    if x["rect"][0] < line_horizontal.x1
+                    and x["rect"][2] > line_horizontal.x0
+                    and line_horizontal.y1
+                    > (x["rect"][1] + abs(x["rect"][1] - x["rect"][3]) / 2)
+                    > line_horizontal.y0
                 ]
 
                 if annos_line:
-                    annos_line.sort(key=lambda x: x['rect'][0])
-                    links.extend(annos_scanner(line_horizontal, annos_line, char_counter))
+                    annos_line.sort(key=lambda x: x["rect"][0])
+                    links.extend(
+                        annos_scanner(line_horizontal, annos_line, char_counter)
+                    )
                 else:
                     pass
                 char_counter = char_counter + len(
@@ -636,7 +697,7 @@ def annos_scanner(
     links = []
     # anno_start_idx is used to index which character is the start of the anno
     # anno_end_idx is used to index in which character has reached the last char in the anno-rectangle
-    anno_flags = {'anno_start_idx': None, 'anno_stop_idx': None}
+    anno_flags = {"anno_start_idx": None, "anno_stop_idx": None}
 
     for idx_char, char in enumerate(lt_textline._objs):  # pylint: disable=protected-access
         # if all the anno-rectangles in a line have all been checked, then just get plain text of chars
@@ -648,7 +709,10 @@ def annos_scanner(
                 annos_line[idx_anno],
                 anno_flags,
             )
-            if anno_flags['anno_start_idx'] is not None and anno_flags['anno_stop_idx'] is not None:
+            if (
+                anno_flags["anno_start_idx"] is not None
+                and anno_flags["anno_stop_idx"] is not None
+            ):
                 # chars are in the anno-rectangle
                 # using "not None" is because the index can be 0
                 if anno_complete:
@@ -692,20 +756,23 @@ def first_last_char_in_anno_marker(  # pylint: disable=too-many-branches # bette
     # As it is already a horizontal line, the vertical margin of each char in the textline is
     # presumably more and less the same.
     if isinstance(char, LTChar):
-        if char.x0 > anno['rect'][0] - ANNO_X_TOLERANCE and char.x1 < anno['rect'][2] + ANNO_X_TOLERANCE:
+        if (
+            char.x0 > anno["rect"][0] - ANNO_X_TOLERANCE
+            and char.x1 < anno["rect"][2] + ANNO_X_TOLERANCE
+        ):
             # a char is in an anno-rectangle
-            if anno_flags['anno_start_idx'] is None:
+            if anno_flags["anno_start_idx"] is None:
                 # the first character of an anno.
-                anno_flags['anno_start_idx'] = idx_char
+                anno_flags["anno_start_idx"] = idx_char
 
             # the original index of a end char plus 1 is more intuitive for the string slicing in python
-            anno_flags['anno_stop_idx'] = idx_char + 1
+            anno_flags["anno_stop_idx"] = idx_char + 1
 
             if idx_char == len(ltobjs_in_lttextline) - 1:
                 # the last char of the textline
                 anno_complete = True
             elif isinstance(ltobjs_in_lttextline[idx_char + 1], LTChar):
-                if ltobjs_in_lttextline[idx_char + 1].x0 > anno['rect'][2]:
+                if ltobjs_in_lttextline[idx_char + 1].x0 > anno["rect"][2]:
                     # the next char is outside of the current anno-rectangle
                     anno_complete = True
             else:
@@ -721,11 +788,11 @@ def first_last_char_in_anno_marker(  # pylint: disable=too-many-branches # bette
             # the last char of the textline
             anno_complete = True
         elif isinstance(ltobjs_in_lttextline[idx_char + 1], LTChar):
-            if ltobjs_in_lttextline[idx_char + 1].x0 > anno['rect'][2]:
+            if ltobjs_in_lttextline[idx_char + 1].x0 > anno["rect"][2]:
                 # the next char is outside of the current anno-rectangle
                 anno_complete = True
         else:
-            raise ValueError('two LTAnno occurs in a row')
+            raise ValueError("two LTAnno occurs in a row")
 
     return anno_complete
 
@@ -740,33 +807,41 @@ def render_link(anno_flags: Dict, anno: Dict, char_counter: int) -> Link:
                         this variable is used to index the start and end chars in the lt_textbox
     :return: a single Link instantiated
     """
-    start_idx = anno_flags['anno_start_idx'] + char_counter
+    start_idx = anno_flags["anno_start_idx"] + char_counter
 
-    if anno_flags['anno_start_idx'] == anno_flags['anno_stop_idx']:
+    if anno_flags["anno_start_idx"] == anno_flags["anno_stop_idx"]:
         #  the annotation contains only one character
         stop_idx = start_idx
     else:
-        stop_idx = anno_flags['anno_stop_idx'] + char_counter
+        stop_idx = anno_flags["anno_stop_idx"] + char_counter
 
     # get the position of the jump target
-    if 'des_name' in anno:
+    if "des_name" in anno:
         # implicit target which means name destination catalog does not exist in this PDF
-        if catalog['dests'] and anno['des_name'] in catalog['dests']:
+        if catalog["dests"] and anno["des_name"] in catalog["dests"]:
             pos_target = {
-                'page': catalog['dests'][anno['des_name']]['Num'],
-                'x': catalog['dests'][anno['des_name']]['X'],
-                'y': catalog['dests'][anno['des_name']]['Y'],
+                "page": catalog["dests"][anno["des_name"]]["Num"],
+                "x": catalog["dests"][anno["des_name"]]["X"],
+                "y": catalog["dests"][anno["des_name"]]["Y"],
             }
         else:
-            pos_target = {'page': anno['dest']['page'], 'x': anno['dest']['rect_X'], 'y': anno['dest']['rect_Y']}
+            pos_target = {
+                "page": anno["dest"]["page"],
+                "x": anno["dest"]["rect_X"],
+                "y": anno["dest"]["rect_Y"],
+            }
     else:
-        pos_target = {'page': anno['dest']['page'], 'x': anno['dest']['rect_X'], 'y': anno['dest']['rect_Y']}
+        pos_target = {
+            "page": anno["dest"]["page"],
+            "x": anno["dest"]["rect_X"],
+            "y": anno["dest"]["rect_Y"],
+        }
 
     link = Link(start_idx, stop_idx, pos_target)
 
     # reset the start and end indices of the annotation
-    anno_flags['anno_start_idx'] = None
-    anno_flags['anno_stop_idx'] = None
+    anno_flags["anno_start_idx"] = None
+    anno_flags["anno_stop_idx"] = None
 
     return link
 
@@ -783,8 +858,8 @@ def _flatten_outline(nested_outline, flatten_outline: List):
     """
     for chapter in nested_outline:
         flatten_outline.append(chapter)
-        if chapter['content']:
-            _flatten_outline(chapter['content'], flatten_outline)
+        if chapter["content"]:
+            _flatten_outline(chapter["content"], flatten_outline)
 
 
 def remove_lt_textboxes_in_tables_figures(
@@ -806,14 +881,17 @@ def remove_lt_textboxes_in_tables_figures(
     page_lt_textboxes_filter = {}
     for page_index, lt_textboxes in page_lt_textboxes.items():
         figures_tables_list = tables_figures_merge(figure_list, table_list, page_index)
-        if figures_tables_list is not None:  # figures or tables exists in the current page
+        if (
+            figures_tables_list is not None
+        ):  # figures or tables exists in the current page
             for element in figures_tables_list:
                 # The lt_textbox inside the elements will be filtered out. It returns only the boxes
                 # outside the elements.
                 # Elements here can be tables or figures
                 lt_textboxes = list(
                     filter(
-                        lambda x, ele=element: x.x0 < (ele.position.x0 - TABLE_MARGIN)  # left
+                        lambda x, ele=element: x.x0
+                        < (ele.position.x0 - TABLE_MARGIN)  # left
                         or x.x1 > (ele.position.x1 + TABLE_MARGIN)  # right
                         or x.y0 < (ele.position.y0 - TABLE_MARGIN)  # bottom
                         or x.y1 > (ele.position.y1 + TABLE_MARGIN),  # top
@@ -842,8 +920,12 @@ def tables_figures_merge(
     :param page_index: index of current page number
     :return:
     """
-    filter_list_table = list(filter(lambda x: x.position.page.number == page_index + 1, table_list))
-    filter_list_figure = list(filter(lambda x: x.position.page.number == page_index + 1, figure_list))
+    filter_list_table = list(
+        filter(lambda x: x.position.page.number == page_index + 1, table_list)
+    )
+    filter_list_figure = list(
+        filter(lambda x: x.position.page.number == page_index + 1, figure_list)
+    )
     merge_list: List[Union[Figure, Table]] = filter_list_table + filter_list_figure
     if merge_list:
         merge_list.sort(key=lambda x: x.position.y0, reverse=True)
@@ -862,20 +944,20 @@ def pdfminer_get_lt_textboxes(pdf) -> Dict[int, List[LTTextBox]]:
     :param pdf: instance of pdfplumber.pdf.PDF class
     :return: dictionary mapping page numbers (0-based) to a list of LTTextBox objects
     """
-    LOG.info('Extracting layout ...')
+    LOG.info("Extracting layout ...")
     page_lt_textboxes = {}
 
     for idx_page, page in enumerate(
         tqdm(
             pdf.pages,
             total=len(pdf.pages),
-            desc='###### Extracting layout',
-            unit='pages',
+            desc="###### Extracting layout",
+            unit="pages",
             bar_format=bar_format_lvl2(),
         ),
     ):
         if logging_needed(idx_page, len(pdf.pages)):
-            LOG.debug('Extracting layout page %s of %s', idx_page + 1, len(pdf.pages))
+            LOG.debug("Extracting layout page %s of %s", idx_page + 1, len(pdf.pages))
 
         pdf.interpreter.process_page(page.page_obj)
         result = pdf.device.get_result()
@@ -883,10 +965,12 @@ def pdfminer_get_lt_textboxes(pdf) -> Dict[int, List[LTTextBox]]:
         # remove detected header and footer lt_textboxes based on given page crop margin parameter
         filter_lt_textboxes = list(
             filter(
-                lambda lt_textbox: lt_textbox.y1 < (float(pdf.pages[0].height) - parameters.PAGE_CROP_MARGINS['top'])
-                and lt_textbox.y0 > parameters.PAGE_CROP_MARGINS['bottom']
-                and lt_textbox.x0 > parameters.PAGE_CROP_MARGINS['left']
-                and lt_textbox.x1 < (float(pdf.pages[0].width) - parameters.PAGE_CROP_MARGINS['right']),
+                lambda lt_textbox: lt_textbox.y1
+                < (float(pdf.pages[0].height) - parameters.PAGE_CROP_MARGINS["top"])
+                and lt_textbox.y0 > parameters.PAGE_CROP_MARGINS["bottom"]
+                and lt_textbox.x0 > parameters.PAGE_CROP_MARGINS["left"]
+                and lt_textbox.x1
+                < (float(pdf.pages[0].width) - parameters.PAGE_CROP_MARGINS["right"]),
                 lt_textboxes,
             ),
         )

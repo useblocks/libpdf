@@ -15,10 +15,10 @@ def get_level_name(verbose):
     """Return the log levels for the CLI verbosity flag in words."""
     verbose = min(verbose, 3)
     level_dict = {
-        0: 'ERROR/FATAL/CRITICAL',
-        1: 'WARNING',
-        2: 'INFO',
-        3: 'DEBUG',
+        0: "ERROR/FATAL/CRITICAL",
+        1: "WARNING",
+        2: "INFO",
+        3: "DEBUG",
     }
     return level_dict[verbose]
 
@@ -80,10 +80,12 @@ def config_logger(cli=True):
         else:  # don't init anything, it's up to the user
             pass
 
-    log_format = '[%(levelname)5s] %(name)s - %(message)s'
+    log_format = "[%(levelname)5s] %(name)s - %(message)s"
     if init_tqdm:
         root_logger = logging.getLogger()
-        handler = TqdmLoggingHandler(level=logging.DEBUG)  # output all messages, log level handling is done in logger
+        handler = TqdmLoggingHandler(
+            level=logging.DEBUG
+        )  # output all messages, log level handling is done in logger
         handler.formatter = logging.Formatter(log_format)
         root_logger.addHandler(handler)
     if init_basic:
@@ -97,15 +99,15 @@ def set_log_level(verbose):
     All loggers have libpdf as a parent, setting the log level for libpdf also affects all child loggers like
     libpdf.core.
     """
-    log = logging.getLogger('libpdf')
+    log = logging.getLogger("libpdf")
     if verbose == 0:
-        log.setLevel('ERROR')
+        log.setLevel("ERROR")
     elif verbose == 1:
-        log.setLevel('WARNING')
+        log.setLevel("WARNING")
     elif verbose == 2:
-        log.setLevel('INFO')
+        log.setLevel("INFO")
     else:
-        log.setLevel('DEBUG')
+        log.setLevel("DEBUG")
 
 
 def logging_needed(idx_page: int, count_pages: int):
@@ -118,4 +120,8 @@ def logging_needed(idx_page: int, count_pages: int):
         return False
     twenty_percent = count_pages / 5.0
     round_up_next_ten = int(math.ceil(twenty_percent / 10.0)) * 10
-    return idx_page == 0 or (idx_page + 1) % round_up_next_ten == 0 or idx_page == count_pages - 1
+    return (
+        idx_page == 0
+        or (idx_page + 1) % round_up_next_ten == 0
+        or idx_page == count_pages - 1
+    )

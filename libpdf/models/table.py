@@ -23,7 +23,9 @@ class Table(Element):
     :vartype position: Position
     """
 
-    def __init__(self, idx: int, cells: List['Cell'], position: 'Position', caption=None):
+    def __init__(
+        self, idx: int, cells: List["Cell"], position: "Position", caption=None
+    ):
         """Initialize the instance."""
         super().__init__(position=position)
         self.idx = idx
@@ -46,7 +48,7 @@ class Table(Element):
 
         :type: str
         """
-        return f'table.{self.idx}'
+        return f"table.{self.idx}"
 
     def set_cells_backref(self):
         """Set b_table back reference on all cells."""
@@ -61,10 +63,10 @@ class Table(Element):
         :type: List[List[Cell]]
         """
         rows = []
-        max_row = max(self.cells, key=attrgetter('row')).row  # get highest row number
+        max_row = max(self.cells, key=attrgetter("row")).row  # get highest row number
         for row_nr in range(1, max_row + 1):
             columns_in_row = [cell for cell in self.cells if cell.row == row_nr]
-            columns_in_row.sort(key=attrgetter('col'))
+            columns_in_row.sort(key=attrgetter("col"))
             rows.append(columns_in_row)
         return rows
 
@@ -76,10 +78,12 @@ class Table(Element):
         :type: List[List[Cell]]
         """
         columns = []
-        max_columns = max(self.cells, key=attrgetter('col')).col  # get highest column number
+        max_columns = max(
+            self.cells, key=attrgetter("col")
+        ).col  # get highest column number
         for col_nr in range(1, max_columns + 1):
             rows_in_column = [cell for cell in self.cells if cell.col == col_nr]
-            rows_in_column.sort(key=attrgetter('row'))
+            rows_in_column.sort(key=attrgetter("row"))
             columns.append(rows_in_column)
         return columns
 
@@ -152,4 +156,4 @@ class Cell(ModelBase):
 
     def __repr__(self):
         """Identify cells by row and column."""
-        return f'Cell({self.row}, {self.col}) {self.textbox.text}'
+        return f"Cell({self.row}, {self.col}) {self.textbox.text}"

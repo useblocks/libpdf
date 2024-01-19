@@ -1,19 +1,26 @@
 """Definition for PDF pages."""
-from typing import List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, List, Union
 
 from libpdf.models.model_base import ModelBase
-
 
 # avoid import cycles for back reference type hinting
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.position import Position  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.root import Root  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.chapter import Chapter  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.paragraph import Paragraph  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.table import Table  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.figure import Figure  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.chapter import (
+        Chapter,  # pylint: disable=cyclic-import
+    )
+    from libpdf.models.figure import (
+        Figure,  # pylint: disable=cyclic-import
+    )
+    from libpdf.models.paragraph import (
+        Paragraph,  # pylint: disable=cyclic-import
+    )
+    from libpdf.models.position import (
+        Position,  # pylint: disable=cyclic-import
+    )
+    from libpdf.models.root import Root  # pylint: disable=cyclic-import
+    from libpdf.models.table import Table  # pylint: disable=cyclic-import
 
 
 class Page(ModelBase):
@@ -40,9 +47,9 @@ class Page(ModelBase):
         number,
         width,
         height,
-        content: List[Union['Chapter', 'Paragraph', 'Table', 'Figure']] = None,
-        root: 'Root' = None,
-        positions: List['Position'] = None,
+        content: List[Union["Chapter", "Paragraph", "Table", "Figure"]] = None,
+        root: "Root" = None,
+        positions: List["Position"] = None,
     ):
         """Initialize the instance."""
         self.number = number
@@ -64,7 +71,7 @@ class Page(ModelBase):
         According to PDF model the parameter should be called ``id`` but the name is reserved in Python, so ``id_``
         is used.
         """
-        return f'page.{str(self.number)}'
+        return f"page.{self.number!s}"
 
     def __repr__(self):
         """Page representation using page.<number>."""

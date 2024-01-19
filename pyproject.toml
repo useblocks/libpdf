@@ -121,7 +121,7 @@ exclude = [
 line-length = 88
 
 # Assume Python 3.11.
-target-version = "py311"
+target-version = "py38"
 
 [tool.ruff.lint]
 # concept: select all rules by default and ignore unwanted (maybe just per file)

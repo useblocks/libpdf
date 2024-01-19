@@ -1,5 +1,5 @@
 """Definition for PDF linked text."""
-from typing import Dict, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, Union
 
 from libpdf.models.model_base import ModelBase
 
@@ -7,9 +7,13 @@ from libpdf.models.model_base import ModelBase
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.table import Cell  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.figure import Figure  # noqa: F401  # pylint: disable=cyclic-import
-    from libpdf.models.paragraph import Paragraph  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.figure import (
+        Figure,  # pylint: disable=cyclic-import
+    )
+    from libpdf.models.paragraph import (
+        Paragraph,  # pylint: disable=cyclic-import
+    )
+    from libpdf.models.table import Cell  # pylint: disable=cyclic-import
 
 
 class Link(ModelBase):
@@ -40,7 +44,7 @@ class Link(ModelBase):
         idx_stop: int,
         pos_target: Dict,
         libpdf_target: str = None,
-        b_source: Union['Paragraph', 'Figure', 'Cell'] = None,
+        b_source: Union["Paragraph", "Figure", "Cell"] = None,
     ):
         """Initialize the instance."""
         self.idx_start = idx_start
@@ -66,4 +70,4 @@ class Link(ModelBase):
 
     def __repr__(self):
         """Make link of the repr for better debugging."""
-        return f'{self.source_chars}'
+        return f"{self.source_chars}"

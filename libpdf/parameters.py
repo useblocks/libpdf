@@ -129,10 +129,10 @@ FIGURE_MIN_WIDTH = 15
 # - it is written in 2 places: initialization here and can be set from command line / API
 # - it is used in multiple modules, passing around is cumbersome
 PAGE_CROP_MARGINS = {
-    'top': 0.0,
-    'right': 0.0,
-    'bottom': 0.0,
-    'left': 0.0,
+    "top": 0.0,
+    "right": 0.0,
+    "bottom": 0.0,
+    "left": 0.0,
 }
 
 # Page margins used as a search area for smart header/footer detection.
@@ -142,8 +142,8 @@ PAGE_CROP_MARGINS = {
 # Given as fraction of page height for top (header) and bottom (footer)
 # Example: 0.2 (==20% of page height)
 SMART_PAGE_CROP_REL_MARGINS = {
-    'top': 0.2,
-    'bottom': 0.2,
+    "top": 0.2,
+    "bottom": 0.2,
 }
 
 # Parameter for the extraction of potential header/footer elements.
@@ -188,26 +188,26 @@ UNIQUE_HEADER_OR_FOOTER_ELEMENTS_PERCENTAGE = 0.05
 # The following parameters are used for visual debugging
 # Give colors a human readable name
 COLORS = {
-    'red': (255, 0, 0),
-    'green': (0, 255, 0),
-    'blue': (0, 0, 255),
-    'yellow': (255, 255, 0),
+    "red": (255, 0, 0),
+    "green": (0, 255, 0),
+    "blue": (0, 0, 255),
+    "yellow": (255, 255, 0),
 }
 
 # Map extracted elements with color
 # the numbers at the end means transparency, the value should be set in range (40, 160)
 VIS_DBG_MAP_ELEMENTS_COLOR = {
-    'chapter': COLORS['green'] + (80,),
-    'paragraph': COLORS['blue'] + (40,),
-    'table': COLORS['red'] + (40,),
-    'figure': COLORS['yellow'] + (80,),
+    "chapter": COLORS["green"] + (80,),
+    "paragraph": COLORS["blue"] + (40,),
+    "table": COLORS["red"] + (40,),
+    "figure": COLORS["yellow"] + (80,),
 }
 
 RENDER_ELEMENTS = [
-    'chapter',
-    'paragraph',
-    'table',
-    'figure',
+    "chapter",
+    "paragraph",
+    "table",
+    "figure",
 ]  # the elements that shall be rendered
 
 # pdfminer layout analysis parameter from from pdfminer.layout -> LAParams.__init__
@@ -215,11 +215,11 @@ RENDER_ELEMENTS = [
 # - pdfplumber wrapper around pdfminer only requests layout analysis if at least one laparam is given
 # - they are adapted to best practice values, the deviations are commented below
 LA_PARAMS = {
-    'line_overlap': 0.5,
-    'char_margin': 6.0,  # default: 2.0
-    'line_margin': 0.4,  # default : 0.5
-    'word_margin': 0.1,
-    'boxes_flow': 0.5,
-    'detect_vertical': False,
-    'all_texts': False,
+    "line_overlap": 0.5,
+    "char_margin": 6.0,  # default: 2.0
+    "line_margin": 0.4,  # default : 0.5
+    "word_margin": 0.1,
+    "boxes_flow": 0.5,
+    "detect_vertical": False,
+    "all_texts": False,
 }

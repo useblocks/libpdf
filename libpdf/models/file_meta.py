@@ -8,7 +8,7 @@ from libpdf.models.model_base import ModelBase
 # https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
     # F401 imported but unused - it's needed for type hinting
-    from libpdf.models.file import File  # noqa: F401  # pylint: disable=cyclic-import
+    from libpdf.models.file import File  # pylint: disable=cyclic-import
 
 
 class FileMeta(ModelBase):
@@ -48,7 +48,7 @@ class FileMeta(ModelBase):
         creation_date: datetime = None,
         modified_date: datetime = None,
         trapped: bool = None,
-        file: 'File' = None,
+        file: "File" = None,
     ):
         """Initialize the instance."""
         self.author = author
