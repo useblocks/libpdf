@@ -202,7 +202,7 @@ VIS_DBG_MAP_ELEMENTS_COLOR = {
     'paragraph': COLORS['blue'] + (40,),
     'table': COLORS['red'] + (40,),
     'figure': COLORS['yellow'] + (80,),
-    'rect': COLORS['cyan'] + (40,),
+    'rect': COLORS['cyan'] + (160,),
 }
 
 RENDER_ELEMENTS = [
