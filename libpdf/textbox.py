@@ -94,7 +94,7 @@ def extract_paragraphs_chapters(
     return paragraph_list, chapter_list
 
 
-def extract_lt_textboxes(pdf, figure_list, table_list, rect_list, page_list):
+def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
     """
     Extract and filter lt_textboxes using pdfminer.
 
@@ -104,7 +104,6 @@ def extract_lt_textboxes(pdf, figure_list, table_list, rect_list, page_list):
     :param pdf:
     :param figure_list:
     :param table_list:
-    :param rect_list:
     :param page_list:
     :return:
     """
@@ -116,7 +115,8 @@ def extract_lt_textboxes(pdf, figure_list, table_list, rect_list, page_list):
             del page_lt_textboxes[idx_page]
 
     if table_list is not None or figure_list is not None:
-        page_lt_textboxes_filtered = remove_lt_textboxes_in_tables_figures(
+        +9
+        = remove_lt_textboxes_in_tables_figures(
             page_lt_textboxes, figure_list, table_list
         )
     else:
@@ -864,11 +864,10 @@ def _flatten_outline(nested_outline, flatten_outline: List):
             _flatten_outline(chapter["content"], flatten_outline)
 
 
-def remove_lt_textboxes_in_tables_figures_rect(
+def remove_lt_textboxes_in_tables_figures(
     page_lt_textboxes: Dict[int, List[LTTextBox]],
     figure_list: List[Figure],
     table_list: List[Table],
-    rect_list: List[Rect]
 ):
     """
     Remove lt_textboxes in the coverage of tables or figures from page_lt_textboxes.
@@ -879,7 +878,6 @@ def remove_lt_textboxes_in_tables_figures_rect(
     :param page_lt_textboxes:
     :param figure_list:
     :param table_list:
-    :param rect_list:
     :return:
     """
     page_lt_textboxes_filter = {}
@@ -908,10 +906,9 @@ def remove_lt_textboxes_in_tables_figures_rect(
     return page_lt_textboxes_filter
 
 
-def tables_figures_rect_merge(
+def tables_figures_merge(
     figure_list: List[Figure],
     table_list: List[Table],
-    rect_list: List[Rect],
     page_index: int,
 ) -> List[Union[Figure, Table]]:
     """
@@ -922,7 +919,6 @@ def tables_figures_rect_merge(
 
     :param figure_list: A list of all figures extracted from the pages in this pdf
     :param table_list: A list of all tables extracted from the pages in this pdf
-    :param rect_list:
     :param page_index: index of current page number
     :return:
     """
