@@ -115,8 +115,7 @@ def extract_lt_textboxes(pdf, figure_list, table_list, page_list):
             del page_lt_textboxes[idx_page]
 
     if table_list is not None or figure_list is not None:
-        +9
-        = remove_lt_textboxes_in_tables_figures(
+        page_lt_textboxes_filtered = remove_lt_textboxes_in_tables_figures(
             page_lt_textboxes, figure_list, table_list
         )
     else:
