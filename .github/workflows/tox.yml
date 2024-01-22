@@ -92,7 +92,11 @@ jobs:
         run: |
           python -m pip install poetry tox
 
-      - name: Run ruff
+      - name: Run ruff format check
+        run: |
+          tox -e format-check
+
+      - name: Run ruff lint
         continue-on-error: true # deactivate for now (need to fix the issues over time)
         run: |
           tox -e lint
