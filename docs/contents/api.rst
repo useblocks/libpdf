@@ -75,7 +75,7 @@ Figure
 Rect
 ~~~~~~
 
-.. autoclass:: libpdf.models.figure.Rect
+.. autoclass:: libpdf.models.rect.Rect
 
 
 Position
