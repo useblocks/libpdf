@@ -153,7 +153,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
             LOG.info('Excluding rects extraction')
             rect_list = []
         else:
-            rect_list = extract_rects(pdf, pages_list, figure_dir)
+            rect_list = extract_rects(pdf, pages_list)
             # smartly remove figures that are in header and footer
             if smart_page_crop:
                 rect_list = smart_page_crop_header_footer(pdf, rect_list)
@@ -658,7 +658,6 @@ def extract_figures(
 def extract_rects(
     pdf,
     pages_list,
-    figure_dir,
 ) -> List[
     Rect
 ]:  # pylint: disable=too-many-nested-blocks, too-many-branches  # local algorithm, easier to read when not split up
@@ -715,16 +714,7 @@ def extract_rects(
 
                     textboxes.append(hbox)
 
-                rect_name = f'page_{page.page_number}_rect.{idx_rect + 1}.png'
-
-                # create figures directory if not exist
-                Path(figure_dir).mkdir(parents=True, exist_ok=True)
-
-                rect_path = os.path.abspath(os.path.join(figure_dir, rect_name))
-
-                #figure = Figure(idx_figure + 1, image_path, fig_pos, links, textboxes, 'None')
-                #figure_list.append(figure)
-                rect = Rect( idx_rect + 1, rect_pos, links, textboxes, non_stroking_color )
+                rect = Rect( idx_rect + 1, rect_pos, links, textboxes, non_stroking_color)
                 rect_list.append(rect)
 
         else:
