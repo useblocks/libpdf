@@ -1,4 +1,4 @@
-"""Definition for PDF figures."""
+"""Definition for PDF rects."""
 from typing import TYPE_CHECKING, List
 
 from libpdf.models.element import Element
@@ -23,7 +23,7 @@ class Rect(Element):
         position: 'Position',
         links: List[Link],
         textboxes: List[HorizontalBox],
-        non_stroking_color: str = None,
+        non_stroking_color: tuple = None,
     ):
         """Initialize the instance."""
         super().__init__(position=position)
