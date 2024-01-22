@@ -472,6 +472,13 @@ class DependentOption(click.Option):
     help="Skip figures. Figures will not be part of the output JSON/YAML structures and also not saved if"
     " --save-figures is given.",
 )
+@click.option(
+    "--no-rects",
+    is_flag=True,
+    show_default=True,
+    help="Skip rects. rects will not be part of the output JSON/YAML structures and also not saved if"
+    " --save-rects is given.",
+)
 @click.option("-vd", "--visual-debug", is_flag=True, help="Visual debug libpdf.")
 @click.option(
     "-vo",
