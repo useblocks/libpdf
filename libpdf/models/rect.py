@@ -14,7 +14,13 @@ if TYPE_CHECKING:
 
 
 class Rect(Element):
-    """PDF Rect."""
+    """
+    Rectangles in a PDF.
+
+    The rectangles are extracted from pdfplumber.
+    References to textboxes are stored in case the rectangle touches them.
+    The textboxes can still be part of paragraphs.
+    """
 
     def __init__(
         self,
@@ -24,7 +30,6 @@ class Rect(Element):
         textboxes: list[HorizontalBox],
         non_stroking_color: tuple | None = None,
     ):
-        """Initialize the instance."""
         super().__init__(position=position)
         self.idx = idx
         self.textboxes = textboxes
