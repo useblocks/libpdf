@@ -15,16 +15,11 @@ Small changes like fixing a typo, contributing to the documentation commonly don
 Here are some things worth noting before uploading commits:
 
 * all code must follow the `black <https://black.readthedocs.io/en/stable/>`_ code style
-* black is configured to
-
-    * a maximum line length of 120 chars and
-    * single quote string literals
-
+* ruff is used for formatting according to the black style with all defaults
 * pull requests are checked using tox
 * tox executes (for various Python versions)
 
-    * pytest
-    * flake8 with various plugins (see pyproject.toml)
-    * pylint
-    * black
+    * test cases
+    * ruff formatter check
+    * ruff linter check
     * the Sphinx documentation build
