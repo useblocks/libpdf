@@ -11,9 +11,6 @@
        :alt: Supported versions
    .. image:: https://readthedocs.org/projects/libpdf/badge/?version=latest
        :target: https://readthedocs.org/projects/libpdf/
-   .. image:: https://travis-ci.org/useblocks/libpdf.svg?branch=master
-       :target: https://travis-ci.org/useblocks/libpdf
-       :alt: Travis-CI Build Status
    .. image:: https://img.shields.io/pypi/v/libpdf.svg
        :target: https://pypi.python.org/pypi/libpdf
        :alt: PyPI Package latest release
