@@ -233,12 +233,11 @@
         HorizontalBox "+textbox  0..1" --* Cell
         HorizontalBox "+textboxes  0..*" --* Figure
         HorizontalBox "+textbox  0..1" --* Chapter
-        HorizontalBox "+textboxes  0..*" --* Rect
+        HorizontalBox "+textbox  0..1" --* Rect
 
         Paragraph "+b_source  1" *-- "+links  *" Link
         Figure "+b_source  1" *-- "+links  *" Link
         Cell "+b_source  1" *-- "+links  *" Link
-        Rect "+b_source  1" *-- "+links  *" Link
 
         Cell "+cells  1..*" --* "+b_table  1" Table
         Cell "+b_cell  1" *-down- "+position  1" Position
@@ -247,7 +246,7 @@
         Figure -[#COL_DERIVE]-|> Element
         Chapter -[#COL_DERIVE]-|> Element
         Paragraph -[#COL_DERIVE]|> Element
-        Rect -[#COL_DERIVE]-|> Element
+        Rect -[#COL_DERIVE]|> Element
         
         Chapter "1" *-- "+content  *" Element: ordered
         Page "1" *-- "+content  *" Element: ordered

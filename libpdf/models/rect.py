@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from libpdf.models.element import Element
+from libpdf.models.horizontal_box import HorizontalBox
 
 if TYPE_CHECKING:
     from libpdf.models.horizontal_box import HorizontalBox
@@ -25,18 +26,14 @@ class Rect(Element):
     def __init__(
         self,
         idx: int,
-        position: Position,
-        links: list[Link],
-        textboxes: list[HorizontalBox],
-        non_stroking_color: tuple | None = None,
+        position: 'Position',
+        textbox: HorizontalBox,
+        non_stroking_color: tuple = None,
     ):
         super().__init__(position=position)
         self.idx = idx
-        self.textboxes = textboxes
-        self.links = links
+        self.textbox = textbox
         self.non_stroking_color = non_stroking_color
-        if self.links:
-            self._set_links_backref()
 
     @property
     def id_(self) -> str:
@@ -54,9 +51,4 @@ class Rect(Element):
 
         :type: str
         """
-        return f"rect.{self.idx}"
-
-    def _set_links_backref(self) -> None:
-        """Set b_source back reference on all links."""
-        for link in self.links:
-            link.b_source = self
+        return f'rect.{self.idx}'

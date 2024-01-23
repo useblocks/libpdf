@@ -34,7 +34,7 @@ from libpdf.parameters import (
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.tables import extract_pdf_table
 from libpdf.textbox import extract_linked_chars, extract_paragraphs_chapters
-from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, to_pdfplumber_bbox
+from libpdf.utils import lt_page_crop,lt_textbox_crop, lt_to_libpdf_hbox_converter, to_pdfplumber_bbox
 
 LOG = logging.getLogger(__name__)
 
@@ -690,31 +690,27 @@ def extract_rects(
                 )
 
                 non_stroking_color = rect['non_stroking_color']
-                fill = rect['fill']
 
-                bbox = (rect_pos.x0, rect_pos.y0, rect_pos.x1, rect_pos.y1)
-
-                LOG.info(f"found rect at {bbox} at page {idx_page+1}: color {non_stroking_color}");
-
-                lt_textboxes = lt_page_crop(
-                    bbox,
-                    lt_page._objs,  # pylint: disable=protected-access # access needed
-                    LTText,
-                    contain_completely=True,
+                offset = 5
+                rect_bbox = (
+                    rect_pos.x0 - offset,
+                    rect_pos.y0 - offset,
+                    rect_pos.x1 + offset,
+                    rect_pos.y1 + offset,
                 )
 
-                textboxes = []
-                links = []
-                for lt_textbox in lt_textboxes:
-                    if catalog['annos']:
-                        links.extend(extract_linked_chars(lt_textbox, lt_page.pageid))
-                    bbox = (lt_textbox.x0, lt_textbox.y0, lt_textbox.x1, lt_textbox.y1)
+                LOG.info(f"found rect at {rect_bbox} at page {idx_page+1}: color {non_stroking_color}");
 
+                lt_textbox = lt_textbox_crop(
+                    rect_bbox, lt_page._objs,
+                    word_margin=LA_PARAMS["word_margin"],
+                    y_tolerance=LA_PARAMS["line_overlap"],
+                    )
+                if lt_textbox:
                     hbox = lt_to_libpdf_hbox_converter(lt_textbox)
 
-                    textboxes.append(hbox)
 
-                rect = Rect( idx_rect + 1, rect_pos, links, textboxes, non_stroking_color)
+                rect = Rect( idx_rect + 1, rect_pos, hbox, non_stroking_color)
                 rect_list.append(rect)
 
         else:
