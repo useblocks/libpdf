@@ -8,7 +8,6 @@ from libpdf.models.horizontal_box import HorizontalBox
 
 if TYPE_CHECKING:
     from libpdf.models.horizontal_box import HorizontalBox
-    from libpdf.models.link import Link
     from libpdf.models.position import (
         Position,
     )
@@ -19,8 +18,8 @@ class Rect(Element):
     Rectangles in a PDF.
 
     The rectangles are extracted from pdfplumber.
-    References to textboxes are stored in case the rectangle touches them.
-    The textboxes can still be part of paragraphs.
+    The text covered in the rectangle is extracted and 
+    stored in an newly instantiated textbox.
     """
 
     def __init__(

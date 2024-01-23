@@ -63,7 +63,6 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     no_tables: bool,
     no_figures: bool,
     no_rects: bool,
-    crop_rects_text: bool,
     overall_pbar: tqdm,
 ) -> ApiObjects:
     """
@@ -80,7 +79,6 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     :param no_tables: flag triggering the exclusion of tables
     :param no_figures: flag triggering the exclusion of figures
     :param no_rects: flag triggering the exclusion of rects
-    :param crop_rects_text: flag triggering that rects text should be cropped from text like paragraphs
     :param overall_pbar: total progress bar for whole libpdf run
     :return: instance of Objects class
     :raise LibpdfException: PDF contains no pages
@@ -175,7 +173,6 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
             pdf,
             figure_list,
             table_list,
-            rect_list if crop_rects_text else [],
             pages_list,
             no_chapters,
             no_paragraphs,
@@ -708,7 +705,8 @@ def extract_rects(
                     )
                 if lt_textbox:
                     hbox = lt_to_libpdf_hbox_converter(lt_textbox)
-
+                else:
+                    hbox = None
 
                 rect = Rect( idx_rect + 1, rect_pos, hbox, non_stroking_color)
                 rect_list.append(rect)

@@ -68,7 +68,6 @@ def extract_paragraphs_chapters(
     pdf,
     figure_list: List[Figure],
     table_list: List[Table],
-    rect_list: List[Rect],
     page_list: List[Page],
     no_chapters,
     no_paragraphs,
