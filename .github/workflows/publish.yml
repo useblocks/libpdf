@@ -10,6 +10,9 @@ on:
 jobs:
   build-n-publish:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/libpdf
     permissions:
       id-token: write
 
@@ -31,4 +34,4 @@ jobs:
 
       - name: Publish package
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
