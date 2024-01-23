@@ -180,7 +180,8 @@
             + [tuple] non_stroking_color
             --
             **id**: ""rect.<1,2,3,n>""
-            **non_stroking_color**: RGB color space
+            **non_stroking_color**: RGB color space,
+            given as floats between 0 and 1
         }
 
         package x <<layout>> {
