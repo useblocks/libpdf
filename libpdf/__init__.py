@@ -9,10 +9,8 @@ through an API and also as a command line interface.
 :copyright: © 2020 by team useblocks
 :license: MIT, see LICENSE for more details
 """  # needed for autodoc
-try:
-    import importlib_metadata  # Python 3.6 and 3.7
-except ImportError:
-    import importlib.metadata as importlib_metadata  # Python 3.8, 3.9
+
+import importlib.metadata as importlib_metadata  # Python 3.8, 3.9
 
 __version__: str = importlib_metadata.version("libpdf")
 __summary__: str = importlib_metadata.metadata("libpdf")["Summary"]
