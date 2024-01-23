@@ -25,7 +25,7 @@ libpdf
 ======
 
 ``libpdf`` allows the extraction of structured data from machine readable PDFs.
-It is tested for Python 3.6, 3.7, 3.8 and 3.9.
+It is tested for Python 3.8, 3.9. 3.10, 3.11 and 3.12.
 
 Motivation
 ----------
