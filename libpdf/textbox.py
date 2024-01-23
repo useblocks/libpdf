@@ -46,7 +46,6 @@ from libpdf.catalog import catalog
 from libpdf.log import logging_needed
 from libpdf.models.chapter import Chapter
 from libpdf.models.figure import Figure
-from libpdf.models.rect import Rect
 from libpdf.models.link import Link
 from libpdf.models.page import Page
 from libpdf.models.paragraph import Paragraph
@@ -63,6 +62,7 @@ from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, textbox_crop
 
 LOG = logging.getLogger(__name__)
+
 
 def extract_paragraphs_chapters(
     pdf,

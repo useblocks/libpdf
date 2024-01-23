@@ -24,12 +24,12 @@ from libpdf.catalog import catalog
 from libpdf.models.chapter import Chapter
 from libpdf.models.element import Element
 from libpdf.models.figure import Figure
-from libpdf.models.rect import Rect
 from libpdf.models.link import Link
 from libpdf.models.model_base import ModelBase
 from libpdf.models.page import Page
 from libpdf.models.paragraph import Paragraph
 from libpdf.models.position import Position
+from libpdf.models.rect import Rect
 from libpdf.models.table import Cell, Table
 from libpdf.parameters import HEADLINE_TOLERANCE
 
@@ -85,8 +85,8 @@ def to_dict_output(obj: Union[ModelBase, Position]) -> Dict:  # pylint: disable=
         # textboxes with positions are not interest of the output file
         if obj.textbox:
             text = obj.textbox.text
-            vars_dict['text'] = text
-        del vars_dict['textbox']
+            vars_dict["text"] = text
+        del vars_dict["textbox"]
     if isinstance(obj, (Figure)):
         # textboxes with positions are not interest of the output file
         if obj.textboxes:
@@ -293,7 +293,9 @@ def map_elements_outline(
     return nested_elements
 
 
-def fill_elements_content(elements_in_outline: List[Union[Chapter, Figure, Rect, Table, Paragraph]]) -> List[Chapter]:
+def fill_elements_content(
+    elements_in_outline: List[Union[Chapter, Figure, Rect, Table, Paragraph]],
+) -> List[Chapter]:
     """
     Fill the elements, tables, figures, rects and paragraphs into their corresponding chapters' contents.
 
@@ -304,7 +306,7 @@ def fill_elements_content(elements_in_outline: List[Union[Chapter, Figure, Rect,
     """
     for index_element, element in enumerate(elements_in_outline):
         if isinstance(element, Chapter):
-            id_dict = {'table': 1, 'figure': 1, 'paragraph': 1, 'rect': 1}
+            id_dict = {"table": 1, "figure": 1, "paragraph": 1, "rect": 1}
             content = elements_in_outline[index_element].content
             index_b_chapter = index_element
         else:

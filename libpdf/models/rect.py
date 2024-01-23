@@ -18,14 +18,14 @@ class Rect(Element):
     Rectangles in a PDF.
 
     The rectangles are extracted from pdfplumber.
-    The text covered in the rectangle is extracted and 
+    The text covered in the rectangle is extracted and
     stored in an newly instantiated textbox.
     """
 
     def __init__(
         self,
         idx: int,
-        position: 'Position',
+        position: Position,
         textbox: HorizontalBox,
         non_stroking_color: tuple = None,
     ):
@@ -50,4 +50,4 @@ class Rect(Element):
 
         :type: str
         """
-        return f'rect.{self.idx}'
+        return f"rect.{self.idx}"

@@ -188,29 +188,29 @@ UNIQUE_HEADER_OR_FOOTER_ELEMENTS_PERCENTAGE = 0.05
 # The following parameters are used for visual debugging
 # Give colors a human readable name
 COLORS = {
-    'red': (255, 0, 0),
-    'green': (0, 255, 0),
-    'blue': (0, 0, 255),
-    'yellow': (255, 255, 0),
-    'cyan': (255,255,1)
+    "red": (255, 0, 0),
+    "green": (0, 255, 0),
+    "blue": (0, 0, 255),
+    "yellow": (255, 255, 0),
+    "cyan": (255, 255, 1),
 }
 
 # Map extracted elements with color
 # the numbers at the end means transparency, the value should be set in range (40, 160)
 VIS_DBG_MAP_ELEMENTS_COLOR = {
-    'chapter': COLORS['green'] + (80,),
-    'paragraph': COLORS['blue'] + (40,),
-    'table': COLORS['red'] + (40,),
-    'figure': COLORS['yellow'] + (80,),
-    'rect': COLORS['cyan'] + (160,),
+    "chapter": COLORS["green"] + (80,),
+    "paragraph": COLORS["blue"] + (40,),
+    "table": COLORS["red"] + (40,),
+    "figure": COLORS["yellow"] + (80,),
+    "rect": COLORS["cyan"] + (160,),
 }
 
 RENDER_ELEMENTS = [
-    'chapter',
-    'paragraph',
-    'table',
-    'figure',
-    'rect'
+    "chapter",
+    "paragraph",
+    "table",
+    "figure",
+    "rect",
 ]  # the elements that shall be rendered
 
 # pdfminer layout analysis parameter from from pdfminer.layout -> LAParams.__init__
