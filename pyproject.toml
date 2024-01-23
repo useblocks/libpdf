@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libpdf"
-version = "0.0.1"
+version = "0.1.1"
 description = "Extract structured data from PDFs."
 authors = [
     "Marco Heinemann <marco.heinemann@useblocks.com>",
