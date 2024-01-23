@@ -72,6 +72,11 @@ Figure
 
 .. autoclass:: libpdf.models.figure.Figure
 
+Rect
+~~~~~~
+
+.. autoclass:: libpdf.models.rect.Rect
+
 
 Position
 ~~~~~~~~

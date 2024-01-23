@@ -21,6 +21,7 @@ from libpdf.models.file import File
 from libpdf.models.file_meta import FileMeta
 from libpdf.models.page import Page
 from libpdf.models.position import Position
+from libpdf.models.rect import Rect
 from libpdf.models.root import Root
 from libpdf.parameters import (
     FIGURE_MIN_HEIGHT,
@@ -33,7 +34,12 @@ from libpdf.parameters import (
 from libpdf.progress import bar_format_lvl2, tqdm
 from libpdf.tables import extract_pdf_table
 from libpdf.textbox import extract_linked_chars, extract_paragraphs_chapters
-from libpdf.utils import lt_page_crop, lt_to_libpdf_hbox_converter, to_pdfplumber_bbox
+from libpdf.utils import (
+    lt_page_crop,
+    lt_textbox_crop,
+    lt_to_libpdf_hbox_converter,
+    to_pdfplumber_bbox,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -61,6 +67,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     no_paragraphs: bool,
     no_tables: bool,
     no_figures: bool,
+    no_rects: bool,
     overall_pbar: tqdm,
 ) -> ApiObjects:
     """
@@ -76,6 +83,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
     :param no_figures: flag triggering the exclusion of figures
+    :param no_rects: flag triggering the exclusion of rects
     :param overall_pbar: total progress bar for whole libpdf run
     :return: instance of Objects class
     :raise LibpdfException: PDF contains no pages
@@ -142,7 +150,17 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
             # smartly remove figures that are in header and footer
             if smart_page_crop:
                 figure_list = smart_page_crop_header_footer(pdf, figure_list)
-        overall_pbar.update(30)
+        overall_pbar.update(15)
+
+        if no_rects:
+            LOG.info("Excluding rects extraction")
+            rect_list = []
+        else:
+            rect_list = extract_rects(pdf, pages_list)
+            # smartly remove figures that are in header and footer
+            if smart_page_crop:
+                rect_list = smart_page_crop_header_footer(pdf, rect_list)
+        overall_pbar.update(15)
 
         if no_tables:
             LOG.info("Excluding tables extraction")
@@ -169,7 +187,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
             paragraph_list = smart_page_crop_header_footer(pdf, paragraph_list)
 
         element_list = pro.merge_all_elements(
-            figure_list, table_list, paragraph_list, chapter_list
+            figure_list, table_list, paragraph_list, chapter_list, rect_list
         )
 
         # to check if elements shall be mapped into nested outline structure.
@@ -195,6 +213,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         paragraphs=paragraph_list,
         tables=table_list,
         figures=figure_list,
+        rects=rect_list,
         pdfplumber=pdf,
         pdfminer=pdf.doc,
     )
@@ -640,6 +659,76 @@ def extract_figures(
     return figure_list
 
 
+def extract_rects(
+    pdf,
+    pages_list,
+) -> List[Rect]:  # pylint: disable=too-many-nested-blocks, too-many-branches  # local algorithm, easier to read when not split up
+    """Extract rects in PDF."""
+    LOG.info("Extracting rects ...")
+    rect_list = []
+
+    for idx_page, page in enumerate(  # pylint: disable=too-many-nested-blocks
+        tqdm(
+            pdf.pages,
+            desc="###### Extracting rects",
+            unit="pages",
+            bar_format=bar_format_lvl2(),
+        ),
+    ):
+        if logging_needed(idx_page, len(pdf.pages)):
+            LOG.debug("Extracting rects page %s of %s", idx_page + 1, len(pdf.pages))
+        page_crop = pro.remove_page_header_footer(page)
+        lt_page = page._layout  # pylint: disable=protected-access  # easiest way to obtain LTPage
+
+        # check and filter figures
+        # figures = check_and_filter_figures(page_crop.objects['figure']) if 'figure' in page_crop.objects else []
+        # rects = page_crop.objects['rects'] if 'rects' in page_crop.objects else []
+        rects = page.objects["rect"] if "rect" in page.objects else []
+
+        if len(rects) != 0:
+            for idx_rect, rect in enumerate(rects):
+                rect_pos = Position(
+                    float(rect["x0"]),
+                    float(rect["y0"]),
+                    float(rect["x1"]),
+                    float(rect["y1"]),
+                    pages_list[idx_page],
+                )
+
+                non_stroking_color = rect["non_stroking_color"]
+
+                offset = 5
+                rect_bbox = (
+                    rect_pos.x0 - offset,
+                    rect_pos.y0 - offset,
+                    rect_pos.x1 + offset,
+                    rect_pos.y1 + offset,
+                )
+
+                LOG.info(
+                    f"found rect at {rect_bbox} at page {idx_page+1}: color {non_stroking_color}"
+                )
+                lt_textbox = lt_textbox_crop(
+                    rect_bbox,
+                    lt_page._objs,
+                    word_margin=LA_PARAMS["word_margin"],
+                    y_tolerance=LA_PARAMS["line_overlap"],
+                )
+                if lt_textbox:
+                    hbox = lt_to_libpdf_hbox_converter(lt_textbox)
+                else:
+                    hbox = None
+
+                rect = Rect(idx_rect + 1, rect_pos, hbox, non_stroking_color)
+                rect_list.append(rect)
+
+        else:
+            LOG.info(f"found no rects on page {idx_page+1}: {page_crop.objects.keys()}")
+
+    # return figure_list
+    return rect_list
+
+
 def images_to_save(pdf, figure_list):
     """Save images to given path."""
     for fig in figure_list:
@@ -708,6 +797,11 @@ def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
         if figure["height"] > FIGURE_MIN_HEIGHT and figure["width"] > FIGURE_MIN_WIDTH:
             filtered_figures.append(figure)
 
+    if len(filtered_figures) < len(figures_list):
+        LOG.debug(
+            f"check_and_filter_figures removed {len(figures_list) - len(filtered_figures)} out of {len(figures_list)}  due to invalid height/width"
+        )
+
     for figure in filtered_figures:
         # if figure exceed the boundary of the page, then only keep the part of figure that inside this page
         if not (
@@ -734,6 +828,7 @@ def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
             and fig0["y1"] >= fig1["y1"]
         ):
             if fig1 in filtered_figures:
+                LOG.debug("remove filtered figure due to contained in other figure")
                 filtered_figures.remove(fig1)
 
     # check if figures partially overlap
@@ -754,9 +849,20 @@ def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
                 # compare the size of two figures, keep the bigger figure
                 if fig0["width"] * fig0["height"] <= fig1["width"] * fig1["height"]:
                     if fig0 in filtered_figures:
+                        LOG.debug(
+                            "remove filtered figure fig0 due to partially overlap"
+                        )
                         filtered_figures.remove(fig0)
                 else:
                     if fig1 in filtered_figures:
+                        LOG.debug(
+                            "remove filtered figure fig1 due to partially overlap"
+                        )
                         filtered_figures.remove(fig1)
+
+    if len(filtered_figures) < len(figures_list):
+        LOG.debug(
+            f"check_and_filter_figures removed {len(figures_list) - len(filtered_figures)} out of {len(figures_list)} figures"
+        )
 
     return filtered_figures

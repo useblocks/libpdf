@@ -35,6 +35,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     no_paragraphs: bool = False,
     no_tables: bool = False,
     no_figures: bool = False,
+    no_rects: bool = False,
     cli_usage: bool = False,
     visual_debug: bool = False,
     visual_debug_output_dir: str = None,
@@ -66,6 +67,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
     :param no_figures: flag triggering the exclusion of figures
+    :param no_rects: flag triggering the exclusion of rects
     :param cli_usage: flag indicating that the function was called through CLI
     :param visual_debug: flag triggering visual debug feature
     :param visual_debug_output_dir: output directory for visualized pdf pages
@@ -120,6 +122,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
         LOG.info("Extract paragraphs: %s", "no" if no_paragraphs else "yes")
         LOG.info("Extract tables: %s", "no" if no_tables else "yes")
         LOG.info("Extract figures: %s", "no" if no_figures else "yes")
+        LOG.info("Extract rects: %s", "no" if no_rects else "yes")
         overall_pbar.update(1)
         try:
             objects = extract(
@@ -133,6 +136,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
                 no_paragraphs,
                 no_tables,
                 no_figures,
+                no_rects,
                 overall_pbar,
             )
         except LibpdfException:
@@ -177,6 +181,7 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
     no_paragraphs: bool = False,
     no_tables: bool = False,
     no_figures: bool = False,
+    no_rects: bool = False,
     init_logging: bool = True,
     visual_debug: bool = False,
     visual_debug_output_dir: str = "visual_debug_libpdf",
@@ -202,6 +207,7 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
     :param no_paragraphs: flag triggering the exclusion of paragraphs (no normal text content)
     :param no_tables: flag triggering the exclusion of tables
     :param no_figures: flag triggering the exclusion of figures
+    :param no_rects: flag triggering the exclusion of rects
     :param init_logging: flag indicating whether libpdf shall instantiate a root log handler that is capable of
                          handling both log messages and progress bars; it does so by passing all log messages to
                          tqdm.write()
@@ -245,6 +251,7 @@ def main_api(  # pylint: disable=too-many-arguments, too-many-locals
         no_paragraphs=no_paragraphs,
         no_tables=no_tables,
         no_figures=no_figures,
+        no_rects=no_rects,
         cli_usage=False,
         visual_debug=visual_debug,
         visual_debug_output_dir=visual_debug_output_dir,
@@ -462,6 +469,13 @@ class DependentOption(click.Option):
     show_default=True,
     help="Skip figures. Figures will not be part of the output JSON/YAML structures and also not saved if"
     " --save-figures is given.",
+)
+@click.option(
+    "--no-rects",
+    is_flag=True,
+    show_default=True,
+    help="Skip rects. rects will not be part of the output JSON/YAML structures and also not saved if"
+    " --save-rects is given.",
 )
 @click.option("-vd", "--visual-debug", is_flag=True, help="Visual debug libpdf.")
 @click.option(

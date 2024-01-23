@@ -176,6 +176,14 @@
             **rel_path**: figures/<image>
         }
 
+        class Rect {
+            + [tuple] non_stroking_color
+            --
+            **id**: ""rect.<1,2,3,n>""
+            **non_stroking_color**: RGB color space,
+            given as floats between 0 and 1
+        }
+
         package x <<layout>> {
 
            class HorizontalBox {
@@ -217,9 +225,7 @@
                 --
                 **text**: the character itself
             }
-        
-       
-        
+        }
         Char "+chars  1..*" ---left*  Word
         Word "+words  1..*" ---left*  HorizontalLine
         HorizontalLine "+lines  1..*" --*  HorizontalBox
@@ -228,6 +234,7 @@
         HorizontalBox "+textbox  0..1" --* Cell
         HorizontalBox "+textboxes  0..*" --* Figure
         HorizontalBox "+textbox  0..1" --* Chapter
+        HorizontalBox "+textbox  0..1" --* Rect
 
         Paragraph "+b_source  1" *-- "+links  *" Link
         Figure "+b_source  1" *-- "+links  *" Link
@@ -240,6 +247,7 @@
         Figure -[#COL_DERIVE]-|> Element
         Chapter -[#COL_DERIVE]-|> Element
         Paragraph -[#COL_DERIVE]|> Element
+        Rect -[#COL_DERIVE]|> Element
         
         Chapter "1" *-- "+content  *" Element: ordered
         Page "1" *-- "+content  *" Element: ordered

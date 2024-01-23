@@ -3,7 +3,7 @@ import logging
 import re
 from typing import Any, Dict, List, Union
 
-from pdfminer.pdftypes import PDFObjRef
+from pdfminer.pdftypes import PDFObjRef, resolve1
 from pdfminer.psparser import PSLiteral
 
 from libpdf.log import logging_needed
@@ -51,7 +51,7 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
         ):
             name_tree = pdf_catalog["Names"].resolve()["Dests"].resolve()
         elif isinstance(pdf_catalog["Names"], dict) and "Dests" in pdf_catalog["Names"]:
-            name_tree = pdf_catalog["Names"]["Dests"].resolve()
+            name_tree = resolve1(pdf_catalog["Names"]["Dests"])
         # check if name tree not empty
         if name_tree:
             # map page id to page number
