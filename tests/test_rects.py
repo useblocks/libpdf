@@ -140,13 +140,19 @@ def test_rects_extraction_code_block() -> None:
     assert check_content_margins_equal(paragraph, rect)
 
 
-def test_rects_extraction_code_inline() -> None:
+def test_rects_extraction_code_inline(tmpdir: PathLike) -> None:
     """Test rect extraction of inline codeblock."""
     smart_page_crop = (
         True  # remove header and footers so rects IN chapters are left only.
     )
 
-    objects = libpdf.load(PDF_RECTS_EXTRACTION, smart_page_crop=smart_page_crop)
+    objects = libpdf.load(
+        PDF_RECTS_EXTRACTION,
+        smart_page_crop=smart_page_crop,
+        visual_debug=False,
+        visual_debug_output_dir=tmpdir.join("visual_debug_dir"),
+        visual_split_elements=True,
+    )
     assert objects.flattened.rects is not None
 
     chapter = find_chapter(objects, "Code Inline Highlighting")
@@ -212,7 +218,7 @@ def test_rects_extraction_table(tmpdir: PathLike) -> None:
     objects = libpdf.load(
         PDF_RECTS_EXTRACTION,
         smart_page_crop=smart_page_crop,
-        visual_debug=True,
+        visual_debug=False,
         visual_debug_output_dir=tmpdir.join("visual_debug_dir"),
         visual_split_elements=True,
     )
