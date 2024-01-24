@@ -15,7 +15,7 @@ import os
 
 # -- Project information -----------------------------------------------------
 project = 'libpdf'
-copyright = '2020, team useblocks'  # noqa: A001 (python builtin) # pylint: disable=redefined-builtin
+copyright = '2024, team useblocks'  # noqa: A001 (python builtin) # pylint: disable=redefined-builtin
 author = 'team useblocks'
 
 # The full version, including alpha/beta/rc tags
