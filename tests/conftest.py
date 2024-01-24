@@ -32,8 +32,9 @@ PDF_SMART_HEADER_FOOTER_DETECTION = os.path.join(
 PDF_PYTHON_LOGGING = os.path.join(os.path.dirname(__file__), "pdf", "howto-logging.pdf")
 
 # test PDF for rect extraction generateby by sphinx-simplepdf
-PDF_RECTS_EXTRACTION = os.path.join(os.path.dirname(__file__), "pdf", "test_rects_extraction.pdf")
-
+PDF_RECTS_EXTRACTION = os.path.join(
+    os.path.dirname(__file__), "pdf", "test_rects_extraction.pdf"
+)
 
 
 def obj_equal(class_type, instance1, instance2):
