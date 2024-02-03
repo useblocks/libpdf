@@ -84,7 +84,7 @@ tox = "*"
 pytest-xdist = "*"  # parallelisation
 
 # linting, formatting
-ruff = "^0.1.13"
+ruff = "^0.2.0"
 
 # docs
 sphinx = "*"
