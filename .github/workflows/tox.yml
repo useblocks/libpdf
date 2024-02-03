@@ -97,6 +97,5 @@ jobs:
           tox -e format-check
 
       - name: Run ruff lint
-        continue-on-error: true # deactivate for now (need to fix the issues over time)
         run: |
           tox -e lint
