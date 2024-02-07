@@ -23,14 +23,12 @@ def find_chapter(objects: ApiObjects, chapter_name: str) -> Chapter:
     :return: found chapter
     """
     chapters = objects.flattened.chapters
-    ret_chapter = None
     assert len(chapters) > 0
-    for chapter in chapters:
-        if chapter.title == chapter_name:
-            ret_chapter = chapter
 
-    assert ret_chapter is not None
-    return ret_chapter
+    chapter = next((c for c in chapters if c.title == chapter_name), None)
+
+    assert chapter is not None
+    return chapter
 
 
 def check_chapter_contains_text_paragraph(
