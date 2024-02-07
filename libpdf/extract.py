@@ -429,9 +429,8 @@ def check_false_positive_header_footer(pdf, elements_list):  # pylint: disable=t
                 # recursively check again, to find the next min_low_pos, which will determine the header/footer boundary
                 if elements_list:
                     return check_false_positive_header_footer(pdf, elements_list)
-        else:
-            if len(elements_list) == 1:
-                elements_list.pop()
+        elif len(elements_list) == 1:
+            elements_list.pop()
     else:
         for idx, element in enumerate(elements_list):
             if float(f"{element.position.y0:.4f}") == header_low_pos:
@@ -853,12 +852,9 @@ def check_and_filter_figures(figures_list):  # pylint: disable=too-many-branches
                             "remove filtered figure fig0 due to partially overlap"
                         )
                         filtered_figures.remove(fig0)
-                else:
-                    if fig1 in filtered_figures:
-                        LOG.debug(
-                            "remove filtered figure fig1 due to partially overlap"
-                        )
-                        filtered_figures.remove(fig1)
+                elif fig1 in filtered_figures:
+                    LOG.debug("remove filtered figure fig1 due to partially overlap")
+                    filtered_figures.remove(fig1)
 
     if len(filtered_figures) < len(figures_list):
         LOG.debug(

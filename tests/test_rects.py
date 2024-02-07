@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
     from os import PathLike
 
-    from libpdf.apiobjects import ApiObjects, Chapter, Paragraph, Rect
+    from libpdf.apiobjects import ApiObjects, Chapter, Paragraph, Rect, Table
 
 import libpdf
 from tests.conftest import (
@@ -108,6 +108,17 @@ def check_content_margins_greater(
     :return: found paragraph
     """
     return rect.textbox.x0 + offset >= paragraph.textbox.x0
+
+
+def find_tables(chapter: Chapter) -> [Table]:
+    """
+    check for number of rects in chapter.
+
+    :return: List of Tables
+    """
+    assert chapter.content is not None
+
+    return [content for content in chapter.content if content.type == "table"]
 
 
 def test_rects_extraction_code_block() -> None:
@@ -226,6 +237,12 @@ def test_rects_extraction_table(tmpdir: PathLike) -> None:
 
     chapter = find_chapter(objects, "Tables")
 
-    assert (
-        check_chapter_rects_count(chapter) == 1 * 5
-    )  # would expect 7 (3 from each colored table line + 1 inline code)
+    tables = find_tables(chapter)
+
+    assert len(tables) == 1
+
+    table = tables[0]
+    assert table.columns_count == 1 * 3
+    assert table.rows_count == 1
+
+    assert check_chapter_rects_count(chapter) == 1 * 5

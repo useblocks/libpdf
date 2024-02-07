@@ -309,21 +309,20 @@ def fill_elements_content(
             id_dict = {"table": 1, "figure": 1, "paragraph": 1, "rect": 1}
             content = elements_in_outline[index_element].content
             index_b_chapter = index_element
+        elif "content" in locals():
+            element.idx = id_dict[element.type]
+            element.b_chapter = elements_in_outline[index_b_chapter]
+            content.append(element)
+            id_dict[element.type] += 1
         else:
-            if "content" in locals():
-                element.idx = id_dict[element.type]
-                element.b_chapter = elements_in_outline[index_b_chapter]
-                content.append(element)
-                id_dict[element.type] += 1
-            else:
-                # TODO 1. this exception is not caught in libpdf code and will go all the way up to the user (wanted?)
-                #      2. the message is unclear
-                #      3. if it's a programming error, fix the code
-                #      4. if it's a real runtime issue coming from wrong PDF input, catch the error one level above
-                #         and log an understandable, critical error
-                raise ValueError(
-                    "elements can not fill into the content because it does not exist"
-                )
+            # TODO 1. this exception is not caught in libpdf code and will go all the way up to the user (wanted?)
+            #      2. the message is unclear
+            #      3. if it's a programming error, fix the code
+            #      4. if it's a real runtime issue coming from wrong PDF input, catch the error one level above
+            #         and log an understandable, critical error
+            raise ValueError(
+                "elements can not fill into the content because it does not exist"
+            )
 
     chapters_content = list(
         filter(lambda x: isinstance(x, Chapter), elements_in_outline)
@@ -435,20 +434,19 @@ def libpdf_target_explorer(  # pylint: disable=too-many-nested-blocks # local al
                         for link in element.links:
                             target_id = find_target_id(link, pages_list, element)
                             link.libpdf_target = target_id
+                    elif isinstance(element, Cell):
+                        # Cell is not considered as element
+                        pass
                     else:
-                        if isinstance(element, Cell):
-                            # Cell is not considered as element
-                            pass
-                        else:
-                            # TODO reason about the overall logic; which cases can be removed? distinguish between
-                            #      programming errors (raise RuntimeErrors) and cases that actually may exist in the
-                            #      wild and write human-readable log messages (e.g.
-                            #        The link on page xy with text xy cannot be resolved to a libpdf element; linking
-                            #        to the target page position instead
-                            LOG.error(
-                                "The source link in the paragraph %s is missing",
-                                repr(element),
-                            )
+                        # TODO reason about the overall logic; which cases can be removed? distinguish between
+                        #      programming errors (raise RuntimeErrors) and cases that actually may exist in the
+                        #      wild and write human-readable log messages (e.g.
+                        #        The link on page xy with text xy cannot be resolved to a libpdf element; linking
+                        #        to the target page position instead
+                        LOG.error(
+                            "The source link in the paragraph %s is missing",
+                            repr(element),
+                        )
 
 
 def elements_with_anno_finder(

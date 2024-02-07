@@ -12,7 +12,7 @@ from tests.conftest import (
 def test_catalog_with_empty_outline():
     """Check if catalog extracted correctly with pdf that has empty outline."""
     runner = CliRunner()
-    result = runner.invoke(libpdf.core.main_cli, [PDF_WITH_EMPTY_OUTLINE])
+    result = runner.invoke(libpdf.core.main_cli, [str(PDF_WITH_EMPTY_OUTLINE)])
     assert result.exit_code == 0
 
     objects = libpdf.load(PDF_WITH_EMPTY_OUTLINE)

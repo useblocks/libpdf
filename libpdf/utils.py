@@ -303,43 +303,40 @@ def find_lt_obj_in_bbox(
     ):
         # This is the case when a LT object is neither inside nor intersected with the given bounding box.
         pass
-    else:
-        # This is the case when a LT object is intersected with the given box. In this case, the LT objects inside the
-        # given bounding box need to be hierarchically and recursively found.
-        if hasattr(lt_obj, "_objs"):
-            # All the downwards hierarchical LT objects are stored in the attribute "_objs".
-            # If the _objs attribute doesn't exist, it means it's the bottom of the hierarchy.
-            text_inside_bbox = False  # True on LTTextLine level when the first LTChar is inside the BBOX
-            for item in lt_obj._objs:  # pylint: disable=protected-access
-                if isinstance(item, LTAnno):
-                    # special treatment of LTAnno because it is virtual with no position data
-                    if text_inside_bbox:
-                        # LTAnno is added because an LTChar was inside the bbox before
+    elif hasattr(lt_obj, "_objs"):
+        # All the downwards hierarchical LT objects are stored in the attribute "_objs".
+        # If the _objs attribute doesn't exist, it means it's the bottom of the hierarchy.
+        text_inside_bbox = (
+            False  # True on LTTextLine level when the first LTChar is inside the BBOX
+        )
+        for item in lt_obj._objs:  # pylint: disable=protected-access
+            if isinstance(item, LTAnno):
+                # special treatment of LTAnno because it is virtual with no position data
+                if text_inside_bbox:
+                    # LTAnno is added because an LTChar was inside the bbox before
+                    lt_objs_in_bbox.append(item)
+            elif isinstance(item, LTChar):
+                # check if the first and last LTChar have shown in the given bbox to decide if the trailing
+                # LTAnno should be added
+                ltchar_inside = check_lt_obj_in_bbox(item, bbox)
+                if text_inside_bbox:
+                    if ltchar_inside:
                         lt_objs_in_bbox.append(item)
-                else:
-                    if isinstance(item, LTChar):
-                        # check if the first and last LTChar have shown in the given bbox to decide if the trailing
-                        # LTAnno should be added
-                        ltchar_inside = check_lt_obj_in_bbox(item, bbox)
-                        if text_inside_bbox:
-                            if ltchar_inside:
-                                lt_objs_in_bbox.append(item)
-                            else:
-                                # the bbox just ended and can't enter again
-                                break
-                        else:
-                            if ltchar_inside:
-                                lt_objs_in_bbox.append(item)
-                                text_inside_bbox = True
-                            else:
-                                # no LTChar was added before, so not in BBOX yet
-                                pass
                     else:
-                        # it is not an LTAnno nor an LTChar, so recurse and break it further down
-                        find_lt_obj_in_bbox(lt_objs_in_bbox, item, bbox)
-        else:
-            # no attribute "_objs" exists. It reaches the bottom of the hierarchy
-            pass
+                        # the bbox just ended and can't enter again
+                        break
+                elif ltchar_inside:
+                    lt_objs_in_bbox.append(item)
+                    text_inside_bbox = True
+                else:
+                    # no LTChar was added before, so not in BBOX yet
+                    pass
+            else:
+                # it is not an LTAnno nor an LTChar, so recurse and break it further down
+                find_lt_obj_in_bbox(lt_objs_in_bbox, item, bbox)
+    else:
+        # no attribute "_objs" exists. It reaches the bottom of the hierarchy
+        pass
 
 
 def lt_page_crop(

@@ -12,7 +12,7 @@ from tests.conftest import (
 def test_figures_extract_with_invalid_bbox():
     """Check if figures extraction correctly when figures have invalid bbox."""
     runner = CliRunner()
-    result = runner.invoke(libpdf.core.main_cli, [PDF_FIGURE_WITH_INVALID_BBOX])
+    result = runner.invoke(libpdf.core.main_cli, [str(PDF_FIGURE_WITH_INVALID_BBOX)])
     assert result.exit_code == 0
 
     objects = libpdf.load(PDF_FIGURE_WITH_INVALID_BBOX)

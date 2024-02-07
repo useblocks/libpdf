@@ -18,9 +18,8 @@ class ModelBase:
         for key, value in vars_dict.items():
             if key.startswith("b_"):
                 delete_backref_keys.append(key)
-            else:
-                if isinstance(value, ModelBase):
-                    vars_dict[key] = value.to_dict()
+            elif isinstance(value, ModelBase):
+                vars_dict[key] = value.to_dict()
         # delete back references
         for key in delete_backref_keys:
             del vars_dict[key]
