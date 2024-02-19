@@ -48,6 +48,12 @@ def test_colors_2() -> None:
             for content in chapter.content:
                 if content.type == "paragraph":
                     assert content.textbox.ncolor == (0, 1, 0)
+        elif chapter.title == "UncoloredHorizontalBox":
+            for content in chapter.content:
+                if content.type == "paragraph":
+                    assert content.textbox.ncolor is None
+                    for line in content.textbox.lines:
+                        assert line.ncolor is not None
 
 
 def test_colors_3() -> None:
