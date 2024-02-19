@@ -5,6 +5,17 @@ import libpdf
 from tests.conftest import PDF_COLOR_STYLE
 
 
+def test_colors_0() -> None:
+    """Test word colors in given chapter paragraph."""
+    objects = libpdf.load(PDF_COLOR_STYLE)
+    assert objects is not None
+    assert objects.flattened.chapters
+
+    for chapter in objects.flattened.chapters:
+        if chapter.title == "Color in Text and Heading":
+            assert chapter.textbox.ncolor == (1, 0, 0)
+
+
 def test_colors_1() -> None:
     """Test word colors in given chapter paragraph."""
     objects = libpdf.load(PDF_COLOR_STYLE)
