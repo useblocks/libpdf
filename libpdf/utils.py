@@ -488,7 +488,14 @@ def assemble_to_textlines(
     for lt_obj in flatten_lt_objs:
         if lt_obj.get_text() != " " and lt_obj.get_text() != "\n":
             # instantiate Char
-            char = Char(lt_obj.get_text(), lt_obj.x0, lt_obj.y0, lt_obj.x1, lt_obj.y1)
+            char = Char(
+                lt_obj.get_text(),
+                lt_obj.x0,
+                lt_obj.y0,
+                lt_obj.x1,
+                lt_obj.y1,
+                lt_obj.graphicstate.ncolor if hasattr(lt_obj, "graphicstate") else None,
+            )
             chars.append(char)
 
             if lt_obj is flatten_lt_objs[-1]:

@@ -19,6 +19,8 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
     :ivar y1: distance from the bottom of the page to the upper edge of the character
         (greater than y0)
     :vartype y1: float
+    :ivar ncolor: non-stroking-color
+    :vartype ncolor: tuple of rgb or None
     """
 
     def __init__(
@@ -28,6 +30,7 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
         y0: float | None = None,
         x1: float | None = None,
         y1: float | None = None,
+        ncolor: tuple | None = None,
     ):
         """Init with plain char of a character and its rectangular coordinates."""
         self.x0 = x0
@@ -35,6 +38,7 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
         self.x1 = x1
         self.y1 = y1
         self.text = text
+        self.ncolor = ncolor
 
     def __repr__(self) -> str:
         """Make the text part of the repr for better debugging."""
@@ -65,12 +69,16 @@ class Word:
         self.x1 = x1
         self.y1 = y1
         self.chars = chars
+        self.ncolor = None
         if self.chars:
             # Obtain the rectangle coordinates from a list of libpdf text objects
             self.x0 = min(text_obj.x0 for text_obj in self.chars)
             self.y0 = min(text_obj.y0 for text_obj in self.chars)
             self.x1 = max(text_obj.x1 for text_obj in self.chars)
             self.y1 = max(text_obj.y1 for text_obj in self.chars)
+
+            if all(x.ncolor == self.chars[0].ncolor for x in self.chars):
+                self.ncolor = self.chars[0].ncolor
 
     @property
     def text(self) -> str:
@@ -158,6 +166,16 @@ class HorizontalBox:
     def text(self) -> str:
         """Return plain text."""
         return "\n".join([x.text for x in self.lines])
+
+    @property
+        def words(self):
+            """Return array of words"""
+            _array = []
+            for l in self.lines:
+                _array += l.words
+
+            return _array
+
 
     def __repr__(self) -> str | None:
         """Make the text part of the repr for better debugging."""
