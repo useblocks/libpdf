@@ -19,8 +19,8 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
     :ivar y1: distance from the bottom of the page to the upper edge of the character
         (greater than y0)
     :vartype y1: float
-    :ivar ncolor: non-stroking-color
-    :vartype ncolor: tuple of rgb or None
+    :ivar ncolor: non-stroking-color as rgb value
+    :vartype ncolor: Tuple[float, float, float]
     """
 
     def __init__(
@@ -77,7 +77,10 @@ class Word:
             self.x1 = max(text_obj.x1 for text_obj in self.chars)
             self.y1 = max(text_obj.y1 for text_obj in self.chars)
 
-            if all(x.ncolor == self.chars[0].ncolor for x in self.chars):
+            if all(
+                x.ncolor == self.chars[0].ncolor and x.ncolor is not None
+                for x in self.chars
+            ):
                 self.ncolor = self.chars[0].ncolor
 
     @property
@@ -114,12 +117,19 @@ class HorizontalLine:
         self.x1 = x1
         self.y1 = y1
         self.words = words
+        self.ncolor = None
         if self.words:
             # Obtain the rectangle coordinates from a list of libpdf text objects
             self.x0 = min(text_obj.x0 for text_obj in self.words)
             self.y0 = min(text_obj.y0 for text_obj in self.words)
             self.x1 = max(text_obj.x1 for text_obj in self.words)
             self.y1 = max(text_obj.y1 for text_obj in self.words)
+
+            if all(
+                x.ncolor == self.words[0].ncolor and x.ncolor is not None
+                for x in self.words
+            ):
+                self.ncolor = self.words[0].ncolor
 
     @property
     def text(self) -> str:
@@ -168,14 +178,22 @@ class HorizontalBox:
         return "\n".join([x.text for x in self.lines])
 
     @property
-        def words(self):
-            """Return array of words"""
-            _array = []
-            for l in self.lines:
-                _array += l.words
+    def words(self):
+        """Return list of words"""
+        _words = []
+        for l in self.lines:
+            _words += l.words
 
-            return _array
+        return _words
 
+    @property
+    def ncolor(self):
+        w = self.words
+        return (
+            w[0].ncolor
+            if all(x.ncolor == w[0].ncolor and x.ncolor is not None for x in w)
+            else None
+        )
 
     def __repr__(self) -> str | None:
         """Make the text part of the repr for better debugging."""

@@ -34,6 +34,11 @@ PDF_PYTHON_LOGGING = Path(__file__).parent / "pdf" / "howto-logging.pdf"
 # test PDF for rect extraction generateby by sphinx-simplepdf
 PDF_RECTS_EXTRACTION = Path(__file__).parent / "pdf" / "test_rects_extraction.pdf"
 
+# test PDF for color style info
+PDF_COLOR_STYLE = os.path.join(
+    os.path.dirname(__file__), "pdf", "test_words_color_style.pdf"
+)
+
 
 @pytest.fixture(scope="session")
 def load_full_features_pdf(

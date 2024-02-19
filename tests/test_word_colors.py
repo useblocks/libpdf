@@ -1,22 +1,102 @@
 """Test catalog extraction."""
 
-import logging
 
 import libpdf
-from tests.conftest import PDF_OUTLINE_NO_DEST
+from tests.conftest import PDF_COLOR_STYLE
 
 
-def test_word_color_chapter() -> None:
+def test_colors_1() -> None:
     """Test word colors in given chapter paragraph."""
-    objects = libpdf.load(PDF_OUTLINE_NO_DEST)
+    objects = libpdf.load(PDF_COLOR_STYLE)
     assert objects is not None
     assert objects.flattened.chapters
 
     for chapter in objects.flattened.chapters:
-        if chapter.title == "Create Basic Shapes":
+        if chapter.title == "HorizontalLine":
             for content in chapter.content:
-                if content.type == "paragraph" and "Diamond" in content.textbox.text:
-                    words = content.textbox.words
-                    logging.debug("found words ", words)
-                    for word in words:
-                        assert word.ncolor == (0, 0, 1)
+                if (
+                    content.type == "paragraph"
+                    and "Paragraph text is blue" in content.textbox.text
+                ):
+                    assert content.textbox.ncolor == (0, 0, 1)
+                if (
+                    content.type == "paragraph"
+                    and "This chapter is for" in content.textbox.text
+                ):
+                    assert content.textbox.ncolor == (0, 0, 0)
+
+
+def test_colors_2() -> None:
+    """Test word colors in given chapter paragraph."""
+    objects = libpdf.load(PDF_COLOR_STYLE)
+    assert objects is not None
+    assert objects.flattened.chapters
+
+    for chapter in objects.flattened.chapters:
+        if chapter.title == "HorizontalBox":
+            for content in chapter.content:
+                if content.type == "paragraph":
+                    assert content.textbox.ncolor == (0, 1, 0)
+
+
+def test_colors_3() -> None:
+    """Test word colors in given chapter paragraph."""
+    objects = libpdf.load(PDF_COLOR_STYLE)
+    assert objects is not None
+    assert objects.flattened.chapters
+
+    for chapter in objects.flattened.chapters:
+        if "Words" in chapter.title:
+            for content in chapter.content:
+                if (
+                    content.type == "paragraph"
+                    and "This line has no color" in content.textbox.text
+                ):
+                    assert content.textbox.ncolor is None
+
+                    for word in content.textbox.words:
+                        if word.text == "has":
+                            assert word.ncolor == (0, 0, 1)
+                        elif word.text == "color":
+                            assert word.ncolor in [(0, 1, 0), (0, 0, 0)]
+                        elif word.text == "changes":
+                            assert word.ncolor == (1, 0, 0)
+                        elif word.text == "words":
+                            assert word.ncolor == (0, 0, 1)
+
+
+def test_colors_4() -> None:
+    """Test word colors in given chapter paragraph."""
+    objects = libpdf.load(PDF_COLOR_STYLE)
+    assert objects is not None
+    assert objects.flattened.chapters
+
+    for chapter in objects.flattened.chapters:
+        if "Words" in chapter.title:
+            for content in chapter.content:
+                if "This words have no color" in content.textbox.text:
+                    assert content.textbox.ncolor is None
+
+                    for word in content.textbox.words:
+                        assert word.ncolor is None or word.ncolor == (0, 0, 0)
+
+
+def test_colors_5() -> None:
+    """Test word colors in given chapter paragraph."""
+    objects = libpdf.load(PDF_COLOR_STYLE)
+    assert objects is not None
+    assert objects.flattened.chapters
+
+    for chapter in objects.flattened.chapters:
+        if "Words" in chapter.title:
+            for content in chapter.content:
+                if "These words are printed" in content.textbox.text:
+                    assert content.textbox.ncolor is None
+
+                    for word in content.textbox.words:
+                        if word.text in ["words", "but"]:
+                            assert word.ncolor == (0, 1, 0)
+                        elif word.text == "printed":
+                            assert word.ncolor == (0, 0, 1)
+                        elif word.text == "background":
+                            assert word.ncolor == (1, 0, 0)
