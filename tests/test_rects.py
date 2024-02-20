@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from os import PathLike
 
     from libpdf.apiobjects import ApiObjects, Chapter, Paragraph, Rect, Table
 
@@ -149,19 +148,13 @@ def test_rects_extraction_code_block() -> None:
     assert check_content_margins_equal(paragraph, rect)
 
 
-def test_rects_extraction_code_inline(tmpdir: PathLike) -> None:
+def test_rects_extraction_code_inline() -> None:
     """Test rect extraction of inline codeblock."""
     smart_page_crop = (
         True  # remove header and footers so rects IN chapters are left only.
     )
 
-    objects = libpdf.load(
-        PDF_RECTS_EXTRACTION,
-        smart_page_crop=smart_page_crop,
-        visual_debug=False,
-        visual_debug_output_dir=tmpdir.join("visual_debug_dir"),
-        visual_split_elements=True,
-    )
+    objects = libpdf.load(PDF_RECTS_EXTRACTION, smart_page_crop=smart_page_crop)
     assert objects.flattened.rects is not None
 
     chapter = find_chapter(objects, "Code Inline Highlighting")
@@ -218,19 +211,13 @@ def test_rects_extraction_adminition() -> None:
     assert check_content_color(rect, (0.858824, 0.980392, 0.956863))
 
 
-def test_rects_extraction_table(tmpdir: PathLike) -> None:
+def test_rects_extraction_table() -> None:
     """Test rect extraction of table colored cells."""
     smart_page_crop = (
         True  # remove header and footers so rects IN chapters are left only.
     )
 
-    objects = libpdf.load(
-        PDF_RECTS_EXTRACTION,
-        smart_page_crop=smart_page_crop,
-        visual_debug=False,
-        visual_debug_output_dir=tmpdir.join("visual_debug_dir"),
-        visual_split_elements=True,
-    )
+    objects = libpdf.load(PDF_RECTS_EXTRACTION, smart_page_crop=smart_page_crop)
     assert objects.flattened.rects is not None
 
     chapter = find_chapter(objects, "Tables")
