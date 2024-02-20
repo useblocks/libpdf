@@ -495,8 +495,7 @@ def assemble_to_textlines(
                 lt_obj.x1,
                 lt_obj.y1,
                 lt_obj.graphicstate.ncolor if hasattr(lt_obj, "graphicstate") else None,
-                "Bold" in lt_obj.fontname,
-                "Italic" in lt_obj.fontname,
+                lt_obj.fontname,
             )
             chars.append(char)
 

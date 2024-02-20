@@ -31,6 +31,7 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
         x1: float | None = None,
         y1: float | None = None,
         ncolor: tuple | None = None,
+        fontname: str = None,
     ):
         """Init with plain char of a character and its rectangular coordinates."""
         self.x0 = x0
@@ -39,6 +40,7 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
         self.y1 = y1
         self.text = text
         self.ncolor = ncolor
+        self.fontname = fontname
 
     def __repr__(self) -> str:
         """Make the text part of the repr for better debugging."""
@@ -70,6 +72,8 @@ class Word:
         self.y1 = y1
         self.chars = chars
         self.ncolor = None
+        self.fontname = None
+
         if self.chars:
             # Obtain the rectangle coordinates from a list of libpdf text objects
             self.x0 = min(text_obj.x0 for text_obj in self.chars)
@@ -77,12 +81,16 @@ class Word:
             self.x1 = max(text_obj.x1 for text_obj in self.chars)
             self.y1 = max(text_obj.y1 for text_obj in self.chars)
 
-            if all(
-                x.ncolor == self.chars[0].ncolor and x.ncolor is not None
-                for x in self.chars
-            ):
-                self.ncolor = self.chars[0].ncolor
+            for n in ["ncolor", "fontname"]:
+                if all(
+                    getattr(x, n) == getattr(self.chars[0], n)
+                    and getattr(x, n) is not None
+                    for x in self.chars
+                ):
+                    setattr(self, n, getattr(self.chars[0], n))
 
+
+==== BASE ====
     @property
     def text(self) -> str:
         """Return plain text."""
@@ -118,6 +126,8 @@ class HorizontalLine:
         self.y1 = y1
         self.words = words
         self.ncolor = None
+        self.fontname = None
+
         if self.words:
             # Obtain the rectangle coordinates from a list of libpdf text objects
             self.x0 = min(text_obj.x0 for text_obj in self.words)
@@ -125,11 +135,13 @@ class HorizontalLine:
             self.x1 = max(text_obj.x1 for text_obj in self.words)
             self.y1 = max(text_obj.y1 for text_obj in self.words)
 
-            if all(
-                x.ncolor == self.words[0].ncolor and x.ncolor is not None
-                for x in self.words
-            ):
-                self.ncolor = self.words[0].ncolor
+            for n in ["ncolor", "fontname"]:
+                if all(
+                    getattr(x, n) == getattr(self.words[0], n)
+                    and getattr(x, n) is not None
+                    for x in self.words
+                ):
+                    setattr(self, n, getattr(self.words[0], n))
 
     @property
     def text(self) -> str:
@@ -165,12 +177,24 @@ class HorizontalBox:
         self.x1 = x1
         self.y1 = y1
         self.lines = lines
+        self.ncolor = None
+        self.fontname = None
+
         if self.lines:
             # Obtain the rectangle coordinates from a list of libpdf text objects.
             self.x0 = min(text_obj.x0 for text_obj in self.lines)
             self.y0 = min(text_obj.y0 for text_obj in self.lines)
             self.x1 = max(text_obj.x1 for text_obj in self.lines)
             self.y1 = max(text_obj.y1 for text_obj in self.lines)
+
+            _words = [word for line in self.lines for word in line.words]
+
+            for n in ["ncolor", "fontname"]:
+                if all(
+                    getattr(x, n) == getattr(_words[0], n) and getattr(x, n) is not None
+                    for x in _words
+                ):
+                    setattr(self, n, getattr(_words[0], n))
 
     @property
     def text(self) -> str:
@@ -180,20 +204,7 @@ class HorizontalBox:
     @property
     def words(self):
         """Return list of words"""
-        _words = []
-        for l in self.lines:
-            _words += l.words
-
-        return _words
-
-    @property
-    def ncolor(self):
-        w = self.words
-        return (
-            w[0].ncolor
-            if all(x.ncolor == w[0].ncolor and x.ncolor is not None for x in w)
-            else None
-        )
+        return [word for line in self.lines for word in line.words]
 
     def __repr__(self) -> str | None:
         """Make the text part of the repr for better debugging."""
