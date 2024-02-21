@@ -8,7 +8,7 @@ import os
 import re
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, List, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, List, Tuple
 
 import chardet
 import pdfplumber
@@ -34,9 +34,9 @@ from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 
+from libpdf.exceptions import TextContainsNewlineError
 from libpdf.log import logging_needed
 from libpdf.models.chapter import Chapter
-from libpdf.models.element import Element
 from libpdf.models.figure import Figure
 from libpdf.models.horizontal_box import Char, HorizontalBox, HorizontalLine, Word
 from libpdf.models.paragraph import Paragraph
@@ -44,6 +44,9 @@ from libpdf.models.rect import Rect
 from libpdf.models.table import Table
 from libpdf.parameters import RENDER_ELEMENTS, VIS_DBG_MAP_ELEMENTS_COLOR
 from libpdf.progress import bar_format_lvl1, tqdm
+
+if TYPE_CHECKING:
+    from libpdf.models.element import Element
 
 MAP_TYPES = {
     Chapter: "chapter",
@@ -80,7 +83,7 @@ def decode_title(obj_bytes: bytes) -> str:
     return str_ret
 
 
-def create_out_dirs(src_file, *paths):
+def create_out_dirs(src_file, *paths) -> str:
     r"""
     Create paths relative to the directory of src_file and return the target directory.
 
@@ -88,7 +91,8 @@ def create_out_dirs(src_file, *paths):
     joins it with the given \*paths.
     Example call: ``create_out_dirs(__name__, 'output', 'visual_debug')``.
 
-    :param src_file: base path given as file path, it's supposed to be set to __file__ by the caller
+    :param src_file: base path given as file path, it's supposed to be set to __file__
+        by the caller
     :param paths: list of paths to be appended
     :return: created directory path
     """
@@ -101,7 +105,7 @@ def create_out_dirs(src_file, *paths):
     return target_dir
 
 
-def string_to_identifier(text: str):
+def string_to_identifier(text: str) -> str:
     r"""
     Take an input text and return an identifier.
 
@@ -114,8 +118,10 @@ def string_to_identifier(text: str):
         uppercase  ::=  "A"..."Z"
         digit      ::=  "0"..."9"
 
-    If the identifier starts with a digit after the replacing operation, an underscore is prepended.
-    In case the input text contains a newline sequence, an exception is thrown.
+    If the identifier starts with a digit after the replacing operation, an underscore
+    is prepended. In case the input text contains a newline sequence, an exception is
+    thrown.
+
     :param text: the input text
     :raises: ValueError: text contains newline chars \r or \n
     :return: identifier
@@ -123,7 +129,7 @@ def string_to_identifier(text: str):
     newline_chars = ["\r", "\n"]
     for newline_char in newline_chars:
         if newline_char in text:
-            raise ValueError(f'Input text "{text}" contains a new line character.')
+            raise TextContainsNewlineError(text)
     allowed_chars_regex = re.compile(r"[^_a-zA-Z0-9]")
     replace_string = allowed_chars_regex.sub("_", text)
     if replace_string[0].isdigit():
@@ -192,7 +198,7 @@ def from_pdfplumber_bbox(x0, top, x1, bottom, page_height) -> list[float]:
 
 def check_lt_obj_in_bbox(lt_obj: LTContainer, bbox: tuple[float, float, float, float]):
     """
-    Check if pdfminer LTContainer layout object (lt_obj) is completely inside the given bounding box (bbox).
+    Check if pdfminer LTContainer (lt_obj) is completely inside a bounding box (bbox).
 
     Examples::
 
@@ -237,16 +243,18 @@ def check_lt_obj_in_bbox(lt_obj: LTContainer, bbox: tuple[float, float, float, f
 
 
 def find_lt_obj_in_bbox(
-    lt_objs_in_bbox: List,
+    lt_objs_in_bbox: list,
     lt_obj,
-    bbox: Tuple[float, float, float, float],
+    bbox: tuple[float, float, float, float],
 ):  # pylint: disable=too-many-nested-blocks, too-many-branches  # local algorithm, easier to read when not split up
     """
     Find all layout objects (lt_obj) inside given bounding box (bbox) recursively.
 
-    The pdfminer LTComponent layout object lt_obj is hierarchical, so a subset of the hierarchy can be contained in the
-    bbox. The function will add the highest level hierarchical elements that are fully contained in the bbox to the list
-    lt_objs_in_bbox. The function is recursive and the in/out parameter lt_objs_in_bbox is passed around and populated.
+    The pdfminer LTComponent layout object lt_obj is hierarchical, so a subset of the
+    hierarchy can be contained in the bbox. The function will add the highest level
+    hierarchical elements that are fully contained in the bbox to the list
+    lt_objs_in_bbox. The function is recursive and the in/out parameter lt_objs_in_bbox
+    is passed around and populated.
 
     Examples::
 
@@ -285,12 +293,15 @@ def find_lt_obj_in_bbox(
         |           |
         +-----------+
 
-    If a layout object is partially inside the given bounding box (bbox), then the function will recurse and
-    search for lower level layout objects completely inside the bbox.
+    If a layout object is partially inside the given bounding box (bbox), then the
+    function will recurse and search for lower level layout objects completely inside
+    the bbox.
 
-    The pdfminer LTAnno class doesn't have any position metadata, it's a virtual space character that pdfminer
-    adds between 2 LTChar objects to denote word boundaries. Any trailing LTAnno is considered zero-width and
-    always contained in the given bbox. Trailing LTAnno may be deleted in a post-processing step.
+    The pdfminer LTAnno class doesn't have any position metadata, it's a virtual
+    space character that pdfminer adds between 2 LTChar objects to denote
+    word boundaries. Any trailing LTAnno is considered zero-width and
+    always contained in the given bbox. Trailing LTAnno may be deleted in a
+    post-processing step.
 
     :param lt_objs_in_bbox: list of LTComponent objects inside given bounding box
     :param lt_obj: LTComponent object like LTTextBox, LTLine, LTTextLine
@@ -306,23 +317,25 @@ def find_lt_obj_in_bbox(
         or lt_obj.y1 < bbox[1]  # lt_obj completely below bbox
         or lt_obj.y0 > bbox[3]  # lt_obj completely above bbox
     ):
-        # This is the case when a LT object is neither inside nor intersected with the given bounding box.
+        # This is the case when a LT object is neither inside nor intersected with the
+        # given bounding box.
         pass
     elif hasattr(lt_obj, "_objs"):
         # All the downwards hierarchical LT objects are stored in the attribute "_objs".
-        # If the _objs attribute doesn't exist, it means it's the bottom of the hierarchy.
+        # If the _objs attribute doesn't exist, it means it's the bottom of the
+        # hierarchy.
         text_inside_bbox = (
             False  # True on LTTextLine level when the first LTChar is inside the BBOX
         )
         for item in lt_obj._objs:  # pylint: disable=protected-access
             if isinstance(item, LTAnno):
-                # special treatment of LTAnno because it is virtual with no position data
+                # special treatment of LTAnno as it is virtual with no position data
                 if text_inside_bbox:
                     # LTAnno is added because an LTChar was inside the bbox before
                     lt_objs_in_bbox.append(item)
             elif isinstance(item, LTChar):
-                # check if the first and last LTChar have shown in the given bbox to decide if the trailing
-                # LTAnno should be added
+                # check if the first and last LTChar have shown in the given bbox to
+                # decide if the trailing LTAnno should be added
                 ltchar_inside = check_lt_obj_in_bbox(item, bbox)
                 if text_inside_bbox:
                     if ltchar_inside:
@@ -345,11 +358,11 @@ def find_lt_obj_in_bbox(
 
 
 def lt_page_crop(
-    bbox: Tuple[float, float, float, float],
-    lt_objs: List,
-    lt_type_in_filter: Type[Union[LTText, LTCurve, LTImage, LTFigure]],
+    bbox: tuple[float, float, float, float],
+    lt_objs: list,
+    lt_type_in_filter: type[LTText | LTCurve | LTImage | LTFigure],
     contain_completely: bool = False,
-) -> List:
+) -> list:
     """
     Find and filter pdfminer layout objects in the given bounding box.
 
@@ -364,18 +377,20 @@ def lt_page_crop(
     2. LTTextLine, LTCurve
     3. LTChar, LTAnno
 
-    This function filters LT objects according to the whitelist. LTImage and LTFigure extract the objects as their
-    literal name, while LTText and LTCurve are explained below.
+    This function filters LT objects according to the whitelist. LTImage and LTFigure
+    extract the objects as their literal name, while LTText and LTCurve are explained
+    below.
 
     LTText:
-    When LTText is in the whitelist, LTAnno, LTChar, LTTextLine and LTTextbox objects will be returned since LTText is
-    an interface class inherited by text-related classes, LTAnno, LTTextline and LTTextbox. These text-related objects
+    When LTText is in the whitelist, LTAnno, LTChar, LTTextLine and LTTextbox objects
+    will be returned since LTText is an interface class inherited by text-related
+    classes, LTAnno, LTTextline and LTTextbox. These text-related objects
     are able to be merged by the function which takes care of the merge.
 
     LTCurve:
-    LTCurve is inherited by LTLine and LTRect. When LTCurve is set in the whitelist, LTCurve, LTLine and LTRect will be
-    collected. These drawing-related objects can be used further for users who would like to do
-    table or figure analysis.
+    LTCurve is inherited by LTLine and LTRect. When LTCurve is set in the whitelist,
+    LTCurve, LTLine and LTRect will be collected. These drawing-related objects can be
+    used further for users who would like to do table or figure analysis.
 
 
     :param bbox: bounding box, rectangular area [x0, y0, x1, y1]
@@ -400,26 +415,25 @@ def lt_page_crop(
 
 
 def lt_to_libpdf_hbox_converter(
-    lt_objs: List[LTTextBoxHorizontal],
-) -> Union[HorizontalBox, None]:
+    lt_objs: list[LTTextBoxHorizontal],
+) -> HorizontalBox | None:
     """Convert a LTTextBox to a HorizontalBox."""
     flatten_lt_objs = []
     flatten_hiearchical_lttext(lt_objs, flatten_lt_objs)
     textlines = assemble_to_textlines(flatten_lt_objs)
 
     if textlines:
-        textbox = HorizontalBox(textlines)
-        return textbox
+        return HorizontalBox(textlines)
 
     return None
 
 
 def textbox_crop(
-    bbox: Tuple[float, float, float, float],
-    ltpage_objs: List,
-) -> Union[HorizontalBox, None]:
+    bbox: tuple[float, float, float, float],
+    ltpage_objs: list,
+) -> HorizontalBox | None:
     """
-    Collect and group hierachically all LTChar in a given bbox and convert all LTText to libpdf text objects.
+    Collect + group all LTChar in a given bbox and convert all LTText to libpdf objects.
 
     :param bbox: a given bounding box (x0, y0, x1, y1)
     :param ltpage_objs: a list of LT objects in a certain LTPage
@@ -434,17 +448,18 @@ def textbox_crop(
 
 
 def assemble_to_textlines(
-    flatten_lt_objs: List[LTText],
-) -> List[LTTextLineHorizontal]:
+    flatten_lt_objs: list[LTText],
+) -> list[LTTextLineHorizontal]:
     """
-    Assemble and convert all LTChar into a libpdf horiontal line or several libpdf horizontal lines.
+    Assemble and convert all LTChar into one or several libpdf horiontal line(s).
 
-    The flatten_lt_objs is a list of LTChar and LTAnno which are already sorted because layout analysis of pdfminer
-    sorts each LTTextboxHorizontal from top to bottom. When the hierarchical structure is flatten, LTChar and LTAnno are
+    The flatten_lt_objs is a list of LTChar and LTAnno which are already sorted because
+    layout analysis of pdfminer sorts each LTTextboxHorizontal from top to bottom.
+    When the hierarchical structure is flatten, LTChar and LTAnno are
     placed in the order of their x coordinates by textlines
 
-    These LTChar are groupped into textlines again in the scope of only one textbox and textlines are groupped
-    according to LTAnno
+    These LTChar are groupped into textlines again in the scope of only one textbox and
+    textlines are groupped according to LTAnno
 
     :param flatten_lt_objs: a list of LTChar and LTAnno
     :return: a list of libpdf HorizontalLine
@@ -452,10 +467,6 @@ def assemble_to_textlines(
     chars = []
     words = []
     textlines = []
-    # if isinstance(flatten_lt_objs[0], LTChar):
-    #     last_ltobj = flatten_lt_objs[0]
-    # else:
-    #     last_ltobj = flatten_lt_objs[1]
 
     for lt_obj in flatten_lt_objs:
         if lt_obj.get_text() != " " and lt_obj.get_text() != "\n":
@@ -494,8 +505,8 @@ def assemble_to_textlines(
                 textlines.append(textline)
 
     if chars or words:
-        # for the case where several trailing spaces at the end of the last textline as the last textline doesn't have
-        # '\n' at the end of the sentence.
+        # for the case where several trailing spaces at the end of the last textline as
+        # the last textline doesn't have '\n' at the end of the sentence.
         if chars:
             word = Word(copy.deepcopy(chars))
             chars.clear()

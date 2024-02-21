@@ -15,7 +15,7 @@ from libpdf import parameters
 from libpdf import process as pro
 from libpdf.apiobjects import ApiObjects
 from libpdf.catalog import catalog, extract_catalog
-from libpdf.exceptions import LibpdfException
+from libpdf.exceptions import LibpdfError
 from libpdf.log import logging_needed
 from libpdf.models.figure import Figure
 from libpdf.models.file import File
@@ -87,7 +87,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     :param no_rects: flag triggering the exclusion of rects
     :param overall_pbar: total progress bar for whole libpdf run
     :return: instance of Objects class
-    :raise LibpdfException: PDF contains no pages
+    :raise LibpdfError: PDF contains no pages
     """
     LOG.info("PDF extraction started ...")
 
@@ -117,7 +117,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
             if len(pdf.pages) == 0:
                 message = "Page range selection: no pages left in the PDF to analyze."
                 LOG.critical(message)
-                raise LibpdfException(message)
+                raise LibpdfError(message)
 
         overall_pbar.update(5)
         pdf = delete_page_ann(pdf)
@@ -132,7 +132,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         pages_list = extract_page_metadata(pdf)
 
         if not pages_list:
-            raise LibpdfException("PDF contains no pages")
+            raise LibpdfError("PDF contains no pages")
 
         overall_pbar.update(1)
 
