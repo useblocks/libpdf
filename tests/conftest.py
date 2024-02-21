@@ -35,9 +35,7 @@ PDF_PYTHON_LOGGING = Path(__file__).parent / "pdf" / "howto-logging.pdf"
 PDF_RECTS_EXTRACTION = Path(__file__).parent / "pdf" / "test_rects_extraction.pdf"
 
 # test PDF for color style info
-PDF_COLOR_STYLE = os.path.join(
-    os.path.dirname(__file__), "pdf", "test_words_color_style.pdf"
-)
+PDF_COLOR_STYLE = Path(__file__).parent / "pdf" / "test_words_color_style.pdf"
 
 
 @pytest.fixture(scope="session")
