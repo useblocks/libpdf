@@ -144,6 +144,8 @@ ignore = [
     "ISC001", # may conflict with Ruff formatter
     "TD003",  # missing-todo-link - no big processes for us
     "ANN101", # missing-type-self - infer typing is simple for this library
+    "CPY001", # missing-copyright-notice - specified on project level
+    "FBT001", # boolean-type-hint-positional-argument - good message, but need a concept how to deal with this
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
