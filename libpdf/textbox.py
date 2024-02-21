@@ -79,10 +79,9 @@ def extract_paragraphs_chapters(
     chapter_list = []
     if no_chapters:
         LOG.info("Excluding chapters extraction")
-    else:
-        if catalog["outline"]:
-            LOG.info("Extracting chapters ...")
-            chapter_list = render_chapters(extracted_lt_textboxes, page_list, pdf)
+    elif catalog["outline"]:
+        LOG.info("Extracting chapters ...")
+        chapter_list = render_chapters(extracted_lt_textboxes, page_list, pdf)
 
     paragraph_list = []
     if no_paragraphs:
@@ -782,17 +781,15 @@ def first_last_char_in_anno_marker(  # pylint: disable=too-many-branches # bette
             # the incoming char is outside the anno-rectangle
             pass
 
-    else:
-        # the char is LTAnno
-        if idx_char == len(ltobjs_in_lttextline) - 1:
-            # the last char of the textline
+    elif idx_char == len(ltobjs_in_lttextline) - 1:
+        # the last char of the textline
+        anno_complete = True
+    elif isinstance(ltobjs_in_lttextline[idx_char + 1], LTChar):
+        if ltobjs_in_lttextline[idx_char + 1].x0 > anno["rect"][2]:
+            # the next char is outside of the current anno-rectangle
             anno_complete = True
-        elif isinstance(ltobjs_in_lttextline[idx_char + 1], LTChar):
-            if ltobjs_in_lttextline[idx_char + 1].x0 > anno["rect"][2]:
-                # the next char is outside of the current anno-rectangle
-                anno_complete = True
-        else:
-            raise ValueError("two LTAnno occurs in a row")
+    else:
+        raise ValueError("two LTAnno occurs in a row")
 
     return anno_complete
 

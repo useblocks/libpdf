@@ -61,13 +61,12 @@ class ApiObjects:  # pylint: disable = too-few-public-methods
         if pdfminer is not None:
             # take argument first
             self.pdfminer = pdfminer
+        elif pdfplumber is not None:
+            # set from pdfplumber document
+            self.pdfminer = pdfplumber.doc
         else:
-            if pdfplumber is not None:
-                # set from pdfplumber document
-                self.pdfminer = pdfplumber.doc
-            else:
-                # nothing available
-                self.pdfminer = None
+            # nothing available
+            self.pdfminer = None
 
 
 class Flattened(NamedTuple):

@@ -71,14 +71,13 @@ def config_logger(cli=True):
             init_tqdm = True
         else:
             init_basic = True
-    else:  # API usage
-        if TQDM_AVAILABLE:
-            # this needs to be documented so any API user is not surprised that the libpdf logger has an attached
-            # handler; users may delete it if unwanted or it could be configurable later if tqdm handler should be
-            # used or the user wants to define something else
-            init_tqdm = True
-        else:  # don't init anything, it's up to the user
-            pass
+    elif TQDM_AVAILABLE:
+        # this needs to be documented so any API user is not surprised that the libpdf logger has an attached
+        # handler; users may delete it if unwanted or it could be configurable later if tqdm handler should be
+        # used or the user wants to define something else
+        init_tqdm = True
+    else:  # don't init anything, it's up to the user
+        pass
 
     log_format = "[%(levelname)5s] %(name)s - %(message)s"
     if init_tqdm:

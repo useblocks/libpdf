@@ -124,7 +124,7 @@ def resolve_name_obj(name_tree_kids):
     """
     temp_list = []
     for kid in name_tree_kids:
-        if "Kids" in kid and kid["Kids"]:
+        if kid.get("Kids"):
             temp_list.extend([kid_kid.resolve() for kid_kid in kid["Kids"]])
         elif "Names" in kid:
             return name_tree_kids
@@ -311,14 +311,12 @@ def resolve_outline(outline_obj, outline_list, des_dict, pdf):  # pylint: disabl
                 raise RuntimeError(
                     f"Page {outline_obj['Dest'][0]} is not an indirect reference to a page object"
                 )
+        elif isinstance(outline_obj["Dest"], PSLiteral):
+            # PDF 1.1 name object
+            outline_dest = outline_obj["Dest"].name
         else:
-            # named destination
-            if isinstance(outline_obj["Dest"], PSLiteral):
-                # PDF 1.1 name object
-                outline_dest = outline_obj["Dest"].name
-            else:
-                # PDF 1.2 byte string
-                outline_dest = outline_obj["Dest"].decode("utf-8")
+            # PDF 1.2 byte string
+            outline_dest = outline_obj["Dest"].decode("utf-8")
         title_bytes = outline_obj["Title"]
     else:
         raise ValueError("No key A and Dest in outline.")
