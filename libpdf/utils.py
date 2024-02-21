@@ -827,7 +827,7 @@ def render_pages(
                 stroke_width=2,
             )
 
-        image.save(str(Path(target_dir) / name_prefix + f"{page_no}.png"))
+        image.save(str(Path(target_dir) / f"{name_prefix}{page_no}.png"))
 
 
 def visual_debug_pdfminer(pdf_path: str, vd_pdfminer_output: str) -> None:
