@@ -1,4 +1,5 @@
 """Handle progress bars using tqdm."""
+
 import logging
 
 LOG = logging.getLogger(__name__)

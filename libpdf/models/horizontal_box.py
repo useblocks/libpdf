@@ -1,6 +1,6 @@
 """Definition of HorizontalBox to contain text in the PDF."""
 
-from typing import List
+from __future__ import annotations
 
 
 class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
@@ -11,30 +11,32 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
     :vartype text: str
     :ivar x0: distance from the left of the page to the left edge of the character
     :vartype x0: float
-    :ivar y0: distance from the bottom of the page to the lower edge of the character (less than y1)
+    :ivar y0: distance from the bottom of the page to the lower edge of the character
+        (less than y1)
     :vartype y0: float
     :ivar x1: distance from the left of the page to the right edge of the character
     :vartype x1: float
-    :ivar y1: distance from the bottom of the page to the upper edge of the character (greater than y0)
+    :ivar y1: distance from the bottom of the page to the upper edge of the character
+        (greater than y0)
     :vartype y1: float
     """
 
     def __init__(
         self,
         text: str,
-        x0: float = None,
-        y0: float = None,
-        x1: float = None,
-        y1: float = None,
+        x0: float | None = None,
+        y0: float | None = None,
+        x1: float | None = None,
+        y1: float | None = None,
     ):
-        """Init the class with plain char of a character and its rectangular coordinates."""
+        """Init with plain char of a character and its rectangular coordinates."""
         self.x0 = x0
         self.y0 = y0
         self.x1 = x1
         self.y1 = y1
         self.text = text
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make the text part of the repr for better debugging."""
         return f"{type(self).__name__}({self.text})"
 
@@ -51,11 +53,11 @@ class Word:
 
     def __init__(
         self,
-        chars: List[Char],
-        x0: float = None,
-        y0: float = None,
-        x1: float = None,
-        y1: float = None,
+        chars: list[Char],
+        x0: float | None = None,
+        y0: float | None = None,
+        x1: float | None = None,
+        y1: float | None = None,
     ):
         """Init the class with plain text of a word and its rectangular coordinates."""
         self.x0 = x0
@@ -71,11 +73,11 @@ class Word:
             self.y1 = max(text_obj.y1 for text_obj in self.chars)
 
     @property
-    def text(self):
+    def text(self) -> str:
         """Return plain text."""
         return "".join([x.text for x in self.chars])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make the text part of the repr for better debugging."""
         return f"{type(self).__name__}({self.text})"
 
@@ -92,13 +94,13 @@ class HorizontalLine:
 
     def __init__(
         self,
-        words: List[Word],
-        x0: float = None,
-        y0: float = None,
-        x1: float = None,
-        y1: float = None,
+        words: list[Word],
+        x0: float | None = None,
+        y0: float | None = None,
+        x1: float | None = None,
+        y1: float | None = None,
     ):
-        """Init the class with plain text of a horizontal line and its rectangular coordinates."""
+        """Init with plain text of a horizontal line and its rectangular coordinates."""
         self.x0 = x0
         self.y0 = y0
         self.x1 = x1
@@ -112,11 +114,11 @@ class HorizontalLine:
             self.y1 = max(text_obj.y1 for text_obj in self.words)
 
     @property
-    def text(self):
+    def text(self) -> str:
         """Return plain text."""
         return " ".join([x.text for x in self.words])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make the text part of the repr for better debugging."""
         return f"{type(self).__name__}({self.text})"
 
@@ -133,13 +135,13 @@ class HorizontalBox:
 
     def __init__(
         self,
-        lines: List[HorizontalLine],
-        x0: float = None,
-        y0: float = None,
-        x1: float = None,
-        y1: float = None,
+        lines: list[HorizontalLine],
+        x0: float | None = None,
+        y0: float | None = None,
+        x1: float | None = None,
+        y1: float | None = None,
     ):
-        """Init the class with plain text of a horizontal box and its rectangular coordinates."""
+        """Init with plain text of a horizontal box and its rectangular coordinates."""
         self.x0 = x0
         self.y0 = y0
         self.x1 = x1
@@ -153,11 +155,11 @@ class HorizontalBox:
             self.y1 = max(text_obj.y1 for text_obj in self.lines)
 
     @property
-    def text(self):
+    def text(self) -> str:
         """Return plain text."""
         return "\n".join([x.text for x in self.lines])
 
-    def __repr__(self):
+    def __repr__(self) -> str | None:
         """Make the text part of the repr for better debugging."""
         if self.lines:
             return f"{type(self).__name__}({self.text})"

@@ -1,4 +1,5 @@
 """Base class for all PDF model classes."""
+
 import logging
 
 LOG = logging.getLogger(__name__)

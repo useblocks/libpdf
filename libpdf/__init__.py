@@ -22,7 +22,7 @@ from libpdf.core import main_api as load
 from libpdf.core import main_cli
 
 # define importable objects
-__all__ = ["load", "__version__", "__summary__"]
+__all__ = ["__summary__", "__version__", "load"]
 
 # Enable running
 #   python -m libpdf.__init__

@@ -1,4 +1,5 @@
 """Core routines for PDF extraction."""
+
 import itertools
 import logging
 import os
@@ -530,15 +531,15 @@ def file_info_extraction(pdf, pdf_path):
     if "CreationDate" in pdf.metadata:
         preprocessed_date = _time_preprocess(pdf.metadata["CreationDate"])
         time_format = _get_datetime_format(preprocessed_date)
-        file_meta_params.update(
-            {"creation_date": datetime.strptime(preprocessed_date, time_format)}
-        )
+        file_meta_params.update({
+            "creation_date": datetime.strptime(preprocessed_date, time_format)
+        })
     if "ModDate" in pdf.metadata:
         preprocessed_date = _time_preprocess(pdf.metadata["ModDate"])
         time_format = _get_datetime_format(preprocessed_date)
-        file_meta_params.update(
-            {"modified_date": datetime.strptime(preprocessed_date, time_format)}
-        )
+        file_meta_params.update({
+            "modified_date": datetime.strptime(preprocessed_date, time_format)
+        })
     if "Trapped" in pdf.metadata:
         file_meta_params.update({"trapped": pdf.metadata["Trapped"]})
 
@@ -705,7 +706,7 @@ def extract_rects(
                 )
 
                 LOG.info(
-                    f"found rect at {rect_bbox} at page {idx_page+1}: color {non_stroking_color}"
+                    f"found rect at {rect_bbox} at page {idx_page + 1}: color {non_stroking_color}"
                 )
                 lt_textbox = lt_textbox_crop(
                     rect_bbox,
@@ -722,7 +723,9 @@ def extract_rects(
                 rect_list.append(rect)
 
         else:
-            LOG.info(f"found no rects on page {idx_page+1}: {page_crop.objects.keys()}")
+            LOG.info(
+                f"found no rects on page {idx_page + 1}: {page_crop.objects.keys()}"
+            )
 
     # return figure_list
     return rect_list

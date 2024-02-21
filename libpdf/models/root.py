@@ -1,4 +1,5 @@
 """Definition for PDF root element."""
+
 from typing import List, Union
 
 from libpdf.models.chapter import Chapter

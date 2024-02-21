@@ -1,4 +1,5 @@
 """Definition for PDF pages."""
+
 from typing import TYPE_CHECKING, List, Union
 
 from libpdf.models.model_base import ModelBase

@@ -1,4 +1,5 @@
 """Definition for PDF textblocks."""
+
 from typing import TYPE_CHECKING, List
 
 from libpdf.models.element import Element

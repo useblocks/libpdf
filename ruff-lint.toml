@@ -1,0 +1,7 @@
+extend = "pyproject.toml"
+# add files here as they are touched by PRs to improve code quality over time
+include = [
+    "libpdf/models/horizontal_box.py",
+    "libpdf/utils.py",
+    "tests/conftest.py",
+]
