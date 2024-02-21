@@ -8,7 +8,7 @@ import os
 import re
 from decimal import Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import TYPE_CHECKING, Any
 
 import chardet
 import pdfplumber
@@ -17,6 +17,7 @@ from pdfminer.layout import (
     LAParams,
     LTAnno,
     LTChar,
+    LTComponent,
     LTContainer,
     LTCurve,
     LTFigure,
@@ -83,7 +84,7 @@ def decode_title(obj_bytes: bytes) -> str:
     return str_ret
 
 
-def create_out_dirs(src_file, *paths) -> str:
+def create_out_dirs(src_file: str, *paths: str) -> str:
     r"""
     Create paths relative to the directory of src_file and return the target directory.
 
@@ -96,13 +97,13 @@ def create_out_dirs(src_file, *paths) -> str:
     :param paths: list of paths to be appended
     :return: created directory path
     """
-    basedir = os.path.dirname(os.path.realpath(src_file))
-    target_dir = os.path.join(basedir, *paths)
+    basedir = Path.parent(os.path.realpath(src_file))
+    target_dir = Path.joinpath(basedir, *paths)
 
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
+    if not target_dir.exists():
+        target_dir.mkdir(parents=True)
 
-    return target_dir
+    return str(target_dir)
 
 
 def string_to_identifier(text: str) -> str:
@@ -137,7 +138,13 @@ def string_to_identifier(text: str) -> str:
     return replace_string
 
 
-def to_pdfplumber_bbox(x0, y0, x1, y1, page_height) -> list[Decimal]:
+def to_pdfplumber_bbox(
+    x0: float,
+    y0: float,
+    x1: float,
+    y1: float,
+    page_height: float,
+) -> list[Decimal]:
     """
     Convert PDF standard or pdfminer bbox coordinates to pdfplumber bbox coordinates.
 
@@ -181,7 +188,13 @@ def to_pdfplumber_bbox(x0, y0, x1, y1, page_height) -> list[Decimal]:
     return [ret_x0, ret_y0, ret_x1, ret_y1]
 
 
-def from_pdfplumber_bbox(x0, top, x1, bottom, page_height) -> list[float]:
+def from_pdfplumber_bbox(
+    x0: Decimal,
+    top: Decimal,
+    x1: Decimal,
+    bottom: Decimal,
+    page_height: Decimal,
+) -> list[float]:
     """
     Convert pdfplumber bbox coordinates to PDF standard.
 
@@ -196,7 +209,9 @@ def from_pdfplumber_bbox(x0, top, x1, bottom, page_height) -> list[float]:
     return [float(x0), float(page_height - bottom), float(x1), float(page_height - top)]
 
 
-def check_lt_obj_in_bbox(lt_obj: LTContainer, bbox: tuple[float, float, float, float]):
+def check_lt_obj_in_bbox(
+    lt_obj: LTContainer, bbox: tuple[float, float, float, float]
+) -> bool:
     """
     Check if pdfminer LTContainer (lt_obj) is completely inside a bounding box (bbox).
 
@@ -242,11 +257,11 @@ def check_lt_obj_in_bbox(lt_obj: LTContainer, bbox: tuple[float, float, float, f
     return lt_obj_in_bbox
 
 
-def find_lt_obj_in_bbox(
+def find_lt_obj_in_bbox(  # noqa: PLR0912 - local algorithm, easier to read when not split up
     lt_objs_in_bbox: list,
-    lt_obj,
+    lt_obj: LTComponent,
     bbox: tuple[float, float, float, float],
-):  # pylint: disable=too-many-nested-blocks, too-many-branches  # local algorithm, easier to read when not split up
+) -> None:
     """
     Find all layout objects (lt_obj) inside given bounding box (bbox) recursively.
 
@@ -327,7 +342,7 @@ def find_lt_obj_in_bbox(
         text_inside_bbox = (
             False  # True on LTTextLine level when the first LTChar is inside the BBOX
         )
-        for item in lt_obj._objs:  # pylint: disable=protected-access
+        for item in lt_obj._objs:  # noqa: SLF001 - not publicly available
             if isinstance(item, LTAnno):
                 # special treatment of LTAnno as it is virtual with no position data
                 if text_inside_bbox:
@@ -350,7 +365,8 @@ def find_lt_obj_in_bbox(
                     # no LTChar was added before, so not in BBOX yet
                     pass
             else:
-                # it is not an LTAnno nor an LTChar, so recurse and break it further down
+                # it is not an LTAnno nor an LTChar, so recurse and break it further
+                # down
                 find_lt_obj_in_bbox(lt_objs_in_bbox, item, bbox)
     else:
         # no attribute "_objs" exists. It reaches the bottom of the hierarchy
@@ -361,6 +377,7 @@ def lt_page_crop(
     bbox: tuple[float, float, float, float],
     lt_objs: list,
     lt_type_in_filter: type[LTText | LTCurve | LTImage | LTFigure],
+    *,
     contain_completely: bool = False,
 ) -> list:
     """
@@ -526,7 +543,7 @@ def lt_textbox_crop(
     y_tolerance: float,
 ) -> LTTextBoxHorizontal | None:
     """
-    Collect and group all LTChar in a given bbox and return only one LTTextBoxHorizontal.
+    Collect + group all LTChar in a given bbox and return only one LTTextBoxHorizontal.
 
     :param bbox: a given bounding box (x0, y0, x1, y1)
     :param ltpage_objs: a list of LT objects in a cetain LTPage
@@ -606,7 +623,9 @@ def assemble_to_lt_textlines(
     return lt_textlines
 
 
-def flatten_hiearchical_lttext(lt_objs: list[LTText], flatten_lt_objs: list[LTChar]):
+def flatten_hiearchical_lttext(
+    lt_objs: list[LTText], flatten_lt_objs: list[LTChar]
+) -> None:
     """
     Flatten hierarchical LTText which can be LTTextBox and LTLine.
 
@@ -650,12 +669,12 @@ def get_elements_on_page(
 
 
 def visual_debug_libpdf(  # pylint: disable=too-many-branches
-    objects,
-    visual_output_dir,
-    visual_split_elements,
-    visual_debug_include_elements,
-    visual_debug_exclude_elements,
-):
+    objects: list[Element],
+    visual_output_dir: str,
+    visual_split_elements: bool,  # -
+    visual_debug_include_elements: list[str],
+    visual_debug_exclude_elements: list[str],
+) -> None:
     """Visual debug."""
     LOG.info("Starting visual debug...")
     # collect all elements
@@ -700,8 +719,8 @@ def visual_debug_libpdf(  # pylint: disable=too-many-branches
         if visual_split_elements:
             # rendering elements to separate folder
             for render_element in rendered_elements:
-                target_dir = os.path.join(visual_output_dir, render_element)
-                Path(target_dir).mkdir(parents=True, exist_ok=True)
+                target_dir = Path(visual_output_dir) / render_element
+                target_dir.mkdir(parents=True, exist_ok=True)
                 render_pages(
                     pdf_pages=objects.pdfplumber.pages,
                     target_dir=target_dir,
@@ -728,7 +747,7 @@ def render_pages(
     name_prefix: str,
     draw_elements: dict[int, list[dict[str, Any]]],
     render_elements: list[str],
-):
+) -> None:
     """
     Render PDF pages as images containing bounding box of certain elements.
 
@@ -808,10 +827,10 @@ def render_pages(
                 stroke_width=2,
             )
 
-        image.save(os.path.join(target_dir, name_prefix + f"{page_no}.png"))
+        image.save(str(Path(target_dir) / name_prefix + f"{page_no}.png"))
 
 
-def visual_debug_pdfminer(pdf_path, vd_pdfminer_output):
+def visual_debug_pdfminer(pdf_path: str, vd_pdfminer_output: str) -> None:
     """Visual debug pdfminer."""
     logging.basicConfig(format="[%(levelname)5s] %(message)s", level=logging.DEBUG)
 
@@ -849,11 +868,11 @@ def visual_debug_pdfminer(pdf_path, vd_pdfminer_output):
     LOG.info("Finished successfully")
 
 
-def extract_layout(path_pdf, idx_single_page=None):
+def extract_layout(path_pdf: str, idx_single_page: int | None = None) -> dict[int, Any]:
     """Use pdfminer.six to extract LTContainer layout boxes."""
     LOG.info("Extracting layout ...")
     parser = None
-    with open(path_pdf, "rb") as file_pointer:
+    with Path(path_pdf).open("rb") as file_pointer:
         # init pdfminer elements
         parser = PDFParser(file_pointer)
     doc = PDFDocument(parser)
