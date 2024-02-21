@@ -1,12 +1,14 @@
 """Helper functions."""
 
+from __future__ import annotations
+
 import copy
 import logging
 import os
 import re
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Type, Union
+from typing import Any, List, Tuple, Type, Union
 
 import chardet
 import pdfplumber
@@ -15,6 +17,7 @@ from pdfminer.layout import (
     LAParams,
     LTAnno,
     LTChar,
+    LTContainer,
     LTCurve,
     LTFigure,
     LTImage,
@@ -70,7 +73,8 @@ def decode_title(obj_bytes: bytes) -> str:
     except UnicodeDecodeError:
         str_ret = obj_bytes.decode(chardet_ret["encoding"], "backslashreplace")
         LOG.warning(
-            'Could not fully decode catalog headline "%s". Replaced character(s) with escaped hex value.',
+            'Could not fully decode catalog headline "%s". Replaced character(s) with '
+            "escaped hex value.",
             str_ret,
         )
     return str_ret
@@ -127,7 +131,7 @@ def string_to_identifier(text: str):
     return replace_string
 
 
-def to_pdfplumber_bbox(x0, y0, x1, y1, page_height):
+def to_pdfplumber_bbox(x0, y0, x1, y1, page_height) -> list[Decimal]:
     """
     Convert PDF standard or pdfminer bbox coordinates to pdfplumber bbox coordinates.
 
@@ -171,7 +175,7 @@ def to_pdfplumber_bbox(x0, y0, x1, y1, page_height):
     return [ret_x0, ret_y0, ret_x1, ret_y1]
 
 
-def from_pdfplumber_bbox(x0, top, x1, bottom, page_height):
+def from_pdfplumber_bbox(x0, top, x1, bottom, page_height) -> list[float]:
     """
     Convert pdfplumber bbox coordinates to PDF standard.
 
@@ -186,7 +190,7 @@ def from_pdfplumber_bbox(x0, top, x1, bottom, page_height):
     return [float(x0), float(page_height - bottom), float(x1), float(page_height - top)]
 
 
-def check_lt_obj_in_bbox(lt_obj, bbox: Tuple[float, float, float, float]):
+def check_lt_obj_in_bbox(lt_obj: LTContainer, bbox: tuple[float, float, float, float]):
     """
     Check if pdfminer LTContainer layout object (lt_obj) is completely inside the given bounding box (bbox).
 
@@ -505,28 +509,28 @@ def assemble_to_textlines(
 
 
 def lt_textbox_crop(
-    bbox: Tuple[float, float, float, float],
-    ltpage_objs: List,
+    bbox: tuple[float, float, float, float],
+    ltpage_objs: list,
     word_margin: float,
     y_tolerance: float,
-) -> Union[LTTextBoxHorizontal, None]:
+) -> LTTextBoxHorizontal | None:
     """
     Collect and group all LTChar in a given bbox and return only one LTTextBoxHorizontal.
 
     :param bbox: a given bounding box (x0, y0, x1, y1)
     :param ltpage_objs: a list of LT objects in a cetain LTPage
     :param word_margin: pdfminer laparam for word margins in a LTTextline
-    :param y_tolerance: the vertical tolerance to group a line. LTAnno with newline is inserted at the end of a line
+    :param y_tolerance: the vertical tolerance to group a line. LTAnno with newline is
+        inserted at the end of a line
     :return: a LTTextbox or None if no LTChar in the given bbox
     """
     lt_objs = lt_page_crop(bbox, ltpage_objs, LTText)
     if len(lt_objs) == 0:
         # None of LTText objects exists
         return None
-    if len(lt_objs) == 1:
-        if isinstance(lt_objs[0], LTTextBoxHorizontal):
-            # only one LTTextbox completely inside the given bbox
-            return lt_objs[0]
+    if len(lt_objs) == 1 and isinstance(lt_objs[0], LTTextBoxHorizontal):
+        # only one LTTextbox completely inside the given bbox
+        return lt_objs[0]
 
     flatten_lt_objs = []
     flatten_hiearchical_lttext(lt_objs, flatten_lt_objs)
@@ -543,23 +547,26 @@ def lt_textbox_crop(
 
 
 def assemble_to_lt_textlines(
-    flatten_lt_objs: List[LTText],
+    flatten_lt_objs: list[LTText],
     word_margin: float,
     y_tolerance: float,
-) -> List[LTTextLineHorizontal]:
+) -> list[LTTextLineHorizontal]:
     """
     Assemble all LTChar into a LTTextline or several LTTextlines.
 
-    The flatten_lt_objs is a list of LTChar and LTAnno which are already sorted because layout analysis of pdfminer
-    sort each LTTextboxHorizontal from top to bottom. When the hierarchical structure is flatten, LTChar and LTAnno are
+    The flatten_lt_objs is a list of LTChar and LTAnno which are already sorted because
+    layout analysis of pdfminer sort each LTTextboxHorizontal from top to bottom.
+    When the hierarchical structure is flatten, LTChar and LTAnno are
     placed in the order of their x coordinates by textlines
 
-    These LTChar are groupped into textlines again in the scope of only one textbox. words-grouping is still made by
-    pdfminer layout analysis, but the textlines-grouping is according to the vertical center of each character.
+    These LTChar are groupped into textlines again in the scope of only one textbox.
+    Words-grouping is still made by pdfminer layout analysis, but the textlines-grouping
+    is according to the vertical center of each character.
 
     :param flatten_lt_objs: a list of LTChar and LTAnno
     :param word_margin: pdfminer laparam for word margins in a LTTextline
-    :param y_tolerance: the vertical tolerance to group a line. LTAnno with newline is inserted at the end of a line
+    :param y_tolerance: the vertical tolerance to group a line. LTAnno with newline is
+        inserted at the end of a line
     :return: a list of LTTextline
     """
     lt_textlines = [LTTextLineHorizontal(word_margin)]
@@ -579,7 +586,7 @@ def assemble_to_lt_textlines(
             ):
                 lt_textlines[-1].add(lt_obj)
             else:
-                lt_textlines[-1]._objs.append(LTAnno("\n"))  # pylint: disable=protected-access # access needed
+                lt_textlines[-1]._objs.append(LTAnno("\n"))  # noqa: SLF001 - not publicly available
                 lt_textlines.append(LTTextLineHorizontal(word_margin))
                 lt_textlines[-1].add(lt_obj)
 
@@ -588,28 +595,32 @@ def assemble_to_lt_textlines(
     return lt_textlines
 
 
-def flatten_hiearchical_lttext(lt_objs: List[LTText], flatten_lt_objs: List[LTChar]):
+def flatten_hiearchical_lttext(lt_objs: list[LTText], flatten_lt_objs: list[LTChar]):
     """
     Flatten hierarchical LTText which can be LTTextBox and LTLine.
 
     The flatten LT objects are stored in the list 'flatten_lt_objs'
 
-    :param lt_objs: a list of hierarchical LT objects, which may be LTTextbox, LTTextline, LTChar, or LTAnno
-    :param flatten_lt_objs:  a list of LT objects in a flatten structure, where the results are stored
+    :param lt_objs: a list of hierarchical LT objects, which may be LTTextbox,
+        LTTextline, LTChar, or LTAnno
+    :param flatten_lt_objs:  a list of LT objects in a flatten structure, where the
+        results are stored
     :return:
     """
     for lt_obj in lt_objs:
         if isinstance(lt_obj, (LTTextBoxHorizontal, LTTextLineHorizontal)):
             if hasattr(lt_obj, "_objs"):
                 flatten_hiearchical_lttext(
-                    lt_obj._objs,  # pylint: disable=protected-access  # not publicly available
+                    lt_obj._objs,  # noqa: SLF001 - not publicly available
                     flatten_lt_objs,
                 )
         elif isinstance(lt_obj, (LTChar, LTAnno)):
             flatten_lt_objs.append(lt_obj)
 
 
-def get_elements_on_page(elements: List[Element], page_no, element_type=None):
+def get_elements_on_page(
+    elements: list[Element], page_no: int, element_type: Element | None = None
+) -> list[Element]:
     """
     Return all libpdf elements that are on a certain page.
 
@@ -620,9 +631,8 @@ def get_elements_on_page(elements: List[Element], page_no, element_type=None):
     """
     page_elements = []
     for element in elements:
-        if element_type is not None:
-            if not isinstance(element, element_type):
-                continue
+        if element_type is not None and not isinstance(element, element_type):
+            continue
         if element.position.page.number == page_no:
             page_elements.append(element)
     return page_elements
@@ -702,11 +712,11 @@ def visual_debug_libpdf(  # pylint: disable=too-many-branches
 
 
 def render_pages(
-    pdf_pages: List,
+    pdf_pages: list,
     target_dir: str,
     name_prefix: str,
-    draw_elements: Dict[int, List[Dict[str, Any]]],
-    render_elements: List[str],
+    draw_elements: dict[int, list[dict[str, Any]]],
+    render_elements: list[str],
 ):
     """
     Render PDF pages as images containing bounding box of certain elements.
@@ -714,8 +724,9 @@ def render_pages(
     :param pdf_pages: A list of pdfplumber pages
     :param target_dir: output directory for images
     :param name_prefix: file name prefix, will be appended with <page_numer>.png
-    :param draw_elements:   The elements to draw. Key is the page number, the value a dictionary containing the
-                            element and the bounding box coordinates. Example::
+    :param draw_elements:   The elements to draw. Key is the page number, the value a
+                            dictionary containing the element and the
+                            bounding box coordinates. Example::
 
                                 {
                                     2: {
@@ -728,7 +739,8 @@ def render_pages(
                                     3: {...}
                                 }
 
-    :param render_elements: list of elements to render, options are chapter, paragraph, table, figure, rect
+    :param render_elements: list of elements to render, options are chapter, paragraph,
+        table, figure, rect
     :return: None
     """
     render_elements_joined = ", ".join(render_elements)
