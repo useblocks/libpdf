@@ -31,7 +31,7 @@ class Char:  # pylint: disable=too-few-public-methods # simplicity is good.
         x1: float | None = None,
         y1: float | None = None,
         ncolor: tuple | None = None,
-        fontname: str = None,
+        fontname: str | None = None,
     ):
         """Init with plain char of a character and its rectangular coordinates."""
         self.x0 = x0
@@ -89,8 +89,6 @@ class Word:
                 ):
                     setattr(self, n, getattr(self.chars[0], n))
 
-
-==== BASE ====
     @property
     def text(self) -> str:
         """Return plain text."""
@@ -202,8 +200,8 @@ class HorizontalBox:
         return "\n".join([x.text for x in self.lines])
 
     @property
-    def words(self):
-        """Return list of words"""
+    def words(self) -> list[str]:
+        """Return list of words."""
         return [word for line in self.lines for word in line.words]
 
     def __repr__(self) -> str | None:

@@ -1,6 +1,5 @@
 """Test catalog extraction."""
 
-
 import libpdf
 from tests.conftest import PDF_COLOR_STYLE
 
@@ -129,18 +128,16 @@ def test_colors_6() -> None:
         if "Styled Text" in chapter.title:
             for content in chapter.content:
                 if "bold text format" in content.textbox.text:
-                    assert content.textbox.bold is None
                     for word in content.textbox.words:
                         if word.text == "bold":
-                            assert word.bold is True
+                            assert "Bold" in word.fontname
                         else:
-                            assert word.bold is False
+                            assert "Bold" not in word.fontname
                 elif "italc text format" in content.textbox.text:
-                    assert content.textbox.italic is None
-                    if word.text == "italc":
-                        assert word.italic is True
+                    if word.text == "italic":
+                        assert "Italic" in word.fontname
                     else:
-                        assert word.italic is False
+                        assert "Italic" not in word.fontname
                 elif "underline text format" in content.textbox.text:
                     # this seems to be exracted as rect
                     pass
