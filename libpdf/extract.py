@@ -1,4 +1,5 @@
 """Core routines for PDF extraction."""
+
 import itertools
 import logging
 import os
@@ -14,7 +15,7 @@ from libpdf import parameters
 from libpdf import process as pro
 from libpdf.apiobjects import ApiObjects
 from libpdf.catalog import catalog, extract_catalog
-from libpdf.exceptions import LibpdfException
+from libpdf.exceptions import LibpdfError
 from libpdf.log import logging_needed
 from libpdf.models.figure import Figure
 from libpdf.models.file import File
@@ -86,7 +87,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     :param no_rects: flag triggering the exclusion of rects
     :param overall_pbar: total progress bar for whole libpdf run
     :return: instance of Objects class
-    :raise LibpdfException: PDF contains no pages
+    :raise LibpdfError: PDF contains no pages
     """
     LOG.info("PDF extraction started ...")
 
@@ -116,7 +117,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
             if len(pdf.pages) == 0:
                 message = "Page range selection: no pages left in the PDF to analyze."
                 LOG.critical(message)
-                raise LibpdfException(message)
+                raise LibpdfError(message)
 
         overall_pbar.update(5)
         pdf = delete_page_ann(pdf)
@@ -131,7 +132,7 @@ def extract(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
         pages_list = extract_page_metadata(pdf)
 
         if not pages_list:
-            raise LibpdfException("PDF contains no pages")
+            raise LibpdfError("PDF contains no pages")
 
         overall_pbar.update(1)
 
@@ -530,15 +531,15 @@ def file_info_extraction(pdf, pdf_path):
     if "CreationDate" in pdf.metadata:
         preprocessed_date = _time_preprocess(pdf.metadata["CreationDate"])
         time_format = _get_datetime_format(preprocessed_date)
-        file_meta_params.update(
-            {"creation_date": datetime.strptime(preprocessed_date, time_format)}
-        )
+        file_meta_params.update({
+            "creation_date": datetime.strptime(preprocessed_date, time_format)
+        })
     if "ModDate" in pdf.metadata:
         preprocessed_date = _time_preprocess(pdf.metadata["ModDate"])
         time_format = _get_datetime_format(preprocessed_date)
-        file_meta_params.update(
-            {"modified_date": datetime.strptime(preprocessed_date, time_format)}
-        )
+        file_meta_params.update({
+            "modified_date": datetime.strptime(preprocessed_date, time_format)
+        })
     if "Trapped" in pdf.metadata:
         file_meta_params.update({"trapped": pdf.metadata["Trapped"]})
 
@@ -705,7 +706,7 @@ def extract_rects(
                 )
 
                 LOG.info(
-                    f"found rect at {rect_bbox} at page {idx_page+1}: color {non_stroking_color}"
+                    f"found rect at {rect_bbox} at page {idx_page + 1}: color {non_stroking_color}"
                 )
                 lt_textbox = lt_textbox_crop(
                     rect_bbox,
@@ -722,7 +723,9 @@ def extract_rects(
                 rect_list.append(rect)
 
         else:
-            LOG.info(f"found no rects on page {idx_page+1}: {page_crop.objects.keys()}")
+            LOG.info(
+                f"found no rects on page {idx_page + 1}: {page_crop.objects.keys()}"
+            )
 
     # return figure_list
     return rect_list

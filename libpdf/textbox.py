@@ -28,6 +28,7 @@ So the LTTextBox coordinates are::
 pdfminer sees y0 and y1 from the bottom of the page, so y0 is smaller than y1.
 All coordinates are given in points where 72 points are 1 inch.
 """
+
 import logging
 import re
 from difflib import SequenceMatcher

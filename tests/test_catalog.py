@@ -1,4 +1,5 @@
 """Test catalog extraction."""
+
 from click.testing import CliRunner
 
 import libpdf

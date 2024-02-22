@@ -1,4 +1,5 @@
 """Definition for PDF file meta data."""
+
 from datetime import datetime
 from typing import TYPE_CHECKING
 

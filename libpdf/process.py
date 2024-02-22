@@ -7,6 +7,7 @@ It includes:
 3. elements sorting
 4. yaml output
 """
+
 import datetime
 import decimal
 import json
@@ -307,7 +308,7 @@ def fill_elements_content(
     for index_element, element in enumerate(elements_in_outline):
         if isinstance(element, Chapter):
             id_dict = {"table": 1, "figure": 1, "paragraph": 1, "rect": 1}
-            content = elements_in_outline[index_element].content
+            content = element.content
             index_b_chapter = index_element
         elif "content" in locals():
             element.idx = id_dict[element.type]

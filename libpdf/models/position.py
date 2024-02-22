@@ -1,4 +1,5 @@
 """Definition of positions in the PDF."""
+
 from typing import TYPE_CHECKING
 
 from libpdf.parameters import TARGET_COOR_TOLERANCE

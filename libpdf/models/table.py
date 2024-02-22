@@ -1,4 +1,5 @@
 """Definition for PDF tables."""
+
 from operator import attrgetter
 from typing import List
 

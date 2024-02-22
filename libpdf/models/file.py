@@ -1,4 +1,5 @@
 """Definition for PDF file."""
+
 from typing import TYPE_CHECKING
 
 from libpdf.models.file_meta import FileMeta

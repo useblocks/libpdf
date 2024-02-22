@@ -16,6 +16,7 @@ pdfplumber sees y0 and y1 from the top of the page
 
 pdfminer's layout is used.
 """
+
 import logging
 from decimal import Decimal
 from typing import List, Union

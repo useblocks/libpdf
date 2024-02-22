@@ -120,8 +120,12 @@ exclude = [
 # use Black's default
 line-length = 88
 
-# Assume Python 3.11.
+# lint according to oldest supported version
 target-version = "py38"
+
+# try out unstable rules, fixes, and formatting
+# changes are reviewed anyway
+preview = true
 
 [tool.ruff.lint]
 # concept: select all rules by default and ignore unwanted (maybe just per file)
@@ -140,6 +144,8 @@ ignore = [
     "ISC001", # may conflict with Ruff formatter
     "TD003",  # missing-todo-link - no big processes for us
     "ANN101", # missing-type-self - infer typing is simple for this library
+    "CPY001", # missing-copyright-notice - specified on project level
+    "FBT001", # boolean-type-hint-positional-argument - good message, but need a concept how to deal with this
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
@@ -155,10 +161,10 @@ max-args = 8
 [tool.ruff.lint.flake8-annotations]
 mypy-init-return = true  # no init return type needed if at least one arg is annotated
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 20
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # "docs/conf.py" = ["E402"]
 "**/__init__.py" = [
     "D104",

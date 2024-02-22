@@ -10,7 +10,7 @@ import click
 # not importing load(), so no circular import when importing from root __init__.py
 from libpdf import __summary__, __version__, parameters  # pylint: disable=cyclic-import
 from libpdf.apiobjects import ApiObjects
-from libpdf.extract import LibpdfException, extract
+from libpdf.extract import LibpdfError, extract
 from libpdf.log import config_logger, get_level_name, set_log_level
 from libpdf.parameters import RENDER_ELEMENTS
 from libpdf.process import output_dump
@@ -139,7 +139,7 @@ def main(  # pylint: disable=too-many-arguments,too-many-locals  # no reasonable
                 no_rects,
                 overall_pbar,
             )
-        except LibpdfException:
+        except LibpdfError:
             if cli_usage:
                 LOG.critical("Exiting with code 1")
                 sys.exit(1)

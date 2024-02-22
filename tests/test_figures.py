@@ -1,4 +1,5 @@
 """Test figures extraction."""
+
 from click.testing import CliRunner
 
 import libpdf

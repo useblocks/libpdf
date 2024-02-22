@@ -1,4 +1,5 @@
 """Definition for PDF linked text."""
+
 from typing import TYPE_CHECKING, Dict, Union
 
 from libpdf.models.model_base import ModelBase

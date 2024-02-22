@@ -1,4 +1,5 @@
 """PDF catalog extraction."""
+
 import logging
 import re
 from typing import Any, Dict, List, Union
@@ -211,14 +212,12 @@ def chapter_number_giver(
 
         if chapter_number:
             #  The assumption is that only one match is found
-            chapters_in_outline[idx_chapter].update({"number": chapter_number[0]})
-            chapters_in_outline[idx_chapter].update(
-                {"title": chapter_title.replace(chapter_number[0], "", 1).strip()}
-            )
+            chapter.update({"number": chapter_number[0]})
+            chapter.update({
+                "title": chapter_title.replace(chapter_number[0], "", 1).strip()
+            })
         else:
-            chapters_in_outline[idx_chapter].update(
-                {"number": f"virt.{new_hierarchical_level}"}
-            )
+            chapter.update({"number": f"virt.{new_hierarchical_level}"})
 
         if chapter["content"]:
             # next deeper level
@@ -653,9 +652,9 @@ def _resolve_pdf_obj_refs(
                         )
                         resolved_dict[key] = ret_list
                     else:
-                        resolved_dict[
-                            key
-                        ] = resolved  # add resolved element to dictionary
+                        resolved_dict[key] = (
+                            resolved  # add resolved element to dictionary
+                        )
             else:
                 # leave other types as they are
                 resolved_dict[key] = value
