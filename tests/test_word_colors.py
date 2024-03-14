@@ -133,7 +133,7 @@ def test_colors_6() -> None:
                             assert "Bold" in word.fontname
                         else:
                             assert "Bold" not in word.fontname
-                elif "italc text format" in content.textbox.text:
+                elif "italic text format" in content.textbox.text:
                     if word.text == "italic":
                         assert "Italic" in word.fontname
                     else:
