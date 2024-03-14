@@ -69,13 +69,11 @@ def extract_pdf_table(pdf, pages_list: List[Page], figure_list: List[Figure]):
         "edge_min_length": 3,
         "min_words_vertical": 3,
         "min_words_horizontal": 1,
-        "keep_blank_chars": False,
+        "text_keep_blank_chars": False,
         "text_tolerance": 3,
         "text_x_tolerance": 2,
         "text_y_tolerance": 2,
         "intersection_tolerance": 3,
-        "intersection_x_tolerance": None,
-        "intersection_y_tolerance": None,
     }
 
     table_dict = {"page": {}}
@@ -164,7 +162,7 @@ def extract_cells(lt_page: LTPage, rows: List, list_cell: List[Cell], page: Page
                     row_cell[1],
                     row_cell[2],
                     row_cell[3],
-                    Decimal(lt_page.height),
+                    lt_page.height,
                 )
                 pos_cell = Position(
                     pos_cell_bbox[0],

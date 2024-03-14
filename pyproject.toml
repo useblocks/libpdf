@@ -63,6 +63,8 @@ wand = "^0.6.5"
 sphinx = { version = "*", optional = true }
 sphinx_rtd_theme = { version = "*", optional = true }
 sphinxcontrib-plantuml = { version = "*", optional = true }
+pdfplumber = "^0.11.0"
+pdfminer-six = "^20231228"
 
 [tool.poetry.extras]
 tqdm = ["tqdm"]
@@ -70,13 +72,6 @@ colorama = ["colorama"]
 docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-plantuml"]
 
 [tool.poetry.dev-dependencies]
-# forked libraries;
-# they must be dev deps so make them invisible to PyPI and the egg/wheel requires section
-# 'poetry install' installs those by default, so the Git deps are actually used instead of the wheels in the deps
-# folder; see also libpdf/_import_forks.py
-pdfplumber = { git = "https://github.com/useblocks/pdfplumber.git" }
-"pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
-
 # testing
 pytest = "^7"
 pytest-cov = "*"
