@@ -17,7 +17,6 @@ __summary__: str = importlib_metadata.metadata("libpdf")["Summary"]
 
 # below imports from libpdf.core cannot be at the top avoid circular import errors in
 # core.py when importing __version__ and __summary__
-import libpdf._import_forks  # noqa: F401
 from libpdf.core import main_api as load
 from libpdf.core import main_cli
 
