@@ -54,7 +54,7 @@ colorama = { version = "^0.4.4", optional = true }
 # see [tool.poetry.dev-dependencies] for the forked libraries
 pycryptodome = "^3.9.9"
 sortedcontainers = "^2.3.0"
-pillow = "~9.0.1"  # cannot go higher because of this bug https://github.com/jsvine/pdfplumber/discussions/637
+pillow = "~10.2.0"  # cannot go higher because of this bug https://github.com/jsvine/pdfplumber/discussions/637
 unicodecsv = "^0.14.1"
 wand = "^0.6.5"
 
@@ -136,7 +136,7 @@ preview = true
 select = ["ALL"]
 # select = [] # commented out (don't want to fix all issues with this PR)
 ignore = [
-    "COM812", # may conflict with Ruff formatter
+    "COM812", # missing-trailing-comma - may conflict with Ruff formatter
     "D107",   # undocumented-public-init - commonly the docstring provides no helpful information
     "D203",   # D203 and D211 are mutually exclusive: https://github.com/PyCQA/pydocstyle/issues/141
     "D212",   # D212 and D213 are mutually exclusive: https://stackoverflow.com/a/45990465
