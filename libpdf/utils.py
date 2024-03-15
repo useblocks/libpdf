@@ -144,13 +144,12 @@ def to_pdfplumber_bbox(
     x1: float,
     y1: float,
     page_height: float,
-) -> list[Decimal]:
+) -> list[float]:
     """
     Convert PDF standard or pdfminer bbox coordinates to pdfplumber bbox coordinates.
 
     The function is needed because for pdfplumber:
     - y coordinates are inverted
-    - Decimal type is needed
 
     Some diagram may help::
 
@@ -180,20 +179,15 @@ def to_pdfplumber_bbox(
     :param page_height: height of the page
     :return: [x0, top, x1, bottom]
     """
-    # pylint: disable=invalid-name  # short is better here
-    ret_x0 = Decimal(x0)
-    ret_y0 = Decimal(Decimal(page_height) - Decimal(y1))
-    ret_x1 = Decimal(x1)
-    ret_y1 = Decimal(Decimal(page_height) - Decimal(y0))
-    return [ret_x0, ret_y0, ret_x1, ret_y1]
+    return [x0, page_height - y1, x1, page_height - y0]
 
 
 def from_pdfplumber_bbox(
-    x0: Decimal,
-    top: Decimal,
-    x1: Decimal,
-    bottom: Decimal,
-    page_height: Decimal,
+    x0: float,
+    top: float,
+    x1: float,
+    bottom: float,
+    page_height: float,
 ) -> list[float]:
     """
     Convert pdfplumber bbox coordinates to PDF standard.
@@ -205,8 +199,7 @@ def from_pdfplumber_bbox(
     :param page_height: height of the page
     :return: [x0, y0, x1, y1]
     """
-    # pylint: disable=invalid-name  # short is better here
-    return [float(x0), float(page_height - bottom), float(x1), float(page_height - top)]
+    return [x0, page_height - bottom, x1, page_height - top]
 
 
 def check_lt_obj_in_bbox(

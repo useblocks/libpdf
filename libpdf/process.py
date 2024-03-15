@@ -9,7 +9,6 @@ It includes:
 """
 
 import datetime
-import decimal
 import json
 import logging
 import os
@@ -17,6 +16,7 @@ import sys
 from typing import Dict, List, Optional, Union
 
 import ruamel.yaml
+from pdfplumber.page import Page as PdfplumberPage
 from ruamel.yaml.representer import RoundTripRepresenter
 
 from libpdf import parameters
@@ -37,19 +37,17 @@ from libpdf.parameters import HEADLINE_TOLERANCE
 LOG = logging.getLogger(__name__)
 
 
-def remove_page_header_footer(single_page):
+def remove_page_header_footer(single_page: PdfplumberPage) -> PdfplumberPage:
     """Remove header and footer."""
-    page_crop = single_page.within_bbox(
+    return single_page.within_bbox(
         (
             0,
-            decimal.Decimal(parameters.PAGE_CROP_MARGINS["top"]),
+            parameters.PAGE_CROP_MARGINS["top"],
             single_page.width,
             single_page.height
-            - decimal.Decimal(parameters.PAGE_CROP_MARGINS["bottom"]),
+            - parameters.PAGE_CROP_MARGINS["bottom"],
         ),
     )
-
-    return page_crop
 
 
 class MyRepresenter(RoundTripRepresenter):  # pylint: disable=too-few-public-methods

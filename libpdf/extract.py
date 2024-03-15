@@ -1,11 +1,13 @@
 """Core routines for PDF extraction."""
 
+from __future__ import annotations
+
 import itertools
 import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 import pdfplumber
 import yaml
@@ -41,6 +43,9 @@ from libpdf.utils import (
     lt_to_libpdf_hbox_converter,
     to_pdfplumber_bbox,
 )
+
+if TYPE_CHECKING:
+    from pdfplumber.page import Page as PdfplumberPage
 
 LOG = logging.getLogger(__name__)
 
@@ -591,14 +596,15 @@ def extract_page_metadata(pdf):
 
 
 def extract_figures(
-    pdf,
-    pages_list,
-    figure_dir,
-) -> List[Figure]:  # pylint: disable=too-many-nested-blocks, too-many-branches  # local algorithm, easier to read when not split up
+    pdf: pdfplumber.pdf.PDF,
+    pages_list: list[Page],
+    figure_dir: str,
+) -> list[Figure]:  # pylint: disable=too-many-nested-blocks, too-many-branches  # local algorithm, easier to read when not split up
     """Extract figures in PDF."""
     LOG.info("Extracting figures ...")
     figure_list = []
 
+    page: PdfplumberPage
     for idx_page, page in enumerate(  # pylint: disable=too-many-nested-blocks
         tqdm(
             pdf.pages,
@@ -611,9 +617,8 @@ def extract_figures(
             LOG.debug("Extracting figures page %s of %s", idx_page + 1, len(pdf.pages))
         page_crop = pro.remove_page_header_footer(page)
         lt_page = page._layout  # pylint: disable=protected-access  # easiest way to obtain LTPage
-
         # check and filter figures
-        figures = check_and_filter_figures(page_crop.figures)
+        figures = check_and_filter_figures(page_crop.objects.get("image", []))
 
         if len(figures) != 0:
             for idx_figure, figure in enumerate(figures):

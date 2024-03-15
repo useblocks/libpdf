@@ -54,7 +54,7 @@ colorama = { version = "^0.4.4", optional = true }
 # see [tool.poetry.dev-dependencies] for the forked libraries
 pycryptodome = "^3.9.9"
 sortedcontainers = "^2.3.0"
-pillow = "~9.0.1"  # cannot go higher because of this bug https://github.com/jsvine/pdfplumber/discussions/637
+pillow = "~10.2.0"  # cannot go higher because of this bug https://github.com/jsvine/pdfplumber/discussions/637
 unicodecsv = "^0.14.1"
 wand = "^0.6.5"
 
@@ -63,6 +63,8 @@ wand = "^0.6.5"
 sphinx = { version = "*", optional = true }
 sphinx_rtd_theme = { version = "*", optional = true }
 sphinxcontrib-plantuml = { version = "*", optional = true }
+pdfplumber = "^0.11.0"
+pdfminer-six = "^20231228"
 
 [tool.poetry.extras]
 tqdm = ["tqdm"]
@@ -70,13 +72,6 @@ colorama = ["colorama"]
 docs = ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-plantuml"]
 
 [tool.poetry.dev-dependencies]
-# forked libraries;
-# they must be dev deps so make them invisible to PyPI and the egg/wheel requires section
-# 'poetry install' installs those by default, so the Git deps are actually used instead of the wheels in the deps
-# folder; see also libpdf/_import_forks.py
-pdfplumber = { git = "https://github.com/useblocks/pdfplumber.git" }
-"pdfminer.six" = {git = "https://github.com/useblocks/pdfminer.six", rev = "develop"}
-
 # testing
 pytest = "^7"
 pytest-cov = "*"
@@ -136,7 +131,7 @@ preview = true
 select = ["ALL"]
 # select = [] # commented out (don't want to fix all issues with this PR)
 ignore = [
-    "COM812", # may conflict with Ruff formatter
+    "COM812", # missing-trailing-comma - may conflict with Ruff formatter
     "D107",   # undocumented-public-init - commonly the docstring provides no helpful information
     "D203",   # D203 and D211 are mutually exclusive: https://github.com/PyCQA/pydocstyle/issues/141
     "D212",   # D212 and D213 are mutually exclusive: https://stackoverflow.com/a/45990465

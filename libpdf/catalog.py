@@ -400,7 +400,7 @@ def get_explict_dest(pdf, dest_list):
     return [dest_page_num, dest_rect_x, dest_rect_y]
 
 
-def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf):  # pylint: disable=too-many-branches
+def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf) -> None:  # pylint: disable=too-many-branches
     """
     Fetch the name of annotation, annotation location on the page and destination of the link annotation.
 
