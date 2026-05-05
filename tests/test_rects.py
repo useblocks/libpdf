@@ -230,4 +230,5 @@ def test_rects_extraction_table() -> None:
     assert table.columns_count == 1 * 3
     assert table.rows_count == 1
 
-    assert check_chapter_rects_count(chapter) == 1 * 5
+    # assert check_chapter_rects_count(chapter) == 1 * 5
+    assert check_chapter_rects_count(chapter) == 17

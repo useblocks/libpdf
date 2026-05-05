@@ -22,6 +22,41 @@ catalog = {
 }
 
 
+def safe_decode_pdf_string(value):
+    """
+    Robust decoding for PDF name/string objects.
+
+    Handles:
+    - PSLiteral name objects
+    - Python strings
+    - byte strings encoded as UTF-16 with BOM
+    - UTF-8
+    - Latin-1 fallback
+
+    :param value: PDF value to decode
+    :return: decoded string
+    """
+    if isinstance(value, PSLiteral):
+        return value.name
+
+    if isinstance(value, str):
+        return value
+
+    if isinstance(value, bytes):
+        if value.startswith(b"\xfe\xff") or value.startswith(b"\xff\xfe"):
+            try:
+                return value.decode("utf-16")
+            except UnicodeDecodeError:
+                pass
+
+        try:
+            return value.decode("utf-8")
+        except UnicodeDecodeError:
+            return value.decode("latin-1", errors="replace")
+
+    return str(value)
+
+
 def get_named_destination(pdf):  # pylint: disable=too-many-branches
     """
     Extract Name destination catalog.
@@ -76,9 +111,12 @@ def get_named_destination(pdf):  # pylint: disable=too-many-branches
                 # In 'Names', odd indices are destination's names, while even indices are the obj id which can be
                 # referred to the certain page in PDF
                 for index_name in range(0, len(item_dest["Names"]), 2):
-                    named_destination[
-                        name_obj_list[index_dest]["Names"][index_name].decode("utf-8")
-                    ] = name_obj_list[index_dest]["Names"][index_name + 1]
+                    name_key = safe_decode_pdf_string(
+                        name_obj_list[index_dest]["Names"][index_name]
+                    )
+                    named_destination[name_key] = name_obj_list[index_dest]["Names"][
+                        index_name + 1
+                    ]
     elif "Dests" in pdf_catalog:
         # PDF 1.1
         if isinstance(pdf_catalog["Dests"], PDFObjRef):
@@ -276,12 +314,7 @@ def resolve_outline(outline_obj, outline_list, des_dict, pdf):  # pylint: disabl
                     )
             else:
                 # named destination
-                if isinstance(outline_dest_entry["D"], PSLiteral):
-                    # PDF 1.1 name object
-                    outline_dest = outline_dest_entry["D"].name
-                else:
-                    # PDF 1.2 byte string
-                    outline_dest = outline_dest_entry["D"].decode("utf-8")
+                outline_dest = safe_decode_pdf_string(outline_dest_entry["D"])
 
                 if isinstance(outline_obj["Title"], PDFObjRef):
                     title_bytes = outline_obj["Title"].resolve()  # title is a PDFObjRef
@@ -314,8 +347,8 @@ def resolve_outline(outline_obj, outline_list, des_dict, pdf):  # pylint: disabl
             # PDF 1.1 name object
             outline_dest = outline_obj["Dest"].name
         else:
-            # PDF 1.2 byte string
-            outline_dest = outline_obj["Dest"].decode("utf-8")
+            # named destination
+            outline_dest = safe_decode_pdf_string(outline_obj["Dest"])
         title_bytes = outline_obj["Title"]
     else:
         raise ValueError("No key A and Dest in outline.")
@@ -436,6 +469,14 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf) -> N
         float(ann_resolved["Rect"][3]) + ANNO_Y_TOLERANCE,
         page.height,
     )
+
+    left, top, right, bottom = ann_bbox
+    if top > bottom:
+        LOG.debug(f"invalid annotation bbox: {ann_resolved['Rect']}, {ann_bbox}")
+        return
+        # maybe continue with swapped bbox
+        # ann_bbox = [left, bottom, right, top]
+
     page_crop = page.within_bbox(ann_bbox)
     ann_text = page_crop.extract_text(x_tolerance=1, y_tolerance=4)
 
@@ -469,12 +510,7 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf) -> N
                     )
             else:
                 # Named destination
-                if isinstance(ann_resolved_entry["D"], PSLiteral):
-                    # PDF 1.1 name object
-                    des_name = ann_resolved_entry["D"].name
-                else:
-                    # PDF 1.2 byte string
-                    des_name = ann_resolved_entry["D"].decode("utf-8")
+                des_name = safe_decode_pdf_string(ann_resolved_entry["D"])
                 annotation_page_map[idx_page + 1]["annotation"].append(
                     {
                         "text": ann_text,
@@ -508,12 +544,7 @@ def update_ann_info(annotation_page_map, ann_resolved, page, idx_page, pdf) -> N
                 )
         else:
             # Named destination
-            if isinstance(ann_resolved["Dest"], PSLiteral):
-                # PDF 1.1 name object
-                des_name = ann_resolved["Dest"].name
-            else:
-                # PDF 1.2 byte string
-                des_name = ann_resolved["Dest"].decode("utf-8")
+            des_name = safe_decode_pdf_string(ann_resolved["Dest"])
 
             annotation_page_map[idx_page + 1]["annotation"].append(
                 {"text": ann_text, "rect": ann_resolved["Rect"], "des_name": des_name},
